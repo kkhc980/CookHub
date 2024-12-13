@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcorvey.project.persistence.RecipeReviewMapper">
+	
+	<resultMap type="com.dishcovery.project.domain.RecipeReviewVO" id="RecipeReviewResultMap">
+      <id property="recipeReviewId" column="RECIPE_REVIEW_ID" /> 
+      <result property="boardId" column="BOARD_ID" /> 
+      <result property="memberId" column="MEMBER_ID" />
+      <result property="reviewContent" column="RECIPE_REVIEW_CONTENT" />
+      <result property="reviewRating" column="REVIEW_RATING" />
+      <result property="recipeReviewDateCreated" column="RECIPE_REVIEW_DATE_CREATED" />
+   </resultMap>
+	
+	<insert id="insert">
+       INSERT INTO RECIPE_REVIEW (RECIPE_REVIEW_ID, BOARD_ID, MEMBER_ID, RECIPE_REVIEW_CONTENT, REVIEW_RATING)
+       VALUES (RECIPE_REVIEW_SEQ.NEXTVAL, #{boardId}, #{memberId}, #{recipeReviewContent}, #{reviewRating})
+   	</insert>
+	
+	<select id="selectListByBoardId" resultMap="RecipeReviewResultMap">
+       SELECT * FROM RECIPE_REVIEW
+       WHERE BOARD_ID = #{boardId}
+       ORDER BY RECIPE_REVIEW_ID
+   	</select>
+   	
+   	<update id="update">
+       UPDATE RECIPE_REVIEW
+       SET RECIPE_REVIEW_CONTENT = #{recipeReviewContent}
+       WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
+   	</update>
+   	
+   	<delete id="delete">
+       DELETE FROM RECIPE_REVIEW
+       WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
+   	</delete>	
+   	
+</mapper>

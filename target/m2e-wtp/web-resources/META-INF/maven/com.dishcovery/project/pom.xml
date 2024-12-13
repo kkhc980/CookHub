@@ -83,7 +83,14 @@
 			</exclusions>
 			<!-- <scope>runtime</scope> -->
 		</dependency>
-
+		
+		<!-- Jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.12.5</version>
+		</dependency>
+		
 		<!-- @Inject -->
 		<dependency>
 			<groupId>javax.inject</groupId>

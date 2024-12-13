@@ -11,5 +11,8 @@
 
 <P>  The time on the server is ${serverTime}. </P>
 
+<div>test kimsangho</div>
+<div>test kimheeseung</div>
+<div>test kill</div>
 </body>
 </html>

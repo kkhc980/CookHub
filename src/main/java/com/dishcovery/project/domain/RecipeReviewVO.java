@@ -14,7 +14,7 @@ import lombok.ToString;
 public class RecipeReviewVO {
 	private int recipeReviewId;
 	private int boardId;
-	private String memberId;
+	private int memberId;
 	private String reviewContent;
 	private int reviewRating;
 	private Date recipeReviewDateCreated;

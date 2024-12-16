@@ -20,6 +20,8 @@ public class ReplyServiceImple implements ReplyService{
 	
 //	@Autowired
 //	private BoardMapper boardMapper;
+	// board쪽 코딩이 안되어있는 상태이기 때문에
+	// 주석으로 따로 뺴놈
 	
 	@Transactional(value = "transactionManager")
 	// transactionManager가 관리

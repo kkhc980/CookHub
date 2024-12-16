@@ -14,13 +14,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 // root-context.xml과 동일
 @Configuration
-<<<<<<< HEAD
 @ComponentScan(basePackages = {"com.dishcovery.project.service"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
-=======
-@ComponentScan(basePackages = {"com.mokcoding.dishcovery.service"})
-@MapperScan(basePackages = {"com.mokcoding.dishcovery.persistence"})
->>>>>>> 1b125073bd2424d84b7d28ce066e336f234a735c
 public class RootConfig {
 	
 	@Bean // 스프링 bean으로 설정

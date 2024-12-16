@@ -24,7 +24,7 @@ public class ReplyMapperTest {
 	ReplyVO replyVO = new ReplyVO();
 	replyVO.setBoardId(1);
 	replyVO.setReplyContent("댓글 테스트");
-	replyVO.setMemberId("test");
+	replyVO.setMemberId(2);
 	int result = replyMapper.insert(replyVO);
 	log.info(replyVO);
 		

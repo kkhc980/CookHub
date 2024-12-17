@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.dishcorvey.project.persistence.RecipeReviewMapper">
+<mapper namespace="com.dishcovery.project.persistence.RecipeReviewMapper">
 	
 	<resultMap type="com.dishcovery.project.domain.RecipeReviewVO" id="RecipeReviewResultMap">
       <id property="recipeReviewId" column="RECIPE_REVIEW_ID" /> 

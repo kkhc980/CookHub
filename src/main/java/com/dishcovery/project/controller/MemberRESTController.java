@@ -1,17 +1,14 @@
 package com.dishcovery.project.controller;
 
-import com.dishcovery.project.domain.Member;
 import com.dishcovery.project.service.MemberService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -23,8 +20,8 @@ public class MemberRESTController {
 
     // ajax 통신으로 아이디 중복확인 요청 처리용 메소드
     @RequestMapping(value = "idchk.do", method = RequestMethod.POST)
-    public void dupCheckIdMethod(@RequestParam("userid") String userid, HttpServletResponse response) throws IOException {
-        int idCount = memberService.selectDupCheckId(userid);
+    public void dupCheckIdMethod(@RequestParam("email") String email, HttpServletResponse response) throws IOException {
+        int idCount = memberService.selectDupCheckId(email);
 
         String returnStr = null;
         if (idCount == 0) {

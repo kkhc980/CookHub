@@ -34,19 +34,19 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@GetMapping("/all/{boardId}") // GET : 댓글 선택(all)
+	@GetMapping("/all/{boardId}") // GET : �뙎湲� �꽑�깮(all)
 	public ResponseEntity<List<ReplyVO>> readAllReply(
 			@PathVariable("boardId") int boardId){
-		// @PathVariable("boardId") : {boardId} 값을 설정된 변수에 저장
+		// @PathVariable("boardId") : {boardId} 媛믪쓣 �꽕�젙�맂 蹂��닔�뿉 ���옣
 		log.info("readdAllReply()");
 		log.info("boardId = " + boardId);
 		
 		List<ReplyVO> list = replyService.getAllReply(boardId);
-		// ResponseEntity<T> : T의 타입은 프론트 side로 전송될 데이터 타입으로선언
+		// ResponseEntity<T> : T�쓽 ���엯�� �봽濡좏듃 side濡� �쟾�넚�맆 �뜲�씠�꽣 ���엯�쑝濡쒖꽑�뼵
 		return new ResponseEntity<List<ReplyVO>>(list, HttpStatus.OK);
 	}
 	
-	@PutMapping("/{replyId}") // PUT : 댓글 수정
+	@PutMapping("/{replyId}") // PUT : �뙎湲� �닔�젙
 	 public ResponseEntity<Integer> updateReply(
 		        @PathVariable("replyId") int replyId,
 		        @RequestBody String replyContent
@@ -57,7 +57,7 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{replyId}/{boardId}") // DELETE : 댓글 삭제
+	@DeleteMapping("/{replyId}/{boardId}") // DELETE : �뙎湲� �궘�젣
 	 public ResponseEntity<Integer> deleteReply(
 			 @PathVariable("replyId") int replyId,
 			 @PathVariable("boardId") int boardId) {

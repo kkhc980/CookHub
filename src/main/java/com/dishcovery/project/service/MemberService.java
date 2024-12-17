@@ -10,4 +10,6 @@ public interface MemberService {
     List<Integer> getAllId();
     int updateMember(Member member);
     int deleteMember(int memberId);
+    Member processSocialLogin(String name);
+    int selectDupCheckId(String user_id);
 }

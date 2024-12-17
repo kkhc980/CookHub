@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.RecipeBoardMapper">
+
+	<resultMap type="com.dishcovery.project.domain.RecipeBoardVO"
+		id="recipeBoardResultMap">
+		<id property="recipeBoardId" column="RECIPE_BOARD_ID"></id>
+		<result property="recipeBoardTitle" column="RECIPE_BOARD_TITLE"></result>
+		<result property="recipeBoardContent"
+			column="RECIPE_BOARD_CONTENT"></result>
+		<result property="memberId" column="MEMBER_ID"></result>
+		<result property="recipeBoardDateCreated"
+			column="RECIPE_BOARD_DATE_CREATED"></result>
+		<result property="viewCount" column="VIEW_COUNT"></result>
+		<result property="typeId" column="TYPE_ID"></result>
+		<result property="ingredientId" column="INGREDIENT_ID"></result>
+		<result property="methodId" column="METHOD_ID"></result>
+		<result property="situationId" column="SITUATION_ID"></result>
+		<result property="avgRating" column="AVG_RATING"></result>
+	</resultMap>
+
+
+  <!-- SELECT 쿼리: 모든 레시피 목록 조회 -->
+    <select id="selectAllRecipeBoards" resultMap="recipeBoardResultMap">
+        SELECT 
+            RECIPE_BOARD_ID, RECIPE_BOARD_TITLE, RECIPE_BOARD_CONTENT, MEMBER_ID, 
+            RECIPE_BOARD_DATE_CREATED, VIEW_COUNT, TYPE_ID, INGREDIENT_ID, 
+            METHOD_ID, SITUATION_ID, AVG_RATING
+        FROM RECIPE_BOARD
+    </select>
+
+    <!-- SELECT 쿼리: 특정 레시피 조회 -->
+    <select id="selectRecipeBoardById" resultMap="recipeBoardResultMap">
+        SELECT 
+            RECIPE_BOARD_ID, RECIPE_BOARD_TITLE, RECIPE_BOARD_CONTENT, MEMBER_ID, 
+            RECIPE_BOARD_DATE_CREATED, VIEW_COUNT, TYPE_ID, INGREDIENT_ID, 
+            METHOD_ID, SITUATION_ID, AVG_RATING
+        FROM RECIPE_BOARD
+        WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+    </select>
+
+    <!-- INSERT 쿼리: 레시피 등록 -->
+    <insert id="insertRecipeBoard" parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+        INSERT INTO RECIPE_BOARD (
+            RECIPE_BOARD_TITLE, RECIPE_BOARD_CONTENT, MEMBER_ID, 
+            RECIPE_BOARD_DATE_CREATED, VIEW_COUNT, TYPE_ID, INGREDIENT_ID, 
+            METHOD_ID, SITUATION_ID, AVG_RATING
+        ) VALUES (
+            #{recipeBoardTitle}, #{recipeBoardContent}, #{memberId}, 
+            ,0 , 0, #{typeId}, #{ingredientId}, 
+            #{methodId}, #{situationId}, 0
+        )
+    </insert>
+
+    <!-- UPDATE 쿼리: 레시피 수정 -->
+    <update id="updateRecipeBoard" parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+        UPDATE RECIPE_BOARD
+        SET  
+            RECIPE_BOARD_CONTENT = #{recipeBoardContent}, 
+            MEMBER_ID = #{memberId}, 
+            RECIPE_BOARD_DATE_CREATED = #{recipeBoardDateCreated},  
+            TYPE_ID = #{typeId}, 
+            INGREDIENT_ID = #{ingredientId}, 
+            METHOD_ID = #{methodId}, 
+            SITUATION_ID = #{situationId}
+        WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+    </update>
+
+    <!-- DELETE 쿼리: 레시피 삭제 -->
+    <delete id="deleteRecipeBoard" parameterType="int">
+        DELETE FROM RECIPE_BOARD WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+    </delete>
+
+	<!-- 게시글 목록 가져오기 -->
+	<select id="getBoardList"
+		resultType="com.dishcovery.project.domain.RecipeBoardVO">
+		SELECT
+		RECIPE_BOARD_ID AS recipeBoardId,
+		RECIPE_BOARD_TITLE AS recipeBoardTitle,
+		RECIPE_BOARD_CONTENT AS recipeBoardContent,
+		MEMBER_ID AS memberId,
+		RECIPE_BOARD_CREATED_DATE AS recipeBoardCreatedDate,
+		VIEW_COUNT AS viewCount,
+		AVG_RATING AS avgRating
+		FROM RECIPE_BOARD
+		ORDER BY RECIPE_BOARD_CREATED_DATE DESC
+	</select>
+
+	<!-- types 테이블에서 TYPE_ID >= 2인 데이터만 가져오기 -->
+	<select id="getTypes"
+		resultType="com.dishcovery.project.domain.TypesVO">
+		SELECT TYPE_ID AS typeId, TYPE_NAME AS typeNam
+		FROM TYPES
+		WHERE TYPE_ID >= 2
+		ORDER BY TYPE_ID ASC
+	</select>
+	<select id="getMethods"
+		resultType="com.dishcovery.project.domain.MethodsVO">
+		SELECT TYPE_ID AS methodId, TYPE_NAME AS methodName
+		FROM METHODS
+		WHERE METHOD_ID >= 2
+		ORDER BY METHOD_ID ASC
+	</select>
+	<select id="getIngredients"
+		resultType="com.dishcovery.project.domain.IngredientsVO">
+		SELECT TYPE_ID AS ingredientId, TYPE_NAME AS ingredientName
+		FROM INGREDIENTS
+		WHERE INGREDIENT_ID >= 2
+		ORDER BY INGREDIENT_ID ASC
+	</select>
+	<select id="getSituations"
+		resultType="com.dishcovery.project.domain.SituationsVO">
+		SELECT TYPE_ID AS situationId, TYPE_NAME AS situationName
+		FROM SITUATIONS
+		WHERE SITUATION_ID >= 2
+		ORDER BY SITATION_ID ASC
+	</select>
+</mapper>

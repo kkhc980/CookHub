@@ -6,19 +6,27 @@
     <resultMap id="MemberMap" type="com.dishcovery.project.domain.Member">
 
     </resultMap>
-    
-    <insert id="insert">
 
+    <insert id="insert">
+        INSERT INTO MEMBER (EMAIL, PASSWORD, NAME, PHONE_NUMBER)
+        VALUES (#{email}, #{password}, #{name}, #{phone})
     </insert>
+
+    <select id="selectDupCheckId" parameterType="string" resultType="_int">
+        SELECT COUNT(EMAIL)
+        FROM MEMBER
+        WHERE EMAIL = #{email}
+    </select>
+
 
     <select id="selectByMemberId" resultMap="MemberMap">
 
     </select>
-    
+
     <select id="selectIdList" resultType="Integer">
 
     </select>
-    
+
     <update id="update">
 
     </update>

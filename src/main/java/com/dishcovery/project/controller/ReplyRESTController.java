@@ -1,23 +1,14 @@
 package com.dishcovery.project.controller;
 
-import java.util.List;
-
+import com.dishcovery.project.domain.ReplyVO;
+import com.dishcovery.project.service.ReplyService;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.dishcovery.project.domain.ReplyVO;
-import com.dishcovery.project.service.ReplyService;
-
-import lombok.extern.log4j.Log4j;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/reply")
@@ -34,19 +25,19 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@GetMapping("/all/{boardId}") // GET : �뙎湲� �꽑�깮(all)
+	@GetMapping("/all/{boardId}") // GET : 댓글 선택(all)
 	public ResponseEntity<List<ReplyVO>> readAllReply(
 			@PathVariable("boardId") int boardId){
-		// @PathVariable("boardId") : {boardId} 媛믪쓣 �꽕�젙�맂 蹂��닔�뿉 ���옣
+		// @PathVariable("boardId") : {boardId} 값을 설정된 변수에 저장
 		log.info("readdAllReply()");
 		log.info("boardId = " + boardId);
 		
 		List<ReplyVO> list = replyService.getAllReply(boardId);
-		// ResponseEntity<T> : T�쓽 ���엯�� �봽濡좏듃 side濡� �쟾�넚�맆 �뜲�씠�꽣 ���엯�쑝濡쒖꽑�뼵
+		// ResponseEntity<T> : T의 타입은 프론트 side로 전송될 데이터 타입으로선언
 		return new ResponseEntity<List<ReplyVO>>(list, HttpStatus.OK);
 	}
 	
-	@PutMapping("/{replyId}") // PUT : �뙎湲� �닔�젙
+	@PutMapping("/{replyId}") // PUT : 댓글 수정
 	 public ResponseEntity<Integer> updateReply(
 		        @PathVariable("replyId") int replyId,
 		        @RequestBody String replyContent
@@ -57,7 +48,7 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{replyId}/{boardId}") // DELETE : �뙎湲� �궘�젣
+	@DeleteMapping("/{replyId}/{boardId}") // DELETE : 댓글 삭제
 	 public ResponseEntity<Integer> deleteReply(
 			 @PathVariable("replyId") int replyId,
 			 @PathVariable("boardId") int boardId) {

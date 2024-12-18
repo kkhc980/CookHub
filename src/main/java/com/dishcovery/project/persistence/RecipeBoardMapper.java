@@ -2,15 +2,17 @@ package com.dishcovery.project.persistence;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
 
+@Mapper
 public interface RecipeBoardMapper {
-	
-	int insert(RecipeBoardVO recipeBoardVO);
+int insert(RecipeBoardVO recipeBoardVO);
 	
 	List<RecipeBoardVO> selectList();
 	

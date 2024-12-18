@@ -28,7 +28,7 @@
 		<!-- 조회수 -->
 		<!--  <label for="viewCount">조회수</label>
             <input type="number" id="viewCount" name="viewCount" value="0" required> -->
-
+		<!--  recipepereivew count 만들어야 함  -->
 		<!-- 댓글수 -->
 		<!--    <label for="replyCount">댓글수</label>
             <input type="number" id="replyCount" name="replyCount" value="0" required> -->

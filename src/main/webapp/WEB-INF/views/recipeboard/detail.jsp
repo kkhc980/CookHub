@@ -9,7 +9,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js">
 </script>
 <meta charset="UTF-8">
-<title>${reciprBoardVO.recipeBoardTitle }</title>
+<title>${recipeBoardVO.recipeBoardTitle }</title>
 </head>
 <body>
 	<h2>글 보기</h2>

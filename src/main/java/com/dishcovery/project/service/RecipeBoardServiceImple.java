@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
@@ -16,9 +17,9 @@ import lombok.extern.log4j.Log4j;
 
 @Service
 @Log4j
-public class RecipeBoardServiceImple  implements RecipeBoardService{
+public class RecipeBoardServiceImple implements RecipeBoardService {
 
-	  @Autowired
+	 @Autowired
 	    private RecipeBoardMapper recipeBoardMapper;
 
 	    @Override
@@ -118,4 +119,10 @@ public class RecipeBoardServiceImple  implements RecipeBoardService{
 			increaseViewCount(recipeBoardId); // 조회수 증가
 			return recipeBoardMapper.selectOne(recipeBoardId);
 		}
+
+		@Override
+	    public List<RecipeBoardVO> selectAll() {
+	        return recipeBoardMapper.selectAll();
+	    }
 }
+

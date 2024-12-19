@@ -3,6 +3,7 @@ package com.dishcovery.project.service;
 import com.dishcovery.project.domain.Member;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MemberService {
     int registerMember(Member member);
@@ -12,4 +13,5 @@ public interface MemberService {
     int deleteMember(int memberId);
     Member processSocialLogin(String name);
     boolean selectDupCheckEmail(String email);
+    int updateAuthStatus(Map<String, String> map);
 }

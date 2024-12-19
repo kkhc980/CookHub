@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Log4j
@@ -51,5 +52,10 @@ public class MemberServiceImpl implements MemberService {
         int result = memberMapper.selectDupCheckEmail(email);
         if (result == 1 ) return true;
         return false;
+    }
+
+    @Override
+    public int updateAuthStatus(Map<String, String> map) {
+        return 0;
     }
 }

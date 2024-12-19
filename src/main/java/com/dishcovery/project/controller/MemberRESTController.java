@@ -2,19 +2,18 @@ package com.dishcovery.project.controller;
 
 import com.dishcovery.project.config.RootConfig;
 import com.dishcovery.project.config.SecurityConfig;
+import com.dishcovery.project.domain.Member;
 import com.dishcovery.project.service.MemberService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 @RestController
 @ContextConfiguration(classes = { RootConfig.class, SecurityConfig.class }) // 설정 파일 연결
@@ -26,25 +25,25 @@ public class MemberRESTController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // ajax 통신으로 아이디 중복확인 요청 처리용 메소드
-    @RequestMapping(value = "emailCheck", method = RequestMethod.POST)
-    public void dupCheckIdMethod(@RequestParam("email") String email, HttpServletResponse response) throws IOException {
-        int idCount = memberService.selectDupCheckId(email);
-
-        String returnStr = null;
-        if (idCount == 0) {
-            returnStr = "ok";
+    // 이메일 중복 확인 처리
+    @PostMapping("/emailCheck")
+    public ResponseEntity<String> checkEmailDuplication(@RequestParam String email) {
+        boolean isDuplicate = memberService.selectDupCheckEmail(email);
+        if (isDuplicate) {
+            return new ResponseEntity<>("fail", HttpStatus.OK);
         } else {
-            returnStr = "duple";
+            return new ResponseEntity<>("ok", HttpStatus.OK);
         }
-
-        // response 를 이용해서 클라이언트와 출력스트림을 연결하고 값 보냄
-        response.setContentType("text/html; charset=utf-8");
-        PrintWriter out = response.getWriter();
-        out.append(returnStr);
-        out.flush();
-        out.close();
     }
 
-
+    // 회원 가입 처리
+    @PostMapping("/register")
+    public ResponseEntity<String> registerMember(@RequestBody Member member) {
+        try {
+            memberService.registerMember(member);
+            return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("회원가입 실패: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

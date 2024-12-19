@@ -5,11 +5,11 @@ import com.dishcovery.project.domain.Member;
 import java.util.List;
 
 public interface MemberService {
-    int createMember(Member member);
+    int registerMember(Member member);
     Member getMemberById(int memberId);
     List<Integer> getAllId();
     int updateMember(Member member);
     int deleteMember(int memberId);
     Member processSocialLogin(String name);
-    int selectDupCheckId(String user_id);
+    boolean selectDupCheckEmail(String email);
 }

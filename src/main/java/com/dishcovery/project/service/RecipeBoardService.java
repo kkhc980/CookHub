@@ -45,5 +45,5 @@ public interface RecipeBoardService {
     
     void updateRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds);
     
-    List<RecipeBoardVO> getFilteredRecipeBoards(int typeId, int situationId, int methodId, List<Integer> ingredientIds);
+    List<RecipeBoardVO> filterByCategory(Integer typeId, Integer situationId, Integer ingredientId, Integer methodId);
 }

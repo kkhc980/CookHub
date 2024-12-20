@@ -56,11 +56,9 @@ public interface RecipeBoardMapper {
     
     void addIngredientsToRecipe(List<RecipeIngredientsVO> recipeIngredients);
     
-    List<RecipeBoardVO> getFilteredRecipeBoards(
-            @Param("typeId") int typeId,
-            @Param("situationId") int situationId,
-            @Param("methodId") int methodId,
-            @Param("ingredientIds") List<Integer> ingredientIds
-    );
+    List<RecipeBoardVO> filterByCategory(@Param("typeId") Integer typeId,
+            @Param("situationId") Integer situationId,
+            @Param("ingredientId") Integer ingredientId,
+            @Param("methodId") Integer methodId);
 
 }

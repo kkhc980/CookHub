@@ -38,6 +38,7 @@ public class RecipeBoardController {
         model.addAttribute("recipeList", recipeBoardService.getRecipeBoardList());
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
         model.addAttribute("methodsList", recipeBoardService.getAllMethods());
+        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
         model.addAttribute("situationsList", recipeBoardService.getAllSituations());
         return "recipeboard/list";
     }

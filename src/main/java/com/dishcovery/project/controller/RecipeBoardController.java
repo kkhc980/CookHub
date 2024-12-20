@@ -170,30 +170,27 @@ public class RecipeBoardController {
     }
     
     @GetMapping("/filter")
-    public String filterByConditions(
-            @RequestParam(value = "typeId", required = false, defaultValue = "1") int typeId,
-            @RequestParam(value = "situationId", required = false, defaultValue = "1") int situationId,
-            @RequestParam(value = "methodId", required = false, defaultValue = "1") int methodId,
-            @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds, // 다중 선택
-            Model model) {
+    public String filterByCategory(
+        @RequestParam(value = "type", required = false) Integer typeId,
+        @RequestParam(value = "situation", required = false) Integer situationId,
+        @RequestParam(value = "ingredient", required = false) Integer ingredientId,
+        @RequestParam(value = "method", required = false) Integer methodId,
+        Model model) {
 
-        log.info("Filtering RecipeBoards by Type ID: {}, Situation ID: {}, Method ID: {}, Ingredient IDs: {}" +
-                 typeId + situationId + methodId + ingredientIds);
+        log.info("Filtering by type: " + typeId + ", situation: " + situationId + 
+                 ", ingredient: " + ingredientId + ", method: " + methodId);
 
-        // 필터링된 레시피 가져오기
-        List<RecipeBoardVO> filteredList = recipeBoardService.getFilteredRecipeBoards(typeId, situationId, methodId, ingredientIds);
+        // 필터링된 레시피 목록 조회
+        List<RecipeBoardVO> filteredRecipes = recipeBoardService.filterByCategory(typeId, situationId, ingredientId, methodId);
 
-        // 필터 데이터 추가
-        model.addAttribute("recipeList", filteredList);
+        // 모델에 데이터 추가
+        model.addAttribute("recipeList", filteredRecipes);
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
         model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
         model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-        model.addAttribute("selectedTypeId", typeId);
-        model.addAttribute("selectedSituationId", situationId);
-        model.addAttribute("selectedMethodId", methodId);
-        model.addAttribute("selectedIngredientIds", ingredientIds);
+        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
 
         return "recipeboard/list";
     }
+
 }

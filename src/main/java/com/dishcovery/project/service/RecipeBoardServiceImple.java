@@ -151,7 +151,8 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     }
     
     @Override
-    public List<RecipeBoardVO> getFilteredRecipeBoards(int typeId, int situationId, int methodId, List<Integer> ingredientIds) {
-        return mapper.getFilteredRecipeBoards(typeId, situationId, methodId, ingredientIds);
+    public List<RecipeBoardVO> filterByCategory(Integer typeId, Integer situationId, Integer ingredientId, Integer methodId) {
+        log.info("Service: Filtering recipes by category");
+        return mapper.filterByCategory(typeId, situationId, ingredientId, methodId);
     }
 }

@@ -147,7 +147,6 @@
     <select id="getAllIngredients" resultType="com.dishcovery.project.domain.IngredientsVO">
         SELECT ingredient_id AS ingredientId, ingredient_name AS ingredientName
         FROM ingredients
-        WHERE ingredient_id != 1
     </select>
     
     <select id="getIngredientIdListByRecipeId" parameterType="int" resultType="int">
@@ -170,22 +169,22 @@
     SELECT 1 FROM DUAL
 	</insert>
 	
-	<select id="getFilteredRecipeBoards" resultType="com.dishcovery.project.domain.RecipeBoardVO">
+	<select id="filterByCategory" resultMap="RecipeBoardResultMap">
     SELECT DISTINCT rb.*
     FROM recipe_board rb
-    WHERE rb.recipe_board_id IN (
-        SELECT ri.recipe_board_id
-        FROM recipe_ingredients ri
-        WHERE ri.ingredient_id IN
-        <foreach collection="ingredientIds" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-        GROUP BY ri.recipe_board_id
-        HAVING COUNT(DISTINCT ri.ingredient_id) = #{ingredientIds.size}
-    )
-    AND (#{typeId} = 1 OR rb.type_id = #{typeId})
-    AND (#{situationId} = 1 OR rb.situation_id = #{situationId})
-    AND (#{methodId} = 1 OR rb.method_id = #{methodId})
+    LEFT JOIN recipe_ingredients ri ON rb.recipe_board_id = ri.recipe_board_id
+    WHERE 1=1
+    <if test="typeId != null">
+        AND rb.type_id = #{typeId}
+    </if>
+    <if test="situationId != null">
+        AND rb.situation_id = #{situationId}
+    </if>
+    <if test="ingredientId != null">
+        AND ri.ingredient_id = #{ingredientId}
+    </if>
+    <if test="methodId != null">
+        AND rb.method_id = #{methodId}
+    </if>
 </select>
-
 </mapper>

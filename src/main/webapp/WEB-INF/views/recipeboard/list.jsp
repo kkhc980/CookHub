@@ -1,56 +1,114 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>게시판 메인 페이지</title>
+    <title>Recipe Board List</title>
 </head>
 <body>
-	<h1>게시판</h1>
-	<!-- 글 작성 페이지 이동 버튼 -->
-	<a href="register"><input type="button" value="글 작성"></a>
-	<hr>
-	<table>
-		<thead>
-			<tr>
-				<th style="width: 60px">번호</th>
-				<th style="width: 700px">제목</th>
-				<th style="width: 120px">작성자</th>
-				<th style="width: 100px">작성일</th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach var="RecipeBoardVO" items="${recipeBoardList }">
-				<tr>
-					<td>${RecipeBoardVO.recipeBoardId }</td>
-					<td><a href="detail?recipeBoardId=${RecipeBoardVO.recipeBoardId }">
-					${RecipeBoardVO.recipeBoardTitle }</a></td>
-					<td>${RecipeBoardVO.memberId }</td>
-					<!-- boardDateCreated 데이터 포멧 변경 -->
-					<fmt:formatDate value="${RecipeBoardVO.recipeBoardDateCreated }"
-						pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardDateCreated" />
-					<td>${recipeBoardDateCreated }</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-	<ul>
-		<!-- 이전 버튼 생성을 위한 조건문 -->
-		<c:if test="${pageMaker.isPrev() }">
-			<li><a href="list?pageNum=${pageMaker.startNum - 1}">이전</a></li>
-		</c:if>
-		<!-- 반복문으로 시작 번호부터 끝 번호까지 생성 -->
-		<c:forEach begin="${pageMaker.startNum }"
-			end="${pageMaker.endNum }" var="num">
-			<li><a href="list?pageNum=${num }">${num }</a></li>
-		</c:forEach>
-		<!-- 다음 버튼 생성을 위한 조건문 -->
-		<c:if test="${pageMaker.isNext() }">
-			<li><a href="list?pageNum=${pageMaker.endNum + 1}">다음</a></li>
-		</c:if>
-	</ul>
+    <h1>Recipe Board</h1>
+
+    <!-- Filter Buttons -->
+    <div class="filter-container">
+        <h3>종류별</h3>
+        <ul>
+            <c:forEach var="type" items="${typesList}">
+                <li>
+                    <a href="${pageContext.request.contextPath}/recipeboard/filter?typeId=${type.typeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientId=${selectedIngredientId}">
+                        ${type.typeName}
+                    </a>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
+
+    <div class="filter-container">
+        <h3>상황별</h3>
+        <ul>
+            <c:forEach var="situation" items="${situationsList}">
+                <li>
+                    <a href="${pageContext.request.contextPath}/recipeboard/filter?typeId=${selectedTypeId}&situationId=${situation.situationId}&methodId=${selectedMethodId}&ingredientId=${selectedIngredientId}">
+                        ${situation.situationName}
+                    </a>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
+
+    <div class="filter-container">
+        <h3>방법별</h3>
+        <ul>
+            <c:forEach var="method" items="${methodsList}">
+                <li>
+                    <a href="${pageContext.request.contextPath}/recipeboard/filter?typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${method.methodId}&ingredientId=${selectedIngredientId}">
+                        ${method.methodName}
+                    </a>
+                </li>
+            </c:forEach>
+        </ul>
+    </div>
+
+  <div class="filter-container">
+    <h3>재료별</h3>
+    <ul>
+        <c:forEach var="ingredient" items="${ingredientsList}">
+            <li>
+                <!-- 현재 ingredientId가 선택된 상태인지 확인 -->
+                <c:set var="selectedIngredients" value="${selectedIngredientIds != null ? selectedIngredientIds : []}" />
+                <c:choose>
+                    <c:when test="${selectedIngredients.contains(ingredient.ingredientId)}">
+                        <!-- 이미 선택된 경우: 선택 해제 -->
+                        <a href="${pageContext.request.contextPath}/recipeboard/filter?typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${fn:join(selectedIngredients, ',')}">
+                            (선택 해제) ${ingredient.ingredientName}
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 선택되지 않은 경우: 선택 추가 -->
+                        <a href="${pageContext.request.contextPath}/recipeboard/filter?typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${fn:join(selectedIngredients, ',')},${ingredient.ingredientId}">
+                            ${ingredient.ingredientName}
+                        </a>
+                    </c:otherwise>
+                </c:choose>
+            </li>
+        </c:forEach>
+    </ul>
+</div>
+
+    <div class="button-container">
+        <button onclick="location.href='${pageContext.request.contextPath}/recipeboard/register'">Register</button>
+    </div>
+
+    <!-- Recipe Board List -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Created Date</th>
+                <th>View Count</th>
+                <th>Average Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="recipe" items="${recipeList}">
+                <tr>
+                    <td>${recipe.recipeBoardId}</td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/recipeboard/detail/${recipe.recipeBoardId}">
+                            ${recipe.recipeBoardTitle}
+                        </a>
+                    </td>
+                    <td>${recipe.recipeBoardContent}</td>
+                    <td><fmt:formatDate value="${recipe.recipeBoardCreatedDate}" pattern="yyyy-MM-dd" /></td>
+                    <td>${recipe.viewCount}</td>
+                    <td>${recipe.avgRating}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
 </body>
 </html>

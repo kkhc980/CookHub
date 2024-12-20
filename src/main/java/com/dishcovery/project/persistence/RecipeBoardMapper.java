@@ -3,57 +3,64 @@ package com.dishcovery.project.persistence;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeIngredientsVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
 
 @Mapper
+@Repository
 public interface RecipeBoardMapper {
-int insert(RecipeBoardVO recipeBoardVO);
-	
-	List<RecipeBoardVO> selectList();
-	
-	int update (RecipeBoardVO recipeBoardVO);
-	
-	RecipeBoardVO selectOne(int recipeBoardId);
 
-	int delete(int recipeBoardId);
+    List<RecipeBoardVO> getRecipeBoardList();
 
-	List<RecipeBoardVO> selectAll();
+    RecipeBoardVO getByRecipeBoardId(int recipeBoardId);
 
-	int increaseViewCount(int recipeBoardId);
+    void insert(RecipeBoardVO recipeBoard);
 
-	List<RecipeBoardVO> selectByMemberId(String memberId);
+    void update(RecipeBoardVO recipeBoard);
 
-	List<RecipeBoardVO> selectByIngredient(int ingredientId);
+    void delete(int recipeBoardId);
 
-	List<RecipeBoardVO> selectByType(int typeId);
+    // Ingredients and RecipeIngredients methods
+    List<IngredientsVO> getAllIngredients();
 
-	List<RecipeBoardVO> selectByMethod(int methodId);
+    List<IngredientsVO> getIngredientsByRecipeId(int recipeBoardId);
 
-	List<RecipeBoardVO> selectBySituation(int situationId);
+    void insertRecipeIngredient(RecipeIngredientsVO recipeIngredients);
+    
+    List<TypesVO> getAllTypes();
 
-	List<TypesVO> getTypes();
-	
-	List<MethodsVO> getMethods();
-	
-	List<IngredientsVO> getIngredients();
-	
-	List<SituationsVO> getSituations();
+    List<MethodsVO> getAllMethods();
 
-	
+    List<SituationsVO> getAllSituations();
+    
+    String getTypeName(int typeId);
+    
+    String getMethodName(int methodId);
+    
+    String getSituationName(int situationId);
+    
+    int getNextRecipeBoardId(); // SEQUENCE에서 다음 값을 가져오는 메서드
+    
+    void insertRecipeBoard(RecipeBoardVO recipeBoard); // INSERT 메서드
 
-
-
-
-
-
-
-
-
-
+    List<Integer> getIngredientIdListByRecipeId(int recipeBoardId);
+    
+    void removeIngredientsFromRecipe(int recipeBoardId);
+    
+    void addIngredientsToRecipe(List<RecipeIngredientsVO> recipeIngredients);
+    
+    List<RecipeBoardVO> getFilteredRecipeBoards(
+            @Param("typeId") int typeId,
+            @Param("situationId") int situationId,
+            @Param("methodId") int methodId,
+            @Param("ingredientIds") List<Integer> ingredientIds
+    );
 
 }

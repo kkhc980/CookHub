@@ -1,15 +1,16 @@
 package com.dishcovery.project.domain;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@Getter 
+@Getter
 @Setter
-@ToString 
+@ToString
+@NoArgsConstructor
 public class SituationsVO {
-	int situationId;
+
+    private int situationId;
     private String situationName;
 }

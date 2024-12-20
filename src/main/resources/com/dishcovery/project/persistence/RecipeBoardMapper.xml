@@ -1,77 +1,191 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.dishcovery.project.persistence.RecipeBoardMapper">
 
-<mapper
-	namespace="com.dishcovery.project.persistence.RecipeBoardMapper">
-
-<resultMap type="com.dishcovery.project.domain.RecipeBoardVO"
-		id="recipeBoardResultMap">
-		<id property="recipeBoardId" column="RECIPE_BOARD_ID"></id>
-		<result property="recipeBoardTitle" column="RECIPE_BOARD_TITLE"></result>
-		<result property="recipeBoardContent"
-			column="RECIPE_BOARD_CONTENT"></result>
-		<result property="memberId" column="MEMBER_ID"></result>
-		<result property="recipeBoardDateCreated"
-			column="RECIPE_BOARD_DATE_CREATED"></result>
-		<result property="viewCount" column="VIEW_COUNT"></result>
-		<result property="typeId" column="TYPE_ID"></result>
-		<result property="ingredientId" column="INGREDIENT_ID"></result>
-		<result property="methodId" column="METHOD_ID"></result>
-		<result property="situationId" column="SITUATION_ID"></result>
-		<result property="avgRating" column="AVG_RATING"></result>
+    <!-- Recipe Board Result Map -->
+    <resultMap id="RecipeBoardResultMap" type="com.dishcovery.project.domain.RecipeBoardVO">
+	    <id column="recipe_board_id" property="recipeBoardId"/>
+	    <result column="recipe_board_title" property="recipeBoardTitle"/>
+	    <result column="recipe_board_content" property="recipeBoardContent"/>
+	    <result column="member_id" property="memberId"/>
+	    <result column="recipe_board_created_date" property="recipeBoardCreatedDate"/>
+	    <result column="view_count" property="viewCount"/>
+	    <result column="type_id" property="typeId"/>
+	    <result column="method_id" property="methodId"/>
+	    <result column="situation_id" property="situationId"/>
+	    <result column="avg_rating" property="avgRating"/>
+	    <result column="reply_count" property="replyCount"/>
+	    <result column="recipe_review_count" property="recipeReviewCount"/>
 	</resultMap>
-	<!-- 게시글 목록 가져오기 -->
-	<select id="getBoardList"
-		resultType="com.dishcovery.project.domain.RecipeBoardVO">
-		SELECT
-		RECIPE_BOARD_ID AS recipeBoardId,
-		RECIPE_BOARD_TITLE AS recipeBoardTitle,
-		RECIPE_BOARD_CONTENT AS recipeBoardContent,
-		MEMBER_ID AS memberId,
-		RECIPE_BOARD_CREATED_DATE AS recipeBoardCreatedDate,
-		VIEW_COUNT AS viewCount,
-		AVG_RATING AS avgRating
-		FROM RECIPE_BOARD
-		ORDER BY RECIPE_BOARD_CREATED_DATE DESC
+
+    <!-- Select Recipe Board List -->
+    <select id="getRecipeBoardList" resultMap="RecipeBoardResultMap">
+        SELECT * FROM recipe_board
+    </select>
+	
+	<select id="getByRecipeBoardId" parameterType="int" resultType="com.dishcovery.project.domain.RecipeBoardVO">
+	    SELECT 
+	        recipe_board_id AS recipeBoardId,
+	        recipe_board_title AS recipeBoardTitle,
+	        recipe_board_content AS recipeBoardContent,
+	        member_id AS memberId,
+	        recipe_board_created_date AS recipeBoardCreatedDate,
+	        view_count AS viewCount,
+	        type_id AS typeId,
+	        method_id AS methodId,
+	        situation_id AS situationId,
+	        avg_rating AS avgRating,
+	        reply_count AS replyCount,
+	        recipe_review_count AS recipeReviewCount
+	    FROM recipe_board
+	    WHERE recipe_board_id = #{recipeBoardId}
+	</select>
+
+    <!-- Recipe Type Name -->
+    <select id="getTypeName" parameterType="int" resultType="string">
+        SELECT type_name
+        FROM types
+        WHERE type_id = #{typeId}
+    </select>
+
+    <!-- Recipe Method Name -->
+    <select id="getMethodName" parameterType="int" resultType="string">
+        SELECT method_name
+        FROM methods
+        WHERE method_id = #{methodId}
+    </select>
+
+    <!-- Recipe Situation Name -->
+    <select id="getSituationName" parameterType="int" resultType="string">
+        SELECT situation_name
+        FROM situations
+        WHERE situation_id = #{situationId}
+    </select>
+
+    <!-- Get Ingredients for Recipe Board -->
+    <select id="getIngredientsByRecipeId" parameterType="int" resultType="com.dishcovery.project.domain.IngredientsVO">
+        SELECT 
+            i.ingredient_id AS ingredientId,
+            i.ingredient_name AS ingredientName
+        FROM ingredients i
+        INNER JOIN recipe_ingredients ri ON i.ingredient_id = ri.ingredient_id
+        WHERE ri.recipe_board_id = #{recipeBoardId}
+    </select>
+
+    <!-- Get Next Recipe Board ID -->
+    <select id="getNextRecipeBoardId" resultType="int">
+        SELECT recipe_board_seq.NEXTVAL FROM dual
+    </select>
+
+    <!-- Insert Recipe Board -->
+    <insert id="insertRecipeBoard" parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+        INSERT INTO recipe_board (
+            recipe_board_id,
+            recipe_board_title,
+            recipe_board_content,
+            member_id,
+            type_id,
+            method_id,
+            situation_id,
+            avg_rating
+        )
+        VALUES (
+            #{recipeBoardId},
+            #{recipeBoardTitle},
+            #{recipeBoardContent},
+            #{memberId},
+            #{typeId},
+            #{methodId},
+            #{situationId},
+            #{avgRating}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+	    UPDATE recipe_board
+	    SET 
+	        recipe_board_title = #{recipeBoardTitle},
+	        recipe_board_content = #{recipeBoardContent},
+	        type_id = #{typeId},
+	        method_id = #{methodId},
+	        situation_id = #{situationId}
+	    WHERE recipe_board_id = #{recipeBoardId}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+	    DELETE FROM recipe_board
+	    WHERE recipe_board_id = #{recipeBoardId}
+	</delete>
+
+    <!-- Insert Recipe Ingredients -->
+    <insert id="insertRecipeIngredient" parameterType="com.dishcovery.project.domain.RecipeIngredientsVO">
+        INSERT INTO recipe_ingredients (recipe_board_id, ingredient_id)
+        VALUES (#{recipeBoardId}, #{ingredientId})
+    </insert>		
+
+    <!-- Select All Types -->
+    <select id="getAllTypes" resultType="com.dishcovery.project.domain.TypesVO">
+        SELECT type_id AS typeId, type_name AS typeName
+        FROM types
+    </select>
+
+    <!-- Select All Methods -->
+    <select id="getAllMethods" resultType="com.dishcovery.project.domain.MethodsVO">
+        SELECT method_id AS methodId, method_name AS methodName
+        FROM methods
+    </select>
+
+    <!-- Select All Situations -->
+    <select id="getAllSituations" resultType="com.dishcovery.project.domain.SituationsVO">
+        SELECT situation_id AS situationId, situation_name AS situationName
+        FROM situations
+    </select>
+
+    <!-- Select All Ingredients -->
+    <select id="getAllIngredients" resultType="com.dishcovery.project.domain.IngredientsVO">
+        SELECT ingredient_id AS ingredientId, ingredient_name AS ingredientName
+        FROM ingredients
+        WHERE ingredient_id != 1
+    </select>
+    
+    <select id="getIngredientIdListByRecipeId" parameterType="int" resultType="int">
+	    SELECT ingredient_id
+	    FROM recipe_ingredients
+	    WHERE recipe_board_id = #{recipeBoardId}
 	</select>
 	
+	<delete id="removeIngredientsFromRecipe" parameterType="int">
+    	DELETE FROM recipe_ingredients
+    	WHERE recipe_board_id = #{recipeBoardId}
+	</delete>
 	
-	<!-- types 테이블에서 TYPE_ID >= 2인 데이터만 가져오기 -->
-	<select id="getTypes"
-		resultType="com.dishcovery.project.domain.TypesVO">
-		SELECT TYPE_ID AS typeId, TYPE_NAME AS typeName
-		FROM TYPES
-		WHERE TYPE_ID >= 2
-		ORDER BY TYPE_ID ASC
-	</select>
-	<select id="getMethods"
-		resultType="com.dishcovery.project.domain.MethodsVO">
-		SELECT METHOD_ID AS methodId, METHOD_NAME AS methodName
-		FROM METHODS
-		WHERE METHOD_ID >= 2
-		ORDER BY METHOD_ID ASC
-	</select>
-	<select id="getIngredients"
-		resultType="com.dishcovery.project.domain.IngredientsVO">
-		SELECT INGREDIENT_ID AS ingredientId, INGREDIENT_NAME AS
-		ingredientName
-		FROM INGREDIENTS
-		WHERE INGREDIENT_ID >= 2
-		ORDER BY
-		INGREDIENT_ID ASC
-	</select>
-	<select id="getSituations"
-		resultType="com.dishcovery.project.domain.SituationsVO">
-		SELECT SITUATION_ID AS situationId, SITUATION_NAME AS
-		situationName
-		FROM SITUATIONS
-		WHERE SITUATION_ID >= 2
-		ORDER BY
-		SITUATION_ID ASC
-	</select>
-	<select id="selectAll"
-		resultType="com.dishcovery.project.domain.RecipeBoardVO">
-		SELECT * FROM recipe_board
-	</select>
+	<insert id="addIngredientsToRecipe" parameterType="list">
+    INSERT ALL
+    <foreach collection="list" item="item">
+        INTO recipe_ingredients (recipe_board_id, ingredient_id)
+        VALUES (#{item.recipeBoardId}, #{item.ingredientId})
+    </foreach>
+    SELECT 1 FROM DUAL
+	</insert>
+	
+	<select id="getFilteredRecipeBoards" resultType="com.dishcovery.project.domain.RecipeBoardVO">
+    SELECT DISTINCT rb.*
+    FROM recipe_board rb
+    WHERE rb.recipe_board_id IN (
+        SELECT ri.recipe_board_id
+        FROM recipe_ingredients ri
+        WHERE ri.ingredient_id IN
+        <foreach collection="ingredientIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY ri.recipe_board_id
+        HAVING COUNT(DISTINCT ri.ingredient_id) = #{ingredientIds.size}
+    )
+    AND (#{typeId} = 1 OR rb.type_id = #{typeId})
+    AND (#{situationId} = 1 OR rb.situation_id = #{situationId})
+    AND (#{methodId} = 1 OR rb.method_id = #{methodId})
+</select>
+
 </mapper>

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Log4j
@@ -17,9 +16,8 @@ public class MemberServiceImpl implements MemberService {
     MemberMapper memberMapper;
 
     @Override
-    public int registerMember(Member member) {
-        int result = memberMapper.insert(member);
-        return result;
+    public int createMember(Member member) {
+        return 0;
     }
 
     @Override
@@ -48,14 +46,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean selectDupCheckEmail(String email) {
-        int result = memberMapper.selectDupCheckEmail(email);
-        if (result == 1 ) return true;
-        return false;
-    }
-
-    @Override
-    public int updateAuthStatus(Map<String, String> map) {
-        return 0;
+    public int selectDupCheckId(String email) {
+        int result = memberMapper.selectDupCheckId(email);
+        return result;
     }
 }

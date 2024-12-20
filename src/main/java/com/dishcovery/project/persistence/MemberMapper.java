@@ -12,5 +12,5 @@ public interface MemberMapper {
     List<Integer> selectIdList();
     int update(Member member);
     int delete(int memberId);
-    int selectDupCheckEmail(String email);
+    int selectDupCheckId(String email);
 }

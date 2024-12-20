@@ -17,6 +17,4 @@ public class Member {
     private String phone;
     private Date createdAt;
     private Date updatedAt;
-    private String authKey;
-    private int authStatus;
 }

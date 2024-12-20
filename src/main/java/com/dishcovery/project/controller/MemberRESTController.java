@@ -50,7 +50,7 @@ public class MemberRESTController {
     public void registerMember(MemberVO memberVO) {
         String password = memberVO.getPassword();
         memberVO.setPassword(passwordEncoder.encode(password));
-        memberService.registerMember(memberVO);
+        int result = memberService.registerMember(memberVO);
 
         //임의의 authKey 생성 & 이메일 발송
         String authKey = mss.sendAuthMail(memberVO.getEmail());

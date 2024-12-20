@@ -52,7 +52,7 @@
     </script>
 </head>
 <body>
-<form action="/member/signup" method="post">
+<form action="/memberVO/signup" method="post">
     <table>
         <tr>
             <th>회원정보를 입력해 주세요. (* 표시는 필수입력 항목입니다)</th>

@@ -3,7 +3,7 @@ package com.dishcovery.project.controller;
 import com.dishcovery.project.config.MailAuthConfiguration;
 import com.dishcovery.project.config.RootConfig;
 import com.dishcovery.project.config.SecurityConfig;
-import com.dishcovery.project.domain.Member;
+import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
 import lombok.extern.log4j.Log4j;
@@ -47,16 +47,18 @@ public class MemberRESTController {
 
     // 회원 가입 처리
     @PostMapping("/member/signup")
-    public void registerMember(Member member) {
-        memberService.registerMember(member);
+    public void registerMember(MemberVO memberVO) {
+        String password = memberVO.getPassword();
+        memberVO.setPassword(passwordEncoder.encode(password));
+        memberService.registerMember(memberVO);
 
         //임의의 authKey 생성 & 이메일 발송
-        String authKey = mss.sendAuthMail(member.getEmail());
-        member.setAuthKey(authKey);
+        String authKey = mss.sendAuthMail(memberVO.getEmail());
+        memberVO.setAuthKey(authKey);
 
         Map<String, String> map = new HashMap<String, String>();
-        map.put("email", member.getEmail());
-        map.put("authKey", member.getAuthKey());
+        map.put("email", memberVO.getEmail());
+        map.put("authKey", memberVO.getAuthKey());
         System.out.println(map);
 
         //DB에 authKey 업데이트

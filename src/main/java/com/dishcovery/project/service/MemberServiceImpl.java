@@ -1,6 +1,6 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.Member;
+import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.persistence.MemberMapper;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,13 @@ public class MemberServiceImpl implements MemberService {
     MemberMapper memberMapper;
 
     @Override
-    public int registerMember(Member member) {
-        int result = memberMapper.insert(member);
+    public int registerMember(MemberVO memberVO) {
+        int result = memberMapper.insert(memberVO);
         return result;
     }
 
     @Override
-    public Member getMemberById(int memberId) {
+    public MemberVO getMemberById(int memberId) {
         return null;
     }
 
@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int updateMember(Member member) {
+    public int updateMember(MemberVO memberVO) {
         return 0;
     }
 
@@ -43,7 +43,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member processSocialLogin(String name) {
+    public MemberVO processSocialLogin(String name) {
         return null;
     }
 

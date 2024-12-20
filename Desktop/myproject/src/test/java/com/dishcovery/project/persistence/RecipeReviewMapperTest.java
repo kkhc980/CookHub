@@ -41,13 +41,14 @@ public class RecipeReviewMapperTest {
 //	
 //	private void updateRecipeReview() {
 //		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
-//		recipeReviewVO.setRecipeReviewId(1);
+//		recipeReviewVO.setRecipeReviewId(2);
 //		recipeReviewVO.setRecipeReviewContent("리뷰 수정 테스트");
 //		recipeReviewVO.setMemberId(1);
 //		recipeReviewVO.setReviewRating(4);
 //		int result = recipeReviewMapper.updateRecipeReview(recipeReviewVO);
 //		log.info(recipeReviewVO);
 //	   }
+	
 	public void test() {
 		deleteRecipeReview();
 	}
@@ -55,7 +56,7 @@ public class RecipeReviewMapperTest {
 	private void deleteRecipeReview() {
 		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
 		recipeReviewVO.setRecipeReviewContent("댓글 삭제 테스트");
-		int result = recipeReviewMapper.deleteRecipeReview(1);
+		int result = recipeReviewMapper.deleteRecipeReview(4);
 		log.info(recipeReviewVO);
 	}
 }

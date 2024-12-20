@@ -41,7 +41,7 @@ public class RecipeReviewRESTController {
 		log.info("recipeBoardId = " + recipeBoardId);
 		
 		List<RecipeReviewVO> list = recipeReviewService.getAllRecipeReview(recipeBoardId);
-		
+		// ResponseEntity<T> : T의 타입은 프론트 side로 전송될 데이터 타입으로 선언
 		return new ResponseEntity<List<RecipeReviewVO>>(list, HttpStatus.OK);
 	}
 	

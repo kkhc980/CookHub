@@ -169,7 +169,8 @@
     SELECT 1 FROM DUAL
 	</insert>
 	
-	<select id="filterByCategory" resultMap="RecipeBoardResultMap">
+
+<select id="filterByCategory" resultMap="RecipeBoardResultMap">
     SELECT DISTINCT rb.*
     FROM recipe_board rb
     LEFT JOIN recipe_ingredients ri ON rb.recipe_board_id = ri.recipe_board_id

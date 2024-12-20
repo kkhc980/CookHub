@@ -60,4 +60,8 @@ public interface RecipeBoardMapper {
             @Param("situationId") Integer situationId,
             @Param("ingredientId") Integer ingredientId,
             @Param("methodId") Integer methodId);
+<<<<<<< HEAD
+=======
+
+>>>>>>> juneoti
 }

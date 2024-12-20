@@ -38,15 +38,15 @@
     }
 
     .filter-category button.active {
-        background-color: #4CAF50;
+        background-color: #4CAF50; /* 초록색 */
         color: white;
         border-color: #4CAF50;
     }
 </style>
 
-
 <body>
     <h1>Recipe Board</h1>
+
  <form id="filterForm" method="get" action="${pageContext.request.contextPath}/recipeboard/filter">
     <!-- 종류별 -->
     <div class="filter-category">

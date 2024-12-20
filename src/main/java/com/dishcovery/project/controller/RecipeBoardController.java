@@ -1,197 +1,99 @@
 package com.dishcovery.project.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.dishcovery.project.domain.IngredientsVO;
-import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
-import com.dishcovery.project.domain.RecipeIngredientsVO;
-import com.dishcovery.project.domain.SituationsVO;
-import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.service.RecipeBoardService;
-
 import lombok.extern.log4j.Log4j;
 
 @Controller
-@RequestMapping("/recipeboard")
+@RequestMapping(value = "/recipeboard")
 @Log4j
 public class RecipeBoardController {
 
-    private final RecipeBoardService recipeBoardService;
+    @Autowired
+    private RecipeBoardService recipeBoardService;
 
-    public RecipeBoardController(RecipeBoardService recipeBoardService) {
-        this.recipeBoardService = recipeBoardService;
-    }
-
+    // ∑πΩ√«« ∞‘Ω√∆« ∏Ò∑œ
     @GetMapping("/list")
-    public String list(Model model) {
-        log.info("Fetching recipe board list");
-        model.addAttribute("recipeList", recipeBoardService.getRecipeBoardList());
-        model.addAttribute("typesList", recipeBoardService.getAllTypes());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-        return "recipeboard/list";
+    public String getRecipeboardList(Model model) {
+        model.addAttribute("recipeboardList", recipeBoardService.getBoardList());
+        return "/recipeboard/list";
     }
-    
+
     @GetMapping("/register")
-    public String register(Model model) {
-        log.info("Navigating to the recipe registration page");
-        List<TypesVO> typesList = recipeBoardService.getAllTypes();
-        List<MethodsVO> methodsList = recipeBoardService.getAllMethods();
-        List<SituationsVO> situationsList = recipeBoardService.getAllSituations();
-        List<IngredientsVO> ingredientsList = recipeBoardService.getAllIngredients();
-        
-        log.info("Types: " + typesList);
-        log.info("Methods: " + methodsList);
-        log.info("Situations: " + situationsList);
-        log.info("Ingredients: " + ingredientsList);
-
-        model.addAttribute("typesList", typesList);
-        model.addAttribute("methodsList", methodsList);
-        model.addAttribute("situationsList", situationsList);
-        model.addAttribute("ingredientsList", ingredientsList);
-        return "recipeboard/register";
+    public String showRegisterPage(Model model) {
+        model.addAttribute("typesList", recipeBoardService.getTypes());
+        log.info("recipeBoardService.getTypes()");
+        model.addAttribute("methodsList", recipeBoardService.getMethods());
+        log.info("recipeBoardService.getMethods()");
+        model.addAttribute("ingredientsList", recipeBoardService.getIngredients());
+        log.info("recipeBoardService.getIngredients()");
+        model.addAttribute("situationsList", recipeBoardService.getSituations());
+        log.info("recipeBoardService.getSituations()");
+        return "/recipeboard/register";
     }
-    
+
     @PostMapping("/register")
-    public String registerRecipe(RecipeBoardVO recipeBoard, @RequestParam("ingredientIds") List<Integer> ingredientIds) {
-        log.info("Registering a new recipe: " + recipeBoard);
-        log.info("Selected ingredients: " + ingredientIds);
+    public String registerPOST(@RequestParam(value = "recipeBoardTitle", required = true) String recipeBoardTitle,
+                                @RequestParam(value = "recipeBoardContent", required = true) String recipeBoardContent,
+                                @RequestParam(value = "memberId", required = true) int memberId,
+                                @RequestParam(value = "ingredientList", required = false) String ingredientListStr,
+                                @RequestParam(value = "methodList", required = false) String methodListStr,
+                                @RequestParam(value = "situationList", required = false) String situationListStr,
+                                @RequestParam(value = "typeList", required = false) String typeListStr) {
 
-        // Save recipe to RecipeBoard table
-        recipeBoardService.create(recipeBoard);
+        log.info("registerPOST()");
 
-        // Retrieve the auto-generated recipeBoardId
-        int recipeBoardId = recipeBoard.getRecipeBoardId();
-        log.info("New Recipe ID: " + recipeBoardId);
 
-        // Save selected ingredients to RecipeIngredients table
-        if (ingredientIds != null && !ingredientIds.isEmpty()) {
-            List<RecipeIngredientsVO> recipeIngredients = ingredientIds.stream()
-                .map(ingredientId -> {
-                    RecipeIngredientsVO recipeIngredient = new RecipeIngredientsVO();
-                    recipeIngredient.setRecipeBoardId(recipeBoardId);
-                    recipeIngredient.setIngredientId(ingredientId);
-                    return recipeIngredient;
-                })
-                .collect(Collectors.toList());
-            recipeBoardService.addIngredientsToRecipe(recipeIngredients);
-        }
+        RecipeBoardVO recipeBoardVO = new RecipeBoardVO();
+        recipeBoardVO.setRecipeBoardTitle(recipeBoardTitle);
+        recipeBoardVO.setRecipeBoardContent(recipeBoardContent);
+        recipeBoardVO.setMemberId(memberId);
+        recipeBoardVO.setIngredientListStr(ingredientListStr);
+        recipeBoardVO.setMethodListStr(methodListStr);
+        recipeBoardVO.setSituationListStr(situationListStr);
+        recipeBoardVO.setTypeListStr(typeListStr);
 
+
+        log.info("recipeBoardVO" + recipeBoardVO.toString());
+
+        int result = recipeBoardService.createRecipeBoard(recipeBoardVO);
+
+        log.info(result + "«‡µÓ∑œ");
         return "redirect:/recipeboard/list";
     }
-    
-    @GetMapping("/detail/{recipeBoardId}")
-    public String getRecipeDetail(@PathVariable int recipeBoardId, Model model) {
-        log.info("Fetching details for recipeBoardId: " + recipeBoardId);
-
-        // Fetch recipe board details
-        RecipeBoardVO recipeBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);
-        if (recipeBoard == null) {
-            log.warn("RecipeBoard with ID " + recipeBoardId + " not found");
-            return "redirect:/recipeboard/list";
-        }
-
-        // Fetch names for type, method, and situation
-        String typeName = recipeBoardService.getTypeName(recipeBoard.getTypeId());
-        String methodName = recipeBoardService.getMethodName(recipeBoard.getMethodId());
-        String situationName = recipeBoardService.getSituationName(recipeBoard.getSituationId());
-
-        // Fetch ingredients
-        List<IngredientsVO> ingredients = recipeBoardService.getIngredientsByRecipeId(recipeBoardId);
-
-        // Add data to the model
-        model.addAttribute("recipeBoard", recipeBoard);
-        model.addAttribute("typeName", typeName);
-        model.addAttribute("methodName", methodName);
-        model.addAttribute("situationName", situationName);
-        model.addAttribute("ingredients", ingredients);
-
-        return "recipeboard/detail";
+    @GetMapping("/detail")
+    public void detail(Integer recipeBoardId) {
     }
 
-    @GetMapping("/update/{recipeBoardId}")
-    public String updateRecipePage(@PathVariable int recipeBoardId, Model model) {
-        log.info("Loading update page for RecipeBoard ID: " + recipeBoardId);
-
-        RecipeBoardVO recipeBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);
-        if (recipeBoard == null) {
-            log.warn("RecipeBoard with ID " + recipeBoardId + " not found");
-            return "redirect:/recipeboard/list";
-        }
-
-        // Fetch related data
-        List<TypesVO> typesList = recipeBoardService.getAllTypes();
-        List<MethodsVO> methodsList = recipeBoardService.getAllMethods();
-        List<SituationsVO> situationsList = recipeBoardService.getAllSituations();
-        List<IngredientsVO> ingredientsList = recipeBoardService.getAllIngredients();
-        List<Integer> recipeIngredientIds = recipeBoardService.getIngredientIdListByRecipeId(recipeBoardId);
-
-        model.addAttribute("recipeBoard", recipeBoard);
-        model.addAttribute("typesList", typesList);
-        model.addAttribute("methodsList", methodsList);
-        model.addAttribute("situationsList", situationsList);
-        model.addAttribute("ingredientsList", ingredientsList);
-        model.addAttribute("recipeIngredientIds", recipeIngredientIds); // List<Integer>Î°ú Ï†ÑÎã¨
-
-        return "recipeboard/update";
+    @GetMapping("/modify")
+    public void modifyGET(Model model, int recipeBoardId) {
+        log.info("modifyGET()");
+        RecipeBoardVO recipeBoardVO = recipeBoardService.getRecipeBoardsById(recipeBoardId);
+        model.addAttribute("recipeBoardVO", recipeBoardVO);
     }
 
-    @PostMapping("/update/{recipeBoardId}")
-    public String updateRecipe(@PathVariable int recipeBoardId, RecipeBoardVO recipeBoard,
-                               @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds) {
-        log.info("Processing update for RecipeBoard ID: " + recipeBoardId);
-
-        recipeBoard.setRecipeBoardId(recipeBoardId);
-        recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds);
-
-        log.info("Successfully updated RecipeBoard ID: " + recipeBoardId);
-        return "redirect:/recipeboard/detail/" + recipeBoardId;
+    @PostMapping("/modify")
+    public String modifyPOST(RecipeBoardVO recipeBoardVO) {
+        log.info("modifyPOST()");
+        int result = recipeBoardService.updateRecipeBoard(recipeBoardVO);
+        log.info(result + "«‡ºˆ¡§");
+        return "redirect:/board/list";
     }
 
-    
-    @PostMapping("/delete/{recipeBoardId}")
-    public String deleteRecipe(@PathVariable int recipeBoardId) {
-        log.info("Deleting RecipeBoard with ID: " + recipeBoardId);
-
-        recipeBoardService.delete(recipeBoardId);
-
-        log.info("Successfully deleted RecipeBoard with ID: " + recipeBoardId);
-        return "redirect:/recipeboard/list"; // ÏÇ≠Ï†ú ÌõÑ Î™©Î°ùÏúºÎ°ú Ïù¥Îèô
-    }
-    
-    @GetMapping("/filter")
-    public String filterByCategory(
-        @RequestParam(value = "type", required = false) Integer typeId,
-        @RequestParam(value = "situation", required = false) Integer situationId,
-        @RequestParam(value = "ingredient", required = false) Integer ingredientId,
-        @RequestParam(value = "method", required = false) Integer methodId,
-        Model model) {
-
-        log.info("Filtering by type: " + typeId + ", situation: " + situationId + 
-                 ", ingredient: " + ingredientId + ", method: " + methodId);
-
-        // ÌïÑÌÑ∞ÎßÅÎêú Î†àÏãúÌîº Î™©Î°ù Ï°∞Ìöå
-        List<RecipeBoardVO> filteredRecipes = recipeBoardService.filterByCategory(typeId, situationId, ingredientId, methodId);
-
-        // Î™®Îç∏Ïóê Îç∞Ïù¥ÌÑ∞ Ï∂îÍ∞Ä
-        model.addAttribute("recipeList", filteredRecipes);
-        model.addAttribute("typesList", recipeBoardService.getAllTypes());
-        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-
-        return "recipeboard/list";
+    @PostMapping("/delete")
+    public String delete(int recipeBoardId) {
+        log.info("delete()");
+        int result = recipeBoardService.deleteRecipeBoard(recipeBoardId);
+        log.info(result + "«‡ ªË¡¶");
+        return "redirect:/board/list";
     }
 
 }

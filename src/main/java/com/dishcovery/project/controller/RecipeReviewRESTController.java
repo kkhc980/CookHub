@@ -34,13 +34,13 @@ public class RecipeReviewRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@GetMapping("/all/{boardId}")
+	@GetMapping("/all/{recipeBoardId}")
 	public ResponseEntity<List<RecipeReviewVO>> readAllRecipeReview(
-			@PathVariable("boardId") int boardId){
+			@PathVariable("recipeBoardId") int recipeBoardId){
 		log.info("readAllRecipeReview()");
-		log.info("boardId = " + boardId);
+		log.info("recipeBoardId = " + recipeBoardId);
 		
-		List<RecipeReviewVO> list = recipeReviewService.getAllRecipeReview(boardId);
+		List<RecipeReviewVO> list = recipeReviewService.getAllRecipeReview(recipeBoardId);
 		
 		return new ResponseEntity<List<RecipeReviewVO>>(list, HttpStatus.OK);
 	}
@@ -56,14 +56,14 @@ public class RecipeReviewRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{recipeReviewId}/{boardId}")
+	@DeleteMapping("/{recipeReviewId}/{recipeBoardId}")
 	public ResponseEntity<Integer> deleteRecipeReview(
 			@PathVariable("recipeReviewId") int recipeReviewId,
-			@PathVariable("boardId") int boardId) {
+			@PathVariable("recipeBoardId") int recipeBoardId) {
 		log.info("deleteRecipe()");
 		log.info("recipeReviewId = " + recipeReviewId);
 		
-		int result = recipeReviewService.deleteRecipeReview(recipeReviewId, boardId);
+		int result = recipeReviewService.deleteRecipeReview(recipeReviewId, recipeBoardId);
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	

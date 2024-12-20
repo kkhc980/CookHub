@@ -1,16 +1,16 @@
 package com.dishcovery.project.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-@ToString
 @NoArgsConstructor
+@Getter 
+@Setter
+@ToString 
 public class MethodsVO {
-
-    private int methodId;
+	
+	int methodId;
     private String methodName;
 }

@@ -6,8 +6,8 @@ import com.dishcovery.project.domain.RecipeReviewVO;
 
 public interface RecipeReviewService {
 	int createRecipeReview(RecipeReviewVO recipeReviewVO);
-	List<RecipeReviewVO> getAllRecipeReview(int boardId);
+	List<RecipeReviewVO> getAllRecipeReview(int recipeBoardId);
 	int updateRecipeReview(int recipeReviewId, String recipeReviewContent);
-	int deleteRecipeReview(int recipeReviewId, int boardId);
+	int deleteRecipeReview(int recipeReviewId, int recipeBoardId);
 	
 }

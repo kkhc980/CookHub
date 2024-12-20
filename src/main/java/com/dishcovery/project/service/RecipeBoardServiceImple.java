@@ -1,15 +1,14 @@
 package com.dishcovery.project.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
-import com.dishcovery.project.domain.RecipeIngredientsVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
@@ -20,140 +19,110 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class RecipeBoardServiceImple implements RecipeBoardService {
 
-    private final RecipeBoardMapper mapper;
+	 @Autowired
+	    private RecipeBoardMapper recipeBoardMapper;
 
-    public RecipeBoardServiceImple(RecipeBoardMapper mapper) {
-        this.mapper = mapper;
-    }
+	    @Override
+	    public int createRecipeBoard(RecipeBoardVO recipeBoardVO) {
+	        log.info("insertRecipeBoard()");
+	        return recipeBoardMapper.insert(recipeBoardVO);
+	    }
 
-    @Override
-    public List<RecipeBoardVO> getRecipeBoardList() {
-        log.info("Fetching all recipe board entries");
-        return mapper.getRecipeBoardList();
-    }
+	    @Override
+	    public RecipeBoardVO getRecipeBoard(int recipeBoardId) {
+	        log.info("getRecipeBoard()");
+	        return recipeBoardMapper.selectOne(recipeBoardId);
+	    }
 
-    @Override
-    public RecipeBoardVO getByRecipeBoardId(int recipeBoardId) {
-        log.info("Fetching recipe board entry with ID: " + recipeBoardId);
-        return mapper.getByRecipeBoardId(recipeBoardId);
-    }
+	    @Override
+	    public List<RecipeBoardVO> getBoardList() {
+	        log.info("getBoardList()");
+	        return recipeBoardMapper.selectAll();
+	    }
 
-    @Override
-    public void create(RecipeBoardVO recipeBoard) {
-        log.info("Fetching next recipe board ID from sequence...");
-        int nextId = mapper.getNextRecipeBoardId(); // SEQUENCE Í∞í Í∞ÄÏ†∏Ïò§Í∏∞
-        recipeBoard.setRecipeBoardId(nextId);       // SEQUENCE Í∞íÏùÑ VOÏóê ÏÑ§Ï†ï
-        log.info("Next RecipeBoard ID: " + nextId);
+	    @Override
+	    public int updateRecipeBoard(RecipeBoardVO recipeBoard) {
+	        log.info("updateRecipeBoard()");
+	        return recipeBoardMapper.update(recipeBoard);
+	    }
 
-        log.info("Inserting recipe board: " + recipeBoard);
-        mapper.insertRecipeBoard(recipeBoard);      // INSERT ÏøºÎ¶¨ Ïã§Ìñâ
-    }
-    
-    @Override
-    public void update(RecipeBoardVO recipeBoard) {
-        log.info("Service: Updating RecipeBoard with ID: " + recipeBoard.getRecipeBoardId());
-        mapper.update(recipeBoard);
-    }
+	    @Override
+	    public int deleteRecipeBoard(int recipeBoardId) {
+	        log.info("deleteRecipeBoard() ");
+	        return recipeBoardMapper.delete(recipeBoardId);
+	    }
 
-    @Override
-    public void delete(int recipeBoardId) {
-        log.info("Service: Deleting RecipeBoard with ID: " + recipeBoardId);
-        mapper.delete(recipeBoardId);
-    }
+	    @Override
+	    public int increaseViewCount(int recipeBoardId) {
+	        log.info("increaseViewCount() ");
+	        return recipeBoardMapper.increaseViewCount(recipeBoardId);
+	    }
 
-    // Ingredients-related methods
-    @Override
-    public List<IngredientsVO> getAllIngredients() {
-        log.info("Fetching all ingredients");
-        return mapper.getAllIngredients();
-    }
+	    @Override
+	    public List<RecipeBoardVO> getRecipeBoardsByMemberId(String memberId) {
+	        log.info("getRecipeBoardsByMemberId() ");
+	        return recipeBoardMapper.selectByMemberId(memberId);
+	    }
 
-    @Override
-    public List<IngredientsVO> getIngredientsByRecipeId(int recipeBoardId) {
-        log.info("Fetching ingredients for recipe ID: " + recipeBoardId);
-        return mapper.getIngredientsByRecipeId(recipeBoardId);
-    }
+	    @Override
+	    public List<RecipeBoardVO> getRecipeBoardsByType(int typeId) {
+	        log.info("getRecipeBoardsByType() ");
+	        return recipeBoardMapper.selectByType(typeId);
+	    }
 
-    @Override
-    public void addIngredientsToRecipe(List<RecipeIngredientsVO> recipeIngredients) {
-        log.info("Adding ingredients to recipe");
-        for (RecipeIngredientsVO ingredient : recipeIngredients) {
-            mapper.insertRecipeIngredient(ingredient);
-        }
-    }
+	    @Override
+	    public List<RecipeBoardVO> getRecipeBoardsByIngredient(int ingredientId) {
+	        log.info("getRecipeBoardsByIngredient() ");
+	        return recipeBoardMapper.selectByIngredient(ingredientId);
+	    }
 
-    @Override
-    public void removeIngredientsFromRecipe(int recipeBoardId) {
-        log.info("Removing all ingredients from recipe with ID: " + recipeBoardId);
-        mapper.removeIngredientsFromRecipe(recipeBoardId);
-    }
+	     @Override
+	    public List<RecipeBoardVO> getRecipeBoardsByMethod(int methodId) {
+	         log.info("getRecipeBoardsByMethod()");
+	        return recipeBoardMapper.selectByMethod(methodId);
+	    }
 
-    // Types, Methods, and Situations
-    @Override
-    public List<TypesVO> getAllTypes() {
-        log.info("Fetching all types");
-        return mapper.getAllTypes();
-    }
 
-    @Override
-    public List<MethodsVO> getAllMethods() {
-        log.info("Fetching all methods");
-        return mapper.getAllMethods();
-    }
+	    @Override
+	    public List<RecipeBoardVO> getRecipeBoardsBySituation(int situationId) {
+	        log.info("getRecipeBoardsBySituation() ");
+	        return recipeBoardMapper.selectBySituation(situationId);
+	    }
 
-    @Override
-    public List<SituationsVO> getAllSituations() {
-        log.info("Fetching all situations");
-        return mapper.getAllSituations();
-    }
-    
-    @Override
-    public String getTypeName(int typeId) {
-        return mapper.getTypeName(typeId);
-    }
+		@Override
+		public List<TypesVO> getTypes() {
+			log.info("getTypes()");
+			return recipeBoardMapper.getTypes();
+		}
 
-    @Override
-    public String getMethodName(int methodId) {
-        return mapper.getMethodName(methodId);
-    }
+		@Override
+		public List<IngredientsVO> getIngredients() {
+			log.info("getAllIngredients()");
+			return recipeBoardMapper.getIngredients();
+		}
 
-    @Override
-    public String getSituationName(int situationId) {
-        return mapper.getSituationName(situationId);
-    }
-    
-    @Override
-    public List<Integer> getIngredientIdListByRecipeId(int recipeBoardId) {
-        log.info("Fetching ingredient IDs for RecipeBoard ID: " + recipeBoardId);
-        return mapper.getIngredientIdListByRecipeId(recipeBoardId);
-    }
-    
-    @Override
-    @Transactional
-    public void updateRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds) {
-        log.info("Updating RecipeBoard and associated ingredients for ID: " + recipeBoard.getRecipeBoardId());
+		@Override
+		public List<MethodsVO> getMethods() {
+			log.info("getMethod()");
+			return recipeBoardMapper.getMethods();
+		}
 
-        // 1. Update RecipeBoard
-        mapper.update(recipeBoard);
+		@Override
+		public List<SituationsVO> getSituations() {
+			log.info("getSituation()");
+			return recipeBoardMapper.getSituations();
+		}
 
-        // 2. Remove existing ingredients
-        mapper.removeIngredientsFromRecipe(recipeBoard.getRecipeBoardId());
-        log.info("Removed existing ingredients for RecipeBoard ID: " + recipeBoard.getRecipeBoardId());
+		@Override
+		public RecipeBoardVO getRecipeBoardsById(int recipeBoardId) {
+			log.info("getRecipeBoardsById()");
+			increaseViewCount(recipeBoardId); // ¡∂»∏ºˆ ¡ı∞°
+			return recipeBoardMapper.selectOne(recipeBoardId);
+		}
 
-        // 3. Add new ingredients
-        if (ingredientIds != null && !ingredientIds.isEmpty()) {
-            List<RecipeIngredientsVO> recipeIngredients = ingredientIds.stream()
-                .map(ingredientId -> new RecipeIngredientsVO(recipeBoard.getRecipeBoardId(), ingredientId))
-                .collect(Collectors.toList());
-            mapper.addIngredientsToRecipe(recipeIngredients);
-            log.info("Added new ingredients for RecipeBoard ID: " + recipeBoard.getRecipeBoardId());
-        }
-    }
-    
-    @Override
-    public List<RecipeBoardVO> filterByCategory(Integer typeId, Integer situationId, Integer ingredientId, Integer methodId) {
-        log.info("Filtering recipes - typeId: " + typeId +
-                 ", situationId: " + situationId + ", ingredientId: " + ingredientId + ", methodId: " + methodId);
-        return mapper.filterByCategory(typeId, situationId, ingredientId, methodId);
-    }
+		@Override
+	    public List<RecipeBoardVO> selectAll() {
+	        return recipeBoardMapper.selectAll();
+	    }
 }
+

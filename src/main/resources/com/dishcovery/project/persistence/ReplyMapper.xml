@@ -7,30 +7,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<resultMap type="com.dishcovery.project.domain.ReplyVO" id="replyResultMap">
       	<id property="replyId" column="REPLY_ID" /> 
-      	<result property="boardId" column="BOARD_ID" /> 
+      	<result property="recipeBoardId" column="RECIPE_BOARD_ID" /> 
       	<result property="memberId" column="MEMBER_ID" />
       	<result property="replyContent" column="REPLY_CONTENT" />
       	<result property="replyDateCreated" column="REPLY_DATE_CREATED" />
    </resultMap>
    
-   <insert id="insert">
-      INSERT INTO REPLY (REPLY_ID, BOARD_ID, MEMBER_ID, REPLY_CONTENT)
-      VALUES (REPLY_SEQ.NEXTVAL, #{boardId}, #{memberId}, #{replyContent})
+   <insert id="insertReply">
+      INSERT INTO REPLY (REPLY_ID, RECIPE_BOARD_ID, MEMBER_ID, REPLY_CONTENT)
+      VALUES (REPLY_SEQ.NEXTVAL, #{recipeBoardId}, #{memberId}, #{replyContent})
    </insert>
    
-   <select id="selectListByBoardId" resultMap="replyResultMap">
-      SELECT * FROM REPLY
-      WHERE BOARD_ID = #{boardId}
-      ORDER BY REPLY_ID
+   <select id="selectListByRecipeBoardId" resultMap="replyResultMap">
+     SELECT
+        REPLY_ID,
+        RECIPE_BOARD_ID,
+        MEMBER_ID,
+        REPLY_CONTENT,
+        REPLY_DATE_CREATED
+     FROM REPLY
+     WHERE RECIPE_BOARD_ID = #{recipeBoardId}
    </select>
    
-   <update id="update">
+   <update id="updateReply">
       UPDATE REPLY
       SET REPLY_CONTENT = #{replyContent}
       WHERE REPLY_ID = #{replyId}
    </update>
    
-   <delete id="delete">
+   <delete id="deleteReply">
       DELETE FROM REPLY
       WHERE REPLY_ID = #{replyId}
    </delete>

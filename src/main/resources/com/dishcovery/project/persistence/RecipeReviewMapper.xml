@@ -7,31 +7,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<resultMap type="com.dishcovery.project.domain.RecipeReviewVO" id="RecipeReviewResultMap">
       <id property="recipeReviewId" column="RECIPE_REVIEW_ID" /> 
-      <result property="boardId" column="BOARD_ID" /> 
+      <result property="recipeBoardId" column="RECIPE_BOARD_ID" /> 
       <result property="memberId" column="MEMBER_ID" />
-      <result property="reviewContent" column="RECIPE_REVIEW_CONTENT" />
+      <result property="recipeReviewContent" column="RECIPE_REVIEW_CONTENT" />
       <result property="reviewRating" column="REVIEW_RATING" />
       <result property="recipeReviewDateCreated" column="RECIPE_REVIEW_DATE_CREATED" />
    </resultMap>
 	
-	<insert id="insert">
-       INSERT INTO RECIPE_REVIEW (RECIPE_REVIEW_ID, BOARD_ID, MEMBER_ID, RECIPE_REVIEW_CONTENT, REVIEW_RATING)
-       VALUES (RECIPE_REVIEW_SEQ.NEXTVAL, #{boardId}, #{memberId}, #{recipeReviewContent}, #{reviewRating})
+	<insert id="insertRecipeReview">
+       INSERT INTO RECIPE_REVIEW (RECIPE_REVIEW_ID, RECIPE_BOARD_ID, MEMBER_ID, RECIPE_REVIEW_CONTENT, REVIEW_RATING)
+       VALUES (RECIPE_REVIEW_SEQ.NEXTVAL, #{recipeBoardId}, #{memberId}, #{recipeReviewContent}, #{reviewRating})
    	</insert>
 	
-	<select id="selectListByBoardId" resultMap="RecipeReviewResultMap">
+	<select id="selectListByRecipeBoardId" resultMap="RecipeReviewResultMap">
        SELECT * FROM RECIPE_REVIEW
-       WHERE BOARD_ID = #{boardId}
+       WHERE RECIPE_BOARD_ID = #{recipeBoardId}
        ORDER BY RECIPE_REVIEW_ID
    	</select>
    	
-   	<update id="update">
+   	<update id="updateRecipeReview">
        UPDATE RECIPE_REVIEW
-       SET RECIPE_REVIEW_CONTENT = #{recipeReviewContent}
+       SET RECIPE_REVIEW_CONTENT = #{recipeReviewContent},
+       	   REVIEW_RATING = #{reviewRating}
        WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
    	</update>
    	
-   	<delete id="delete">
+   	<delete id="deleteRecipeReview">
        DELETE FROM RECIPE_REVIEW
        WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
    	</delete>	

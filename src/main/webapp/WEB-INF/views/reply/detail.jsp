@@ -11,7 +11,7 @@
 </head>
 <body>
 
-	<input type="hidden" id="boardId" value="3">
+	<input type="hidden" id="recipeBoardId" value="2">
 
 	<div style="text-align: center;">
 		<input type="text" id="memberId" >
@@ -25,17 +25,15 @@
 	</div>
 
 	<script type="text/javascript">
-		$(document).ready(function(){
-			getAllReply(); // 함수 호출		
-			
+				
 			// 댓글 작성 기능
 			$('#btnAdd').click(function(){
-				var boardId = $('#boardId').val(); // 게시판 번호 데이터
+				var recipeBoardId = $('#recipeBoardId').val(); // 게시판 번호 데이터
 				var memberId = $('#memberId').val(); // 작성자 데이터
 				var replyContent = $('#replyContent').val(); // 댓글 내용
 				// javascript 객체 생성
 				var obj = {
-						'boardId' : boardId,
+						'recipeBoardId' : recipeBoardId,
 						'memberId' : memberId,
 						'replyContent' : replyContent
 				}
@@ -61,9 +59,9 @@
 			
 			// 게시판 댓글 전체 가져오기
 			function getAllReply() {
-				var boardId = $('#boardId').val();
+				var recipeBoardId = $('#recipeBoardId').val();
 				
-				var url = '../reply/all/' + boardId;
+				var url = '../reply/all/' + recipeBoardId;
 				$.getJSON(
 					url, 		
 					function(data) {
@@ -134,13 +132,13 @@
 			// 삭제 버튼을 클릭하면 선택된 댓글 삭제
 			$('#replies').on('click', '.reply_item .btn_delete', function(){
 				console.log(this);
-				var boardId = $('#boardId').val(); // 게시판 번호 데이터
+				var recipeBoardId = $('#recipeBoardId').val(); // 게시판 번호 데이터
 				var replyId = $(this).prevAll('#replyId').val();
 				
 				// ajax 요청
 				$.ajax({
 					type : 'DELETE', 
-					url : '../reply/' + replyId + '/' + boardId, 
+					url : '../reply/' + replyId + '/' + recipeBoardId, 
 					headers : {
 						'Content-Type' : 'application/json'
 					},

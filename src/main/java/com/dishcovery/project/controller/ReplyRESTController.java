@@ -25,14 +25,14 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@GetMapping("/all/{boardId}") // GET : 댓글 선택(all)
+	@GetMapping("/all/{recipeBoardId}") // GET : 댓글 선택(all)
 	public ResponseEntity<List<ReplyVO>> readAllReply(
-			@PathVariable("boardId") int boardId){
-		// @PathVariable("boardId") : {boardId} 값을 설정된 변수에 저장
+			@PathVariable("recipeBoardId") int recipeBoardId){
+		// @PathVariable("recipeBoardId") : {recipeBoardId} 값을 설정된 변수에 저장
 		log.info("readdAllReply()");
-		log.info("boardId = " + boardId);
+		log.info("recipeBoardId = " + recipeBoardId);
 		
-		List<ReplyVO> list = replyService.getAllReply(boardId);
+		List<ReplyVO> list = replyService.getAllReply(recipeBoardId);
 		// ResponseEntity<T> : T의 타입은 프론트 side로 전송될 데이터 타입으로선언
 		return new ResponseEntity<List<ReplyVO>>(list, HttpStatus.OK);
 	}
@@ -48,14 +48,14 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{replyId}/{boardId}") // DELETE : 댓글 삭제
+	@DeleteMapping("/{replyId}/{recipeBoardId}") // DELETE : 댓글 삭제
 	 public ResponseEntity<Integer> deleteReply(
 			 @PathVariable("replyId") int replyId,
-			 @PathVariable("boardId") int boardId) {
+			 @PathVariable("recipeBoardId") int recipeBoardId) {
 		log.info("deleteReply()");
 		log.info("replyId = " + replyId);
 		
-		int result = replyService.deleteReply(replyId, boardId);
+		int result = replyService.deleteReply(replyId, recipeBoardId);
 		
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 		}

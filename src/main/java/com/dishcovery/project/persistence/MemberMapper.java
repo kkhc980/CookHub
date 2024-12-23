@@ -9,4 +9,5 @@ public interface MemberMapper {
     int selectDupCheckEmail(String email);
     void updateAuthKey(String email, String authKey);
     void updateAuthStatus(String email, String authKey);
+
 }

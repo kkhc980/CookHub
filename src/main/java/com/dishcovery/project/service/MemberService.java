@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface MemberService {
+
     int registerMember(MemberVO memberVO);
 
     MemberVO getMemberById(int memberId);
+
 
     List<Integer> getAllId();
 
@@ -23,4 +25,5 @@ public interface MemberService {
     void updateAuthStatus(Map<String, String> map);
 
     void updateAuthKey(Map<String, String> map);
+
 }

@@ -19,6 +19,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public int registerMember(MemberVO memberVO) {
         int result = memberMapper.insert(memberVO);
+
         return result;
     }
 
@@ -51,6 +52,7 @@ public class MemberServiceImpl implements MemberService {
     public boolean selectDupCheckEmail(String email) {
         int result = memberMapper.selectDupCheckEmail(email);
         if (result == 1) return true;
+
         return false;
     }
 
@@ -66,5 +68,6 @@ public class MemberServiceImpl implements MemberService {
         String email = map.get("email");
         String authKey = map.get("authKey");
         memberMapper.updateAuthKey(email, authKey);
+
     }
 }

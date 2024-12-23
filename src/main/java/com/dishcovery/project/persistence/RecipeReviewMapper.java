@@ -8,8 +8,8 @@ import com.dishcovery.project.domain.RecipeReviewVO;
 
 @Mapper
 public interface RecipeReviewMapper {
-	int insert(RecipeReviewVO recipeReviewVO);
-	List<RecipeReviewVO> selectListByBoardId(int boardId);
-	int update(RecipeReviewVO recipeReviewVO);
-	int delete(int RecipeReviewId);
+	int insertRecipeReview(RecipeReviewVO recipeReviewVO);
+	List<RecipeReviewVO> selectListByRecipeBoardId(int recipeBoardId);
+	int updateRecipeReview(RecipeReviewVO recipeReviewVO);
+	int deleteRecipeReview(int RecipeReviewId);
 }

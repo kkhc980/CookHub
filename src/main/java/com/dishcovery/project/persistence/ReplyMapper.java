@@ -8,8 +8,8 @@ import com.dishcovery.project.domain.ReplyVO;
 
 @Mapper
 public interface ReplyMapper {
-	int insert(ReplyVO replyVO);
-	List<ReplyVO> selectListByBoardId(int boardId);
-	int update(ReplyVO replyVO);
-	int delete(int replyId);
+	int insertReply(ReplyVO replyVO);
+	List<ReplyVO> selectListByRecipeBoardId(int recipeBoardId);
+	int updateReply(ReplyVO replyVO);
+	int deleteReply(int replyId);
 }

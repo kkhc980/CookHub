@@ -5,45 +5,49 @@ import java.util.List;
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
-import com.dishcovery.project.domain.RecipeIngredientsVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
 
 public interface RecipeBoardService {
+	 // 레시피 게시글 등록
+    int createRecipeBoard(RecipeBoardVO recipeBoardVO);
 
-    List<RecipeBoardVO> getRecipeBoardList();
+    // 레시피 게시글 조회
+    RecipeBoardVO getRecipeBoard(int recipeBoardId);
 
-    RecipeBoardVO getByRecipeBoardId(int recipeBoardId);
+    // 레시피 게시글 목록 조회
+    List<RecipeBoardVO> getBoardList();
 
-    void create(RecipeBoardVO recipeBoard);
+    // 레시피 게시글 수정
+    int updateRecipeBoard(RecipeBoardVO recipeBoard);
 
-    void update(RecipeBoardVO recipeBoard);
+    // 레시피 게시글 삭제
+    int deleteRecipeBoard(int recipeBoardId);
 
-    void delete(int recipeBoardId);
-    
-    List<IngredientsVO> getAllIngredients();
+    // 조회수 증가
+    int increaseViewCount(int recipeBoardId);
 
-    List<IngredientsVO> getIngredientsByRecipeId(int recipeBoardId);
+    List<RecipeBoardVO> selectAll();
 
-    void addIngredientsToRecipe(List<RecipeIngredientsVO> recipeIngredients);
+    // 특정 사용자의 레시피 게시글 목록 조회
+    List<RecipeBoardVO> getRecipeBoardsByMemberId(String memberId);
 
-    void removeIngredientsFromRecipe(int recipeBoardId);
-    
-    List<TypesVO> getAllTypes();
+    // 카테고리별 레시피 조회
+    List<RecipeBoardVO> getRecipeBoardsByType(int typeId);
 
-    List<MethodsVO> getAllMethods();
+    List<RecipeBoardVO> getRecipeBoardsByIngredient(int ingredientId);
 
-    List<SituationsVO> getAllSituations();
-    
-    String getTypeName(int typeId);
-    
-    String getMethodName(int methodId);
-    
-    String getSituationName(int situationId);
-    
-    List<Integer> getIngredientIdListByRecipeId(int recipeBoardId);
-    
-    void updateRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds);
-    
-    List<RecipeBoardVO> filterByCategory(Integer typeId, Integer situationId, Integer ingredientId, Integer methodId);
+    List<RecipeBoardVO> getRecipeBoardsByMethod(int methodId);
+
+    List<RecipeBoardVO> getRecipeBoardsBySituation(int situationId);
+
+    List<TypesVO> getTypes();
+
+    List<IngredientsVO> getIngredients();
+
+    List<MethodsVO> getMethods();
+
+    List<SituationsVO> getSituations();
+
+	RecipeBoardVO getRecipeBoardsById(int recipeBoardId);
 }

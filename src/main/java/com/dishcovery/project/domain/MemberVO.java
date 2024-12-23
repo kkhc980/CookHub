@@ -9,7 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class Member {
+public class MemberVO {
     private int memberId;
     private String email;
     private String password;
@@ -17,4 +17,6 @@ public class Member {
     private String phone;
     private Date createdAt;
     private Date updatedAt;
+    private String authKey;
+    private int authStatus;
 }

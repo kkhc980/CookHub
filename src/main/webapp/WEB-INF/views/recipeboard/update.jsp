@@ -1,102 +1,74 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Update Recipe</title>
-    <style>
-        .form-container {
-            width: 50%;
-            margin: 0 auto;
-        }
-        .form-container h1 {
-            text-align: center;
-        }
-        .form-container form {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-container label {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .form-container input, .form-container textarea, .form-container select {
-            margin-top: 5px;
-            padding: 8px;
-            font-size: 14px;
-        }
-        .form-container button {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .form-container button:hover {
-            background-color: #45a049;
-        }
-    </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Update Recipe</h1>
-        <form action="${pageContext.request.contextPath}/recipeboard/update/${recipeBoard.recipeBoardId}" method="post">
-            <!-- Title -->
-            <label for="recipeBoardTitle">Title:</label>
-            <input type="text" id="recipeBoardTitle" name="recipeBoardTitle" value="${recipeBoard.recipeBoardTitle}" required>
-            
-            <!-- Content -->
-            <label for="recipeBoardContent">Content:</label>
-            <textarea id="recipeBoardContent" name="recipeBoardContent" rows="5" required>${recipeBoard.recipeBoardContent}</textarea>
+    <h1>Update Recipe</h1>
+    <form action="${pageContext.request.contextPath}/recipeboard/update" method="post">
+        <input type="hidden" name="recipeBoardId" value="${recipeBoard.recipeBoardId}">
 
-            <!-- Types -->
-            <label for="typeId">Type:</label>
-            <select id="typeId" name="typeId" required>
-                <c:forEach var="type" items="${typesList}">
-                    <c:if test="${type.typeId != 1}">
-                        <option value="${type.typeId}" ${type.typeId == recipeBoard.typeId ? 'selected' : ''}>${type.typeName}</option>
-                    </c:if>
-                </c:forEach>
-            </select>
+        <!-- Recipe Title -->
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="recipeBoardTitle" value="${recipeBoard.recipeBoardTitle}" required>
+        <br>
 
-            <!-- Methods -->
-            <label for="methodId">Method:</label>
-            <select id="methodId" name="methodId" required>
-                <c:forEach var="method" items="${methodsList}">
-                    <c:if test="${method.methodId != 1}">
-                        <option value="${method.methodId}" ${method.methodId == recipeBoard.methodId ? 'selected' : ''}>${method.methodName}</option>
-                    </c:if>
-                </c:forEach>
-            </select>
+        <!-- Recipe Content -->
+        <label for="content">Content:</label>
+        <textarea id="content" name="recipeBoardContent" required>${recipeBoard.recipeBoardContent}</textarea>
+        <br>
 
-            <!-- Situations -->
-            <label for="situationId">Situation:</label>
-            <select id="situationId" name="situationId" required>
-                <c:forEach var="situation" items="${situationsList}">
-                    <c:if test="${situation.situationId != 1}">
-                        <option value="${situation.situationId}" ${situation.situationId == recipeBoard.situationId ? 'selected' : ''}>${situation.situationName}</option>
-                    </c:if>
-                </c:forEach>
-            </select>
-
-            <!-- Ingredients -->
-            <label for="ingredientIds">Ingredients:</label>
-            <c:forEach var="ingredient" items="${ingredientsList}">
-                <c:if test="${ingredient.ingredientId != 1}">
-                    <div>
-                        <input type="checkbox" id="ingredient${ingredient.ingredientId}" name="ingredientIds" value="${ingredient.ingredientId}"
-                            <c:if test="${recipeIngredientIds.contains(ingredient.ingredientId)}">checked</c:if>>
-                        <label for="ingredient${ingredient.ingredientId}">${ingredient.ingredientName}</label>
-                    </div>
-                </c:if>
+        <!-- Recipe Type -->
+        <label for="type">Type:</label>
+        <select id="type" name="typeId">
+            <c:forEach var="type" items="${typesList}">
+                <option value="${type.typeId}" 
+                    <c:if test="${recipeBoard.typeId == type.typeId}">selected</c:if>>
+                    ${type.typeName}
+                </option>
             </c:forEach>
+        </select>
+        <br>
 
-            <!-- Submit Button -->
-            <button type="submit">Update Recipe</button>
-        </form>
-    </div>
+        <!-- Recipe Method -->
+        <label for="method">Method:</label>
+        <select id="method" name="methodId">
+            <c:forEach var="method" items="${methodsList}">
+                <option value="${method.methodId}" 
+                    <c:if test="${recipeBoard.methodId == method.methodId}">selected</c:if>>
+                    ${method.methodName}
+                </option>
+            </c:forEach>
+        </select>
+        <br>
+
+        <!-- Recipe Situation -->
+        <label for="situation">Situation:</label>
+        <select id="situation" name="situationId">
+            <c:forEach var="situation" items="${situationsList}">
+                <option value="${situation.situationId}" 
+                    <c:if test="${recipeBoard.situationId == situation.situationId}">selected</c:if>>
+                    ${situation.situationName}
+                </option>
+            </c:forEach>
+        </select>
+        <br>
+
+        <!-- Recipe Ingredients -->
+        <label for="ingredients">Ingredients:</label>
+        <c:forEach var="ingredient" items="${allIngredients}">
+            <input type="checkbox" name="ingredientIds" value="${ingredient.ingredientId}" 
+                <c:if test="${fn:contains(selectedIngredientIds, ingredient.ingredientId)}">checked</c:if>>
+            ${ingredient.ingredientName}
+        </c:forEach>
+        <br>
+
+        <!-- Submit Button -->
+        <button type="submit">Update</button>
+    </form>
 </body>
 </html>

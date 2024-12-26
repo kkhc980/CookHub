@@ -1,53 +1,41 @@
 package com.dishcovery.project.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
+import com.dishcovery.project.util.Pagination;
 
 public interface RecipeBoardService {
-	 // ∑πΩ√«« ∞‘Ω√±€ µÓ∑œ
-    int createRecipeBoard(RecipeBoardVO recipeBoardVO);
 
-    // ∑πΩ√«« ∞‘Ω√±€ ¡∂»∏
-    RecipeBoardVO getRecipeBoard(int recipeBoardId);
+    RecipeBoardVO getByRecipeBoardId(int recipeBoardId);
 
-    // ∑πΩ√«« ∞‘Ω√±€ ∏Ò∑œ ¡∂»∏
-    List<RecipeBoardVO> getBoardList();
+    void createRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds);
 
-    // ∑πΩ√«« ∞‘Ω√±€ ºˆ¡§
-    int updateRecipeBoard(RecipeBoardVO recipeBoard);
+    RecipeDetailVO getRecipeDetailById(int recipeBoardId); // Ï∂îÍ∞Ä: Recipe ÏÉÅÏÑ∏ Ï†ïÎ≥¥ Î∞òÌôò
 
-    // ∑πΩ√«« ∞‘Ω√±€ ªË¡¶
-    int deleteRecipeBoard(int recipeBoardId);
+    List<IngredientsVO> getIngredientsByRecipeId(int recipeBoardId);
+    
+    List<TypesVO> getAllTypes();
 
-    // ¡∂»∏ºˆ ¡ı∞°
-    int increaseViewCount(int recipeBoardId);
+    List<MethodsVO> getAllMethods();
 
-    List<RecipeBoardVO> selectAll();
+    List<SituationsVO> getAllSituations();
 
-    // ∆Ø¡§ ªÁøÎ¿⁄¿« ∑πΩ√«« ∞‘Ω√±€ ∏Ò∑œ ¡∂»∏
-    List<RecipeBoardVO> getRecipeBoardsByMemberId(String memberId);
+    List<IngredientsVO> getAllIngredients();
+    
+    void updateRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds);
+    
+    void deleteRecipe(int recipeBoardId);
 
-    // ƒ´≈◊∞Ì∏Æ∫∞ ∑πΩ√«« ¡∂»∏
-    List<RecipeBoardVO> getRecipeBoardsByType(int typeId);
+    Set<Integer> getSelectedIngredientIdsByRecipeId(int recipeBoardId);
 
-    List<RecipeBoardVO> getRecipeBoardsByIngredient(int ingredientId);
+    Map<String, Object> getRecipeBoardListWithFilters(Pagination pagination);
 
-    List<RecipeBoardVO> getRecipeBoardsByMethod(int methodId);
-
-    List<RecipeBoardVO> getRecipeBoardsBySituation(int situationId);
-
-    List<TypesVO> getTypes();
-
-    List<IngredientsVO> getIngredients();
-
-    List<MethodsVO> getMethods();
-
-    List<SituationsVO> getSituations();
-
-	RecipeBoardVO getRecipeBoardsById(int recipeBoardId);
 }

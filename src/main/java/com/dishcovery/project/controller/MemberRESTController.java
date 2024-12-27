@@ -1,3 +1,4 @@
+/*
 package com.dishcovery.project.controller;
 
 import com.dishcovery.project.config.MailAuthConfiguration;
@@ -80,3 +81,4 @@ public class MemberRESTController {
 
     }
 }
+ */

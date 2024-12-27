@@ -13,9 +13,4 @@ public class RecipeIngredientsVO {
 	
     private int recipeBoardId;
     private int ingredientId;
-    
-    public RecipeIngredientsVO(int recipeBoardId, int ingredientId) {
-        this.recipeBoardId = recipeBoardId;
-        this.ingredientId = ingredientId;
-    }
 }

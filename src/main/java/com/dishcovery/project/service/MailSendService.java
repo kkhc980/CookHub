@@ -1,3 +1,4 @@
+/*
 package com.dishcovery.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,3 +62,4 @@ public class MailSendService {
         return authKey;
     }
 }
+*/

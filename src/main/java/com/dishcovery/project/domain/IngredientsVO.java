@@ -1,19 +1,16 @@
 package com.dishcovery.project.domain;
 
-
-
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@Getter 
+@Getter
 @Setter
-@ToString 
+@ToString
+@NoArgsConstructor
 public class IngredientsVO {
-
-	int ingredientId;
-    private String ingredientName;
 	
+    private int ingredientId;
+    private String ingredientName;
 }

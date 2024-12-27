@@ -1,53 +1,45 @@
 package com.dishcovery.project.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
+import com.dishcovery.project.util.Pagination;
 
 public interface RecipeBoardService {
-	 // ·¹½ÃÇÇ °Ô½Ã±Û µî·Ï
-    int createRecipeBoard(RecipeBoardVO recipeBoardVO);
 
-    // ·¹½ÃÇÇ °Ô½Ã±Û Á¶È¸
-    RecipeBoardVO getRecipeBoard(int recipeBoardId);
+    // Recipe CRUD
+    RecipeBoardVO getByRecipeBoardId(int recipeBoardId); // íŠ¹ì • Recipe ì¡°íšŒ
+    void createRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, MultipartFile thumbnail); // Recipe ë“±ë¡ ë° ì¬ë£Œ ì¶”ê°€
+    void updateRecipeWithIngredients(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, MultipartFile thumbnail); // Recipe ì—…ë°ì´íŠ¸ ë° ì¬ë£Œ ë³€ê²½
+    void deleteRecipe(int recipeBoardId); // Recipe ì‚­ì œ
 
-    // ·¹½ÃÇÇ °Ô½Ã±Û ¸ñ·Ï Á¶È¸
-    List<RecipeBoardVO> getBoardList();
+    // Recipe Details
+    RecipeDetailVO getRecipeDetailById(int recipeBoardId); // Recipe ìƒì„¸ ì •ë³´ ì¡°íšŒ
 
-    // ·¹½ÃÇÇ °Ô½Ã±Û ¼öÁ¤
-    int updateRecipeBoard(RecipeBoardVO recipeBoard);
+    // Ingredients Management
+    List<IngredientsVO> getIngredientsByRecipeId(int recipeBoardId); // íŠ¹ì • Recipeì˜ ì¬ë£Œ ì¡°íšŒ
+    List<IngredientsVO> getAllIngredients(); // ëª¨ë“  ì¬ë£Œ ì¡°íšŒ
+    Set<Integer> getSelectedIngredientIdsByRecipeId(int recipeBoardId); // íŠ¹ì • Recipeì˜ ì¬ë£Œ ID ëª©ë¡ ì¡°íšŒ
 
-    // ·¹½ÃÇÇ °Ô½Ã±Û »èÁ¦
-    int deleteRecipeBoard(int recipeBoardId);
+    // Types, Methods, Situations
+    List<TypesVO> getAllTypes(); // ëª¨ë“  Type ì¡°íšŒ
+    List<MethodsVO> getAllMethods(); // ëª¨ë“  Method ì¡°íšŒ
+    List<SituationsVO> getAllSituations(); // ëª¨ë“  Situation ì¡°íšŒ
 
-    // Á¶È¸¼ö Áõ°¡
-    int increaseViewCount(int recipeBoardId);
-
-    List<RecipeBoardVO> selectAll();
-
-    // Æ¯Á¤ »ç¿ëÀÚÀÇ ·¹½ÃÇÇ °Ô½Ã±Û ¸ñ·Ï Á¶È¸
-    List<RecipeBoardVO> getRecipeBoardsByMemberId(String memberId);
-
-    // Ä«Å×°í¸®º° ·¹½ÃÇÇ Á¶È¸
-    List<RecipeBoardVO> getRecipeBoardsByType(int typeId);
-
-    List<RecipeBoardVO> getRecipeBoardsByIngredient(int ingredientId);
-
-    List<RecipeBoardVO> getRecipeBoardsByMethod(int methodId);
-
-    List<RecipeBoardVO> getRecipeBoardsBySituation(int situationId);
-
-    List<TypesVO> getTypes();
-
-    List<IngredientsVO> getIngredients();
-
-    List<MethodsVO> getMethods();
-
-    List<SituationsVO> getSituations();
-
-	RecipeBoardVO getRecipeBoardsById(int recipeBoardId);
+    // Pagination & Filtering
+    Map<String, Object> getRecipeBoardListWithFilters(Pagination pagination); // í•„í„° ë° í˜ì´ì§• ì ìš© Recipe ëª©ë¡ ì¡°íšŒ
+    Pagination preprocessPagination(Pagination pagination); // í•„í„° ë°ì´í„° ì „ì²˜ë¦¬
+    
+    // thumbnail
+    Resource getThumbnailByRecipeBoardId(int recipeBoardId);
 }

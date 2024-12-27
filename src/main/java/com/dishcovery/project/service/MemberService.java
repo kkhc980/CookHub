@@ -1,15 +1,29 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.Member;
+import com.dishcovery.project.domain.MemberVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MemberService {
-    int createMember(Member member);
-    Member getMemberById(int memberId);
+
+    int registerMember(MemberVO memberVO);
+
+    MemberVO getMemberById(int memberId);
+
+
     List<Integer> getAllId();
-    int updateMember(Member member);
+
+    int updateMember(MemberVO memberVO);
+
     int deleteMember(int memberId);
-    Member processSocialLogin(String name);
-    int selectDupCheckId(String user_id);
+
+    MemberVO processSocialLogin(String name);
+
+    boolean selectDupCheckEmail(String email);
+
+    void updateAuthStatus(Map<String, String> map);
+
+    void updateAuthKey(Map<String, String> map);
+
 }

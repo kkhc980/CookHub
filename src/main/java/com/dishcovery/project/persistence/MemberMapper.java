@@ -1,16 +1,13 @@
 package com.dishcovery.project.persistence;
 
-import com.dishcovery.project.domain.Member;
+import com.dishcovery.project.domain.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
 
 @Mapper
 public interface MemberMapper {
-    int insert(Member member);
-    Member selectByMemberId(int memberId);
-    List<Integer> selectIdList();
-    int update(Member member);
-    int delete(int memberId);
-    int selectDupCheckId(String email);
+    int insert(MemberVO memberVO);
+    int selectDupCheckEmail(String email);
+    void updateAuthKey(String email, String authKey);
+    void updateAuthStatus(String email, String authKey);
+
 }

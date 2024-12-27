@@ -6,7 +6,8 @@ import com.dishcovery.project.domain.ReplyVO;
 
 public interface ReplyService {
 	int createReply(ReplyVO replyVO);
-	List<ReplyVO> getAllReply(int boardId);
+	List<ReplyVO> getAllReply(int recipeBoardId);
 	int updateReply(int replyId, String replyContent);
-	int deleteReply(int replyId, int boardId);
+	int deleteReply(int replyId, int recipeBoardId);
+	
 }

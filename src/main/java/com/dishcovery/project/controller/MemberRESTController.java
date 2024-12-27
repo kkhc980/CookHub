@@ -1,4 +1,3 @@
-/*
 package com.dishcovery.project.controller;
 
 import com.dishcovery.project.config.RootConfig;
@@ -47,5 +46,5 @@ public class MemberRESTController {
         out.close();
     }
 
+
 }
- */

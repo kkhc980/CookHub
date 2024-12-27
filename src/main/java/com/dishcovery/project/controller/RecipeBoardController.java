@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
@@ -93,8 +91,6 @@ public class RecipeBoardController {
 
     @GetMapping("/detail/{recipeBoardId}")
     public String getRecipeDetail(@PathVariable int recipeBoardId, Model model) {
-        log.info("Fetching details for recipeBoardId: " + recipeBoardId);
-
         RecipeDetailVO detail = recipeBoardService.getRecipeDetailById(recipeBoardId);
 
         if (detail == null) {
@@ -110,41 +106,36 @@ public class RecipeBoardController {
 
         return "recipeboard/detail";
     }
-    
+
     @GetMapping("/update/{recipeBoardId}")
     public String updateForm(@PathVariable int recipeBoardId, Model model) {
-        log.info("Navigating to the update page for recipeBoardId: " + recipeBoardId);
-
         RecipeBoardVO recipeBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);
-        List<IngredientsVO> allIngredients = recipeBoardService.getAllIngredients();
+        if (recipeBoard == null) {
+            log.warn("RecipeBoard with ID " + recipeBoardId + " not found");
+            return "redirect:/recipeboard/list";
+        }
 
-        Set<Integer> selectedIngredientIds = recipeBoardService.getSelectedIngredientIdsByRecipeId(recipeBoardId);
-        
+        addCommonAttributes(model);
         model.addAttribute("recipeBoard", recipeBoard);
-        model.addAttribute("allIngredients", allIngredients);
-        model.addAttribute("selectedIngredientIds", selectedIngredientIds); // 전달
-        model.addAttribute("typesList", recipeBoardService.getAllTypes());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
+        model.addAttribute("selectedIngredientIds", recipeBoardService.getSelectedIngredientIdsByRecipeId(recipeBoardId));
 
         return "recipeboard/update";
     }
 
     @PostMapping("/update")
-    public String updateRecipe(RecipeBoardVO recipeBoard, @RequestParam("ingredientIds") List<Integer> ingredientIds) {
-        log.info("Updating recipe: " + recipeBoard);
-
-        // Update recipe and ingredients
-        recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds);
-
+    public String updateRecipe(RecipeBoardVO recipeBoard,
+                               @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+                               @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
+        recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
         return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
     }
-    
+
     @PostMapping("/delete/{recipeBoardId}")
     public String deleteRecipe(@PathVariable int recipeBoardId) {
-        log.info("Deleting recipe with ID: " + recipeBoardId);
+        recipeBoardService.deleteRecipe(recipeBoardId);
+        return "redirect:/recipeboard/list";
+    }
 
-<<<<<<< HEAD
     // Helper method to add common attributes to the model
     private void addCommonAttributes(Model model) {
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
@@ -167,11 +158,5 @@ public class RecipeBoardController {
             log.error("Error fetching thumbnail", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-=======
-        // Delete recipe
-        recipeBoardService.deleteRecipe(recipeBoardId);
-
-        return "redirect:/recipeboard/list";
->>>>>>> 4f43097c6fcf0796edeff1ff812f892935944176
     }
 }

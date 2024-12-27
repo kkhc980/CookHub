@@ -22,9 +22,6 @@
         }
 
         //아이디 중복을 확인하기 위한 ajax 요청 처리용 함수
-        //ajax(Asynchronous Javascript And Xml) :
-        //페이지를 바꾸거나 새로고침하지 않고, 서버와 통신하는 기술임
-        //서버로 서비스 요청하고 결과받음
         function dupCheckId() {
             var email = $('#email').val().trim();
             if (email === '') {
@@ -55,7 +52,7 @@
     </script>
 </head>
 <body>
-<form action="signup" method="post">
+<form action="/memberVO/signup" method="post">
     <table>
         <tr>
             <th>회원정보를 입력해 주세요. (* 표시는 필수입력 항목입니다)</th>

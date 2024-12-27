@@ -1,4 +1,3 @@
-/*
 package com.dishcovery.project.controller;
 
 import com.dishcovery.project.config.MailAuthConfiguration;
@@ -70,8 +69,8 @@ public class MemberRESTController {
         //email, authKey 가 일치할경우 authStatus 업데이트
         memberService.updateAuthStatus(map);
 
-        mav.addObject("display", "/view/member/signUp_confirm.jsp");
-        mav.setViewName("/view/index");
+        mav.addObject("display", "/views/member/signUp_confirm.jsp");
+        mav.setViewName("/views/home");
         return mav;
     }
 
@@ -81,4 +80,3 @@ public class MemberRESTController {
 
     }
 }
- */

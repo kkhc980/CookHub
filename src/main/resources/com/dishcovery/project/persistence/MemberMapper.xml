@@ -16,14 +16,14 @@
     </select>
 
     <!-- 이메일 인증 키 발급 -->
-    <update id="updateAuthKey" parameterType="com.dishcovery.project.domain.MemberVO">
+    <update id="updateAuthKey" parameterType="java.util.Map">
         UPDATE MEMBER
         SET AUTH_KEY = #{authKey}
         WHERE EMAIL = #{email}
     </update>
 
     <!-- 이메일 인증 후 로그인 권한 부여 -->
-    <update id="updateAuthStatus" parameterType="com.dishcovery.project.domain.MemberVO">
+    <update id="updateAuthStatus" parameterType="java.util.Map">
         UPDATE MEMBER
         SET AUTH_STATUS = 1
         WHERE EMAIL = #{email}

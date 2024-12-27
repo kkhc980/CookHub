@@ -1,4 +1,3 @@
-/*
 package com.dishcovery.project.config;
 
 
@@ -32,4 +31,3 @@ public class MailAuthConfiguration {
         return mailSender;
     }
 }
-*/

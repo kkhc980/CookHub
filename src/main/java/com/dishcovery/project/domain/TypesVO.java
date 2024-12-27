@@ -3,11 +3,14 @@ package com.dishcovery.project.domain;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class TypesVO {
-    private int typeId;         // TYPE_ID (Primary Key)
-    private String typeName;    // TYPE_NAME
+
+    private int typeId;
+    private String typeName;
 }

@@ -20,13 +20,13 @@ import com.dishcovery.project.service.RecipeReviewService;
 import lombok.extern.log4j.Log4j;
 
 @RestController
-@RequestMapping(value = "/recipereview")
+@RequestMapping(value = "/recipeboard")
 @Log4j
 public class RecipeReviewRESTController {
 	@Autowired
 	private RecipeReviewService recipeReviewService;
 	
-	@PostMapping
+	@PostMapping("/detail")
 	public ResponseEntity<Integer> createRecipeReview(@RequestBody RecipeReviewVO recipeReviewVO){
 		log.info("createRecipeReview()");
 		

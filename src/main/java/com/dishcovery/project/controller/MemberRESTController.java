@@ -2,7 +2,6 @@ package com.dishcovery.project.controller;
 
 import com.dishcovery.project.config.MailAuthConfiguration;
 import com.dishcovery.project.config.RootConfig;
-import com.dishcovery.project.config.SecurityConfig;
 import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
@@ -10,18 +9,17 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/member")
 @ContextConfiguration(classes = {RootConfig.class, SecurityConfig.class, MailAuthConfiguration.class}) // 설정 파일 연결
 @Log4j
 public class MemberRESTController {
@@ -46,7 +44,7 @@ public class MemberRESTController {
     }
 
     // 회원 가입 처리
-    @PostMapping("/member/signup")
+    @PostMapping("/signup")
     public void registerMember(MemberVO memberVO) {
         String password = memberVO.getPassword();
         memberVO.setPassword(passwordEncoder.encode(password));
@@ -66,7 +64,7 @@ public class MemberRESTController {
     }
 
     // 메일 인증
-    @GetMapping("/member/signUpConfirm")
+    @GetMapping("/signUpConfirm")
     public ModelAndView signUpConfirm(@RequestParam Map<String, String> map, ModelAndView mav) {
         //email, authKey 가 일치할경우 authStatus 업데이트
         memberService.updateAuthStatus(map);
@@ -74,5 +72,11 @@ public class MemberRESTController {
         mav.addObject("display", "/view/member/signUp_confirm.jsp");
         mav.setViewName("/view/index");
         return mav;
+    }
+
+    // 회원 정보 수정
+    @PostMapping("/update")
+    public void updateMember(MemberVO memberVO) {
+
     }
 }

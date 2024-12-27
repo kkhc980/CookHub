@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 
 // root-context.xml과 동일
 @Configuration
-@ComponentScan(basePackages = {"com.dishcovery.project.service"})
+@ComponentScan(basePackages = {"com.dishcovery.project"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
 public class RootConfig {
 	

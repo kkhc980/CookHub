@@ -1,6 +1,8 @@
 package com.dishcovery.project.controller;
 
+
 import com.dishcovery.project.domain.ReplyVO;
+import com.dishcovery.project.service.RecipeReviewService;
 import com.dishcovery.project.service.ReplyService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ public class ReplyRESTController {
 	@Autowired
 	private ReplyService replyService;
 	
-	@PostMapping("/detail")
+	@PostMapping("/replies/detail")
 	public ResponseEntity<Integer> createReply(@RequestBody ReplyVO replyVO){
 		log.info("createReply()");
 		try {
@@ -42,8 +44,7 @@ public class ReplyRESTController {
 		return new ResponseEntity<List<ReplyVO>>(list, HttpStatus.OK);
 	}
 	
-	
-	@PutMapping("/{replyId}") // PUT : 댓글 수정
+	@PutMapping("replies/{replyId}") // PUT : 댓글 수정
 	 public ResponseEntity<Integer> updateReply(
 		        @PathVariable("replyId") int replyId,
 		        @RequestBody String replyContent
@@ -54,7 +55,7 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{replyId}/{recipeBoardId}") // DELETE : 댓글 삭제
+	@DeleteMapping("replies/{replyId}/{recipeBoardId}") // DELETE : 댓글 삭제
 	 public ResponseEntity<Integer> deleteReply(
 			 @PathVariable("replyId") int replyId,
 			 @PathVariable("recipeBoardId") int recipeBoardId) {

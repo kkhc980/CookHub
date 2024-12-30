@@ -56,7 +56,7 @@ public class RecipeReviewMapperTest {
 	private void deleteRecipeReview() {
 		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
 		recipeReviewVO.setRecipeReviewContent("댓글 삭제 테스트");
-		int result = recipeReviewMapper.deleteRecipeReview(4);
+		int result = recipeReviewMapper.deleteRecipeReview(16);
 		log.info(recipeReviewVO);
 	}
 }

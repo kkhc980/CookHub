@@ -1,5 +1,6 @@
 package com.dishcovery.project.controller;
 
+
 import com.dishcovery.project.domain.ReplyVO;
 import com.dishcovery.project.service.ReplyService;
 import lombok.extern.log4j.Log4j;
@@ -11,18 +12,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/reply")
+@RequestMapping(value = "/recipeboard")
 @Log4j
 public class ReplyRESTController {
 	@Autowired
 	private ReplyService replyService;
 	
-	@PostMapping
+	@PostMapping("/replies/detail")
 	public ResponseEntity<Integer> createReply(@RequestBody ReplyVO replyVO){
 		log.info("createReply()");
-		
+		try {
 		int result = replyService.createReply(replyVO);
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
+			} catch (Exception e) {
+				log.error("Error creating reply", e);
+				
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 	}
 	
 	@GetMapping("/all/{recipeBoardId}") // GET : 댓글 선택(all)
@@ -37,7 +43,7 @@ public class ReplyRESTController {
 		return new ResponseEntity<List<ReplyVO>>(list, HttpStatus.OK);
 	}
 	
-	@PutMapping("/{replyId}") // PUT : 댓글 수정
+	@PutMapping("replies/{replyId}") // PUT : 댓글 수정
 	 public ResponseEntity<Integer> updateReply(
 		        @PathVariable("replyId") int replyId,
 		        @RequestBody String replyContent
@@ -48,17 +54,18 @@ public class ReplyRESTController {
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{replyId}/{recipeBoardId}") // DELETE : 댓글 삭제
+	@DeleteMapping("replies/{replyId}/{recipeBoardId}") // DELETE : 댓글 삭제
 	 public ResponseEntity<Integer> deleteReply(
 			 @PathVariable("replyId") int replyId,
 			 @PathVariable("recipeBoardId") int recipeBoardId) {
 		log.info("deleteReply()");
 		log.info("replyId = " + replyId);
 		
-		int result = replyService.deleteReply(replyId, recipeBoardId);
+		int result = replyService.deleteReply(replyId, recipeBoardId);	
 		
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 		}
-			 
+	
+	
 
 }

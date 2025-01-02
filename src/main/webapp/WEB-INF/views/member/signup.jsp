@@ -1,12 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Enroll</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" />
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script type="text/javascript">
         function validate() {
             //전송 보내기전 (submit 버튼 클릭시) 입력값들이 유효한지 검사
@@ -32,7 +30,7 @@
                 return false;
             }
             $.ajax({
-                url: "emailCheck",
+                url: "../member/emailCheck",
                 type: "post",
                 data: {email: email},
                 success: function (data) {
@@ -49,12 +47,12 @@
                     console.log("error : " + jqXHR.responseText + ", " + textStatus + ", " + errorThrown);
                 }
             });
-            return false; //클릭 이벤트 해제함
+
         }
     </script>
 </head>
 <body>
-<form action="/member/signup" method="post">
+<form action="../member/signup" method="post" onsubmit="return validate();">
     <table>
         <tr>
             <th>회원정보를 입력해 주세요. (* 표시는 필수입력 항목입니다)</th>
@@ -64,14 +62,14 @@
         </tr>
         <tr>
             <th>* 이 름</th>
-            <td><input type="text" name="name" id="name"></td>
+            <td><input type="text" name="name" id="name" required></td>
         </tr>
         <tr>
             <th>* 이메일</th>
             <td>
-                <input type="email" name="email" id="email" required>
-                &nbsp; &nbsp;
-                <input type="button" value="중복확인" onclick="return dupCheckId();">
+                <input type="text" name="email" id="email" required>
+
+                <input type="button" value="중복확인" onclick="dupCheckId();">
             </td>
         </tr>
         <tr>
@@ -87,7 +85,7 @@
             <td><input type="tel" name="phone" id="phone"></td>
         </tr>
         <tr>
-            <th><input type="submit" value="가입하기"></th>
+            <td><input type="submit" value="가입하기"></td>
         </tr>
     </table>
 </form>

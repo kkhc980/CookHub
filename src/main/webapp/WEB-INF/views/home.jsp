@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="false" %>
 <html>
@@ -11,7 +12,7 @@
 
 <P>  The time on the sefdfrver is ${serverTime}. </P>
 
-<div>test kimsangho</div>
+<div><a href="member/enroll">회원가입 이동 테스트</a></div>
 <div>test kimheeseung</div>
 <div>test kill</div>
 </body>

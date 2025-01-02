@@ -82,13 +82,22 @@
    </div>
 
 	<input type="hidden" id="recipeBoardId" value="${recipeBoard.recipeBoardId }">
-	
+	<hr>
+		<div style="text-align: center;">
+			<input type="text" id="memberId"><input type="text" id="reviewContent">
+			<button id="btnReviewAdd">리뷰 작성</button>
+		</div>
+		<hr>
+		<div style="text-align: center;">
+		<div id="reviews"></div>
+		</div>
 		
    <script type="text/javascript">
       $(document)
             .ready(
                   function() {
                      getAllReply(); // reply 함수 호출
+                     getAllRecipeReview(); // review 함수 호출
                   
                      
                  
@@ -123,7 +132,42 @@
                            }
                         });
                      }); // end btn Add.click()
-
+                     
+                     $('#btnReviewAdd').click(function(){
+                    	 var recipeBoardId = $('#recipeBoardId').val(); // 게시판 번호
+                    	 var memberId = $('#memberId').val(); // 작성자 데이터
+                    	 var recipeReviewContent = $('#recipeReviewContent').val();
+                    	 var reviewRating = $('reviewRating').val();
+                    	 
+                    	 var obj = {
+                    		'recipeBoardId' : recipeBoardId, //게시글 전달
+                    		'memberId' : memberId,
+                    		'recipeReviewContent' : recipeReviewContent,
+                    		'reviewRating' : reviewRating
+                    	 }
+                    	 console.log(obj);
+                    	 
+                    	 // $.ajax로 송수신
+                    	 $.ajax({
+                    		 type : 'POST',
+                    		 url : '/project/recipeboard/reviews/detail',
+                    		 headers : {// 헤더정보
+                    			 'Content-Type' : 'application/json' // json content-type 설정
+                    		 },
+                    		 data : JSON.stringify(obj), // JSON으로 변환
+                    		 success : function(result) { // 전송 성공 시 서버에서 result값 전송
+                    			 console.log(result);
+                    		 	 if(result == 1) {
+                    		 		 alert('리뷰 입력 성공');
+                    		 		 getAllRecipeReview();
+                    		 	 } else {
+                    		 		 alert('리뷰 입력 실패');
+                    		 	 }
+                    			 
+                    		 }
+                    	 });
+                     }); // end btnReviewAdd.click()
+                     
                      // 게시판 댓글 전체 가져오기
                      function getAllReply() {
                         var recipeBoardId = $('#recipeBoardId').val();
@@ -251,7 +295,47 @@
                                                 }
                                              }
                                           });
-                                 }); // end replies.on                               
+                                 }); // end replies.on
+                                 
+                                 function get AllRecipeReview() {
+                                	 var recipeBoardId = $('#recipeBoardId').val();
+                                	 var url = '/project/recipeboard/allReviews/'
+                                	 			+ recipeBoardId;
+                                	 $
+                                	 		.getJSON(
+                                	 			url,
+                                	 			function(data) {
+                                	 				console.log(data);
+                                	 				var list = '';
+                                	 				$(data)
+                                	 					.each(
+                                	 					function() {
+                                	 						console
+                                	 							.log(this);
+                                	 						recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
+                                	 						
+                                	 						var starRatingHTML = '';
+                                	 						for (let i = 0; i < 5; i++) {
+                                	 							if(i < this.reviewRating) {
+                                	 								starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
+                                	 							} else {
+                                	 								starRatingHTML += '<span style="color:lightgray;">★</span>'; // 빈 별
+                                	 							}
+                                	 						}
+                                	 						
+                                	 						list += '<div class="review_item">'
+                                	 						+ '<pre>'
+                                	 						+ '<input type="hidden" id="recipeReviewId" value="' + this.recipeReviewId + '">'
+                                	 						+ this.memberId
+                                	 						+ '&nbsp;&nbsp;'
+                                	 						+ '<input type="text" id="recipeReviewContent" value="' + this.recipeReviewContent + '">'
+                                	 						+ '&nbsp;&nbsp;'
+                                	 						+ ''
+                                	 					}		
+                                	 					);
+                                	 			}
+                                	 		)
+                                 }               
                             
                   }); // end document()
                   

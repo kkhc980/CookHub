@@ -6,6 +6,7 @@
 <html>
 <head>
 <!-- jquery 라이브러리 import -->
+<base href="${pageContext.request.contextPath}/">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <meta charset="UTF-8">
 <title>${recipeBoard.recipeBoardTitle }</title>
@@ -51,13 +52,12 @@
             <img src="${pageContext.request.contextPath}${attach.recipeBoardPath}" alt="첨부 이미지" style="max-width: 300px;"><br>
         </c:forEach>
    </div>
-    <button onclick="location.href='list'">글 목록</button>
-    <button onclick="location.href='modify?recipeBoardId=${recipeBoard.recipeBoardId}'">글 수정</button>
+    <button onclick="location.href='recipeboard/list'">글 목록</button>
+    <button onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글 수정</button>
     <button type="button" id="deleteBoard">글 삭제</button>
-    <form id="deleteForm" action="delete" method="POST">
-        <input type="hidden" name="recipeBoardId" value="${recipeBoard.recipeBoardId }">
+    <form id="deleteForm" action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
+        <input type="hidden" name="recipeBoardId" value="${recipeBoard.recipeBoardId}">
     </form>
-
    <div style="text-align: center;">
       <input type="text" id="memberId"> <input type="text"
          id="replyContent">

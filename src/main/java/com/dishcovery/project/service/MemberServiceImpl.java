@@ -58,16 +58,12 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void updateAuthStatus(Map<String, String> map) {
-        String email = map.get("email");
-        String authKey = map.get("authKey");
-        memberMapper.updateAuthStatus(email, authKey);
+        memberMapper.updateAuthStatus(map);
     }
 
     @Override
     public void updateAuthKey(Map<String, String> map) {
-        String email = map.get("email");
-        String authKey = map.get("authKey");
-        memberMapper.updateAuthKey(email, authKey);
-
+        System.out.println("map : " + map);
+        memberMapper.updateAuthKey(map);
     }
 }

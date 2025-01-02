@@ -136,7 +136,6 @@ public class RecipeBoardController {
         return "redirect:/recipeboard/list";
     }
 
-    // Helper method to add common attributes to the model
     private void addCommonAttributes(Model model) {
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
         model.addAttribute("methodsList", recipeBoardService.getAllMethods());

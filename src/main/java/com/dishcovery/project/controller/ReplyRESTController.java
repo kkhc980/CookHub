@@ -2,7 +2,6 @@ package com.dishcovery.project.controller;
 
 
 import com.dishcovery.project.domain.ReplyVO;
-import com.dishcovery.project.service.RecipeReviewService;
 import com.dishcovery.project.service.ReplyService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;

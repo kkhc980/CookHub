@@ -26,7 +26,7 @@ public class RecipeReviewRESTController {
 	@Autowired
 	private RecipeReviewService recipeReviewService;
 
-	@PostMapping("reviews/detail")
+	@PostMapping("/reviews/detail")
 	public ResponseEntity<Integer> createRecipeReview(@RequestBody RecipeReviewVO recipeReviewVO) {
 		log.info("createRecipeReview()");
 

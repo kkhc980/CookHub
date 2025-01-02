@@ -1,17 +1,15 @@
-/*
 package com.dishcovery.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Random;
 
-@Service("mss")
+@Service
 public class MailSendService {
 
     private int size;
@@ -46,14 +44,15 @@ public class MailSendService {
 
         //인증메일 보내기
         MimeMessage mail = mailSender.createMimeMessage();
-        String mailContent = "<h1>[이메일 인증]</h1><br><p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>"
-                + "<a href='http://localhost:8080/member/signUpConfirm?email="
-                + email + "&authKey=" + authKey + "' target='_blank'>이메일 인증 확인</a>";
-
         try {
-            mail.setSubject("회원가입 이메일 인증 ", "utf-8");
-            mail.setText(mailContent, "utf-8", "html");
-            mail.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            MimeMessageHelper helper = new MimeMessageHelper(mail, true, "UTF-8");
+            String mailContent = "<h1>[이메일 인증]</h1><br><p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>"
+                    + "<a href='http://localhost:8080/project/member/signUpConfirm?email="
+                    + email + "&authKey=" + authKey + "' target='_blank'>이메일 인증 확인</a>";
+
+            helper.setSubject("회원가입 이메일 인증");
+            helper.setText(mailContent, true); // 두 번째 인자를 true 로 설정하면 HTML 메일로 처리
+            helper.setTo(email);
             mailSender.send(mail);
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -62,4 +61,3 @@ public class MailSendService {
         return authKey;
     }
 }
-*/

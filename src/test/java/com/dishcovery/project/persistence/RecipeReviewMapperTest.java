@@ -21,19 +21,19 @@ public class RecipeReviewMapperTest {
 	private RecipeReviewMapper recipeReviewMapper;
 	
 	@Test
-//	public void test() {
-//	  	 insertRecipeReview();
-//	   }
-//
-//	private void insertRecipeReview() {
-//		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
-//		recipeReviewVO.setRecipeBoardId(2);
-//		recipeReviewVO.setRecipeReviewContent("리뷰 테스트");
-//		recipeReviewVO.setMemberId(1);
-//		recipeReviewVO.setReviewRating(3);
-//		int result = recipeReviewMapper.insertRecipeReview(recipeReviewVO);
-//		log.info(recipeReviewVO);
-//	   }
+	public void test() {
+	  	 insertRecipeReview();
+	   }
+
+	private void insertRecipeReview() {
+		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
+		recipeReviewVO.setRecipeBoardId(1);
+		recipeReviewVO.setRecipeReviewContent("리뷰 테스트");
+		recipeReviewVO.setMemberId(1);
+		recipeReviewVO.setReviewRating(4);
+		int result = recipeReviewMapper.insertRecipeReview(recipeReviewVO);
+		log.info(recipeReviewVO);
+	   }
 	
 //	public void test() {
 //		 updateRecipeReview();
@@ -49,14 +49,14 @@ public class RecipeReviewMapperTest {
 //		log.info(recipeReviewVO);
 //	   }
 	
-	public void test() {
-		deleteRecipeReview();
-	}
-	
-	private void deleteRecipeReview() {
-		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
-		recipeReviewVO.setRecipeReviewContent("댓글 삭제 테스트");
-		int result = recipeReviewMapper.deleteRecipeReview(16);
-		log.info(recipeReviewVO);
-	}
+//	public void test() {
+//		deleteRecipeReview();
+//	}
+//	
+//	private void deleteRecipeReview() {
+//		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
+//		recipeReviewVO.setRecipeReviewContent("댓글 삭제 테스트");
+//		int result = recipeReviewMapper.deleteRecipeReview(16);
+//		log.info(recipeReviewVO);
+//	}
 }

@@ -1,7 +1,7 @@
 package com.dishcovery.project.config;
 
-import javax.sql.DataSource;
-
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -9,14 +9,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
 
 // root-context.xml과 동일
 @Configuration
-@ComponentScan(basePackages = {"com.dishcovery.project.service"})
+@ComponentScan(basePackages = {"com.dishcovery.project"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
-
 public class RootConfig {
 	
 	@Bean // 스프링 bean으로 설정

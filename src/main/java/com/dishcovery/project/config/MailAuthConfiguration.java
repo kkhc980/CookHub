@@ -1,4 +1,3 @@
-/*
 package com.dishcovery.project.config;
 
 
@@ -12,7 +11,7 @@ import java.util.Properties;
 
 @Configuration
 public class MailAuthConfiguration {
-    @Bean(name="mailSender")
+    @Bean
     public JavaMailSender getJavaMailSender() {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", true);
@@ -24,12 +23,11 @@ public class MailAuthConfiguration {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
-        mailSender.setUsername("이메일 주소");
-        mailSender.setPassword("비밀번호");
+        mailSender.setUsername("ksh71192@gmail.com");
+        mailSender.setPassword("fjeofjynknzvwaid");
         mailSender.setDefaultEncoding("utf-8");
         mailSender.setJavaMailProperties(properties);
 
         return mailSender;
     }
 }
-*/

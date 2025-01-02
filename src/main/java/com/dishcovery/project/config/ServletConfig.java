@@ -16,8 +16,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @ComponentScan(basePackages = { "com.dishcovery.project" }) // component scan 설정
 public class ServletConfig implements WebMvcConfigurer {
 
-	private static final String UPLOAD_DIR = "C:/uploads/";
-	
 	// ViewResolver 설정 메서드
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {

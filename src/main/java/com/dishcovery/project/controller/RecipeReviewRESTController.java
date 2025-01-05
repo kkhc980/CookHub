@@ -29,13 +29,19 @@ public class RecipeReviewRESTController {
 	@PostMapping("/reviews/detail")
 	public ResponseEntity<Integer> createRecipeReview(@RequestBody RecipeReviewVO recipeReviewVO) {
 		log.info("createRecipeReview()");
-
+		try {
 		int result = recipeReviewService.createRecipeReview(recipeReviewVO);
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Error creating recipeReview", e);
+			
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@GetMapping("/allReviews/{recipeBoardId}")
-	public ResponseEntity<List<RecipeReviewVO>> readAllRecipeReview(@PathVariable("recipeBoardId") int recipeBoardId) {
+	public ResponseEntity<List<RecipeReviewVO>> readAllRecipeReview(
+			@PathVariable("recipeBoardId") int recipeBoardId) {
 		log.info("readAllRecipeReview()");
 		log.info("recipeBoardId = " + recipeBoardId);
 

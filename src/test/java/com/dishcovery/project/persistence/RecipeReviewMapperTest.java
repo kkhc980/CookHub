@@ -28,9 +28,9 @@ public class RecipeReviewMapperTest {
 	private void insertRecipeReview() {
 		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
 		recipeReviewVO.setRecipeBoardId(1);
-		recipeReviewVO.setRecipeReviewContent("리뷰 테스트");
+		recipeReviewVO.setRecipeReviewContent("리뷰 테스트 123");
 		recipeReviewVO.setMemberId(1);
-		recipeReviewVO.setReviewRating(4);
+		recipeReviewVO.setReviewRating(3);
 		int result = recipeReviewMapper.insertRecipeReview(recipeReviewVO);
 		log.info(recipeReviewVO);
 	   }

@@ -120,6 +120,24 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        
+        .register-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .register-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -169,6 +187,8 @@
         </div>
     </div>
 
+ <!-- 등록 버튼 -->
+    <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-button">등록</a>
     <!-- Recipe List Section -->
     <div class="recipe-list">
         <c:forEach var="recipe" items="${recipeList}">

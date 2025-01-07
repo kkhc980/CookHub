@@ -190,11 +190,14 @@
                     	 var memberId = $('#reviewMemberId').val(); // 작성자 데이터
                     	 var recipeReviewContent = $('#recipeReviewContent').val();
                     	 var reviewRating = $("input[name='reviewRating']:checked").val();
-                    	 
+                                        
+                                         	 
                     	 if(!reviewRating) {
                     		 alert('0점 이외의 별점을 입력하세요');
                     		 return;
                     	 }
+                    	 
+                    	
                     	 
                     	 var obj = {
                     		'recipeBoardId' : recipeBoardId, //게시글 전달
@@ -202,7 +205,7 @@
                     		'recipeReviewContent' : recipeReviewContent,
                     		'reviewRating' : reviewRating
                     	 }
-                    	 console.log(obj);
+                    	 console.log("전송 데이터:", obj);
                     	 
                     	 // $.ajax로 송수신
                     	 $.ajax({
@@ -357,8 +360,8 @@
                                 	 						recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
                                 	 						
                                 	 						var starRatingHTML = '';
-                                	 						for (let i = 0; i < 5; i++) {
-                                	 							if(i < this.reviewRating) {
+                                	 						for (let i = 1; i < 6; i++) {
+                                	 							if(i <= this.reviewRating) {
                                 	 								starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
                                 	 							} else {
                                 	 								starRatingHTML += '<span style="color:lightgray;">★</span>'; // 빈 별

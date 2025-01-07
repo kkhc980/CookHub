@@ -124,46 +124,44 @@
 	</select>
 
     <!-- Pagination and Filtering -->
-    <select id="getRecipeBoardListWithPaging" parameterType="com.dishcovery.project.util.Pagination" resultMap="RecipeBoardResultMap">
-        SELECT * FROM (
-            SELECT ROW_NUMBER() OVER (ORDER BY recipe_board_created_date DESC) AS rn, rb.*
-            FROM recipe_board rb
-            WHERE 1=1
-            <if test="ingredientIds != null and !ingredientIds.isEmpty()">
-                AND rb.recipe_board_id IN (
-                    SELECT ri.recipe_board_id
-                    FROM recipe_ingredients ri
-                    WHERE ri.ingredient_id IN
-                    <foreach item="ingredientId" collection="ingredientIds" open="(" separator="," close=")">
-                        #{ingredientId}
-                    </foreach>
-                    GROUP BY ri.recipe_board_id
-                )
-            </if>
-            <if test="typeId != null">AND rb.type_id = #{typeId}</if>
-            <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
-            <if test="methodId != null">AND rb.method_id = #{methodId}</if>
-        ) WHERE rn BETWEEN #{start} AND #{end}
-    </select>
-
-    <select id="getTotalCountWithFilters" parameterType="com.dishcovery.project.util.Pagination" resultType="int">
-        SELECT COUNT(*) 
-        FROM recipe_board rb
-        WHERE 1=1
-        <if test="ingredientIds != null and !ingredientIds.isEmpty()">
-            AND rb.recipe_board_id IN (
-                SELECT ri.recipe_board_id
-                FROM recipe_ingredients ri
-                WHERE ri.ingredient_id IN
-                <foreach item="ingredientId" collection="ingredientIds" open="(" separator="," close=")">
-                    #{ingredientId}
-                </foreach>
-                GROUP BY ri.recipe_board_id
-            )
-        </if>
-        <if test="typeId != null">AND rb.type_id = #{typeId}</if>
-        <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
-        <if test="methodId != null">AND rb.method_id = #{methodId}</if>
-    </select>
+	<select id="getRecipeBoardListWithPaging" parameterType="com.dishcovery.project.util.Pagination" resultMap="RecipeBoardResultMap">
+	    SELECT * FROM (
+	        SELECT ROW_NUMBER() OVER (ORDER BY recipe_board_created_date DESC) AS rn, rb.*
+	        FROM recipe_board rb
+	        WHERE 1=1
+	        <if test="ingredientIds != null and !ingredientIds.isEmpty()">
+	            <foreach item="ingredientId" collection="ingredientIds" open="" separator=" " close="">
+	                AND EXISTS (
+	                    SELECT 1
+	                    FROM recipe_ingredients ri
+	                    WHERE ri.recipe_board_id = rb.recipe_board_id
+	                    AND ri.ingredient_id = #{ingredientId}
+	                )
+	            </foreach>
+	        </if>
+	        <if test="typeId != null">AND rb.type_id = #{typeId}</if>
+	        <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
+	        <if test="methodId != null">AND rb.method_id = #{methodId}</if>
+	    ) WHERE rn BETWEEN #{start} AND #{end}
+	</select>
+	
+	<select id="getTotalCountWithFilters" parameterType="com.dishcovery.project.util.Pagination" resultType="int">
+	    SELECT COUNT(*)
+	    FROM recipe_board rb
+	    WHERE 1=1
+	    <if test="ingredientIds != null and !ingredientIds.isEmpty()">
+	        <foreach item="ingredientId" collection="ingredientIds" open="" separator=" " close="">
+	            AND EXISTS (
+	                SELECT 1
+	                FROM recipe_ingredients ri
+	                WHERE ri.recipe_board_id = rb.recipe_board_id
+	                AND ri.ingredient_id = #{ingredientId}
+	            )
+	        </foreach>
+	    </if>
+	    <if test="typeId != null">AND rb.type_id = #{typeId}</if>
+	    <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
+	    <if test="methodId != null">AND rb.method_id = #{methodId}</if>
+	</select>
 
 </mapper>

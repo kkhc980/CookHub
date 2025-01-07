@@ -23,12 +23,12 @@ public class Pagination {
     private Integer typeId; // 타입 ID
     private Integer situationId; // 상황 ID
     private Integer methodId; // 방법 ID
-    
+
 	public Pagination() {
 		this.pageNum = 1; // 기본 페이지 번호 설정
-		this.pageSize = 5; // 기본 페이지 사이즈 설정
+		this.pageSize = 8; // 기본 페이지 사이즈 설정
 	}
-
+	
 	public Pagination(int page, int pageSize) {
 		this.pageNum = page;
 		this.pageSize = pageSize;

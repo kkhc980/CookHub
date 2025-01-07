@@ -26,16 +26,58 @@
         .selection-container li input {
             margin-right: 5px;
         }
+        
+        .thumbnail-preview {
+            margin-top: 10px;
+        }
+        .thumbnail-preview img {
+            max-width: 200px;
+            max-height: 200px;
+        }
     </style>
+    
+    <script>
+        function validateAndPreviewThumbnail(input) {
+            const previewImage = document.getElementById('thumbnailPreview');
+            const noThumbnailMessage = document.getElementById('noThumbnailMessage');
+            const allowedExtensions = ['jpeg', 'jpg', 'png', 'gif'];
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const fileName = file.name.toLowerCase();
+                const fileExtension = fileName.split('.').pop();
+
+                // 유효성 검사: 확장자 체크
+                if (!allowedExtensions.includes(fileExtension)) {
+                    alert('Invalid file type. Please upload an image (JPEG, PNG, GIF).');
+                    input.value = ''; // 파일 입력 초기화
+                    previewImage.style.display = 'none';
+                    noThumbnailMessage.style.display = 'block';
+                    return;
+                }
+
+                // 이미지 파일 미리보기
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    noThumbnailMessage.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // 파일이 선택되지 않았을 경우 초기화
+                previewImage.style.display = 'none';
+                noThumbnailMessage.style.display = 'block';
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Register a New Recipe</h1>
     <form action="${pageContext.request.contextPath}/recipeboard/register" method="post" enctype="multipart/form-data">
-        <!-- Title -->
-        <label for="memberId">Member ID:</label>
-        <input type="text" id="memberId" name="memberId" required>
-        <br><br>
+        <input type="hidden" id="memberId" name="memberId" value="1">
         
+        <!-- Title -->
         <label for="recipeBoardTitle">Title:</label>
         <input type="text" id="recipeBoardTitle" name="recipeBoardTitle" required>
         <br><br>
@@ -46,9 +88,13 @@
         <br><br>
         
         <!-- Thumbnail Upload -->
-	    <label for="thumbnail">Thumbnail Image:</label>
-	    <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required>
-	    <br><br>
+        <label for="thumbnail">Thumbnail Image (Required):</label>
+        <input type="file" id="thumbnail" name="thumbnail" accept="image/*" onchange="validateAndPreviewThumbnail(this)" required>
+        <div class="thumbnail-preview">
+            <p id="noThumbnailMessage" style="color: red;">No thumbnail selected. Please upload an image.</p>
+            <img id="thumbnailPreview" src="#" alt="Thumbnail Preview" style="display: none;">
+        </div>
+        <br><br>
 
         <!-- Types (Single Selection) -->
         <div class="selection-container">

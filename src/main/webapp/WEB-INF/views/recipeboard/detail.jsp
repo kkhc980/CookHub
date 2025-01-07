@@ -43,11 +43,12 @@
 </head>
 <body>
 	<h2>글 보기</h2>
-
+	
 	<div>
 		<p>제목 :</p>
 		<p>${recipeBoard.recipeBoardTitle }</p>
 	</div>
+	
 	<div>
 		<p>작성자 : ${recipeBoard.memberId }</p>
 		<!-- boardDateCreated 데이터 포멧 변경 -->
@@ -55,6 +56,20 @@
 			pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardCreatedDate" />
 		<p>작성일 : ${recipeBoardCreatedDate }</p>
 	</div>
+	
+	<div>
+	    <c:if test="${recipeBoard.thumbnailPath != null}">
+	        <!-- 썸네일 이미지 경로를 사용해 이미지를 표시 -->
+	        <img 
+	            src="${pageContext.request.contextPath}/uploads/${recipeBoard.thumbnailPath}" 
+	            alt="썸네일 이미지" 
+	            style="max-width: 300px; max-height: 300px;">
+	    </c:if>
+	    <c:if test="${recipeBoard.thumbnailPath == null}">
+	        <p>썸네일 이미지가 없습니다.</p>
+	    </c:if>
+	</div>
+	
 	<div>
 		<textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
 	</div>
@@ -62,12 +77,15 @@
 	<div>
 		<p>타입 : ${typeName}</p>
 	</div>
+	
 	<div>
 		<p>방법 : ${methodName}</p>
 	</div>
+	
 	<div>
 		<p>상황 : ${situationName}</p>
 	</div>
+	
 	<div>
 		<p>재료 :</p>
 		<ul>
@@ -76,6 +94,7 @@
 			</c:forEach>
 		</ul>
 	</div>
+	
 	<div>
 		<p>첨부 이미지 :</p>
 		<c:forEach var="attach" items="${attachList}">

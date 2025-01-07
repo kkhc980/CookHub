@@ -1,19 +1,13 @@
 package com.dishcovery.project.controller;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +34,7 @@ public class RecipeBoardController {
     @GetMapping("/list")
     public String list(
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-            @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+            @RequestParam(value = "pageSize", defaultValue = "4") int pageSize,
             @RequestParam(value = "ingredientIds", required = false) String ingredientIdsStr,
             @RequestParam(value = "typeId", defaultValue = "1") Integer typeId,
             @RequestParam(value = "situationId", defaultValue = "1") Integer situationId,
@@ -50,10 +44,10 @@ public class RecipeBoardController {
         // Pagination 설정
         Pagination pagination = new Pagination(pageNum, pageSize);
         pagination.setIngredientIdsFromString(ingredientIdsStr);
-        pagination.setTypeId(typeId);
-        pagination.setSituationId(situationId);
-        pagination.setMethodId(methodId);
-
+        pagination.setTypeId(typeId != null ? typeId : 1);
+        pagination.setSituationId(situationId != null ? situationId : 1);
+        pagination.setMethodId(methodId != null ? methodId : 1);
+        
         // RecipeBoard 목록 및 관련 데이터 가져오기
         Map<String, Object> result = recipeBoardService.getRecipeBoardListWithFilters(
                 recipeBoardService.preprocessPagination(pagination));
@@ -74,17 +68,21 @@ public class RecipeBoardController {
         return "layout";
     }
 
+
     @GetMapping("/register")
     public String register(Model model) {
-        addCommonAttributes(model);
+        model.addAttribute("typesList", recipeBoardService.getAllTypes());
+        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
+        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
+        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
         return "recipeboard/register";
     }
 
     @PostMapping("/register")
-    public String registerRecipe(RecipeBoardVO recipeBoard,
-                                 @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
-                                 @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
-    	log.info("Ingredient IDs: " + ingredientIds);
+    public String registerRecipe(
+            RecipeBoardVO recipeBoard,
+            @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
         recipeBoardService.createRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
         return "redirect:/recipeboard/list";
     }
@@ -94,7 +92,6 @@ public class RecipeBoardController {
         RecipeDetailVO detail = recipeBoardService.getRecipeDetailById(recipeBoardId);
 
         if (detail == null) {
-            log.warn("RecipeBoard with ID " + recipeBoardId + " not found");
             return "redirect:/recipeboard/list";
         }
 
@@ -103,7 +100,6 @@ public class RecipeBoardController {
         model.addAttribute("methodName", detail.getMethodName());
         model.addAttribute("situationName", detail.getSituationName());
         model.addAttribute("ingredients", detail.getIngredients());
-
         return "recipeboard/detail";
     }
 
@@ -111,23 +107,28 @@ public class RecipeBoardController {
     public String updateForm(@PathVariable int recipeBoardId, Model model) {
         RecipeBoardVO recipeBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);
         if (recipeBoard == null) {
-            log.warn("RecipeBoard with ID " + recipeBoardId + " not found");
             return "redirect:/recipeboard/list";
         }
-
-        addCommonAttributes(model);
         model.addAttribute("recipeBoard", recipeBoard);
-        model.addAttribute("selectedIngredientIds", recipeBoardService.getSelectedIngredientIdsByRecipeId(recipeBoardId));
-
+        model.addAttribute("selectedIngredientIds", recipeBoardService.getSelectedIngredientIdsByRecipeBoardId(recipeBoardId));
+        model.addAttribute("typesList", recipeBoardService.getAllTypes());
+        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
+        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
+        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
         return "recipeboard/update";
     }
 
     @PostMapping("/update")
     public String updateRecipe(RecipeBoardVO recipeBoard,
                                @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
-                               @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
-        recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
-        return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
+                               @RequestPart(value = "thumbnail", required = true) MultipartFile thumbnail) {
+        try {
+            recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
+            return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
+        } catch (IllegalArgumentException e) {
+            log.error("Error updating recipe: " + e.getMessage());
+            return "redirect:/recipeboard/update/" + recipeBoard.getRecipeBoardId() + "?error=" + e.getMessage();
+        }
     }
 
     @PostMapping("/delete/{recipeBoardId}")
@@ -136,26 +137,10 @@ public class RecipeBoardController {
         return "redirect:/recipeboard/list";
     }
 
-    private void addCommonAttributes(Model model) {
-        model.addAttribute("typesList", recipeBoardService.getAllTypes());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-    }
-    
     @GetMapping("/thumbnail/{recipeBoardId}")
-    public ResponseEntity<Resource> getThumbnail(@PathVariable int recipeBoardId) {
-        try {
-            Resource resource = recipeBoardService.getThumbnailByRecipeBoardId(recipeBoardId);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(resource.getFile().toPath()))
-                    .body(resource);
-        } catch (FileNotFoundException e) {
-            log.warn(e.getMessage());
-            return ResponseEntity.notFound().build();
-        } catch (IOException e) {
-            log.error("Error fetching thumbnail", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<?> getThumbnail(@PathVariable int recipeBoardId) {
+        return recipeBoardService.getThumbnailByRecipeBoardId(recipeBoardId)
+                .map(resource -> ResponseEntity.ok(resource))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

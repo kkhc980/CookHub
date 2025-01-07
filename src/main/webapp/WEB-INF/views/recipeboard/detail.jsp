@@ -12,43 +12,45 @@
 <title>${recipeBoard.recipeBoardTitle }</title>
 
 <style>
-  .star-rating {
-    display: inline-block;
-    direction: rtl; /* 별을 오른쪽부터 채우도록 설정 */
-    font-size: 20px; /* 별 크기 */
-    color: lightgray;
-  }
-  .star-rating input[type="radio"] {
-    display: none;
-  }
-  .star-rating label {
-    cursor: pointer;
-  }
-  .star-rating label:before {
-    content: '★';
-    display: inline-block;
-    transition: color 0.2s;
-  }
-  .star-rating input[type="radio"]:checked ~ label:before {
-    color: gold;
-  }
-  
-  .star-rating label:hover:before,
-  .star-rating label:hover ~ label:before {
-    color: gold;
-  }
+.star-rating {
+	display: inline-block;
+	direction: rtl; /* 별을 오른쪽부터 채우도록 설정 */
+	font-size: 20px; /* 별 크기 */
+	color: lightgray;
+}
 
+.star-rating input[type="radio"] {
+	display: none;
+}
+
+.star-rating label {
+	cursor: pointer;
+}
+
+.star-rating label:before {
+	content: '★';
+	display: inline-block;
+	transition: color 0.2s;
+}
+
+.star-rating input[type="radio"]:checked ~ label:before {
+	color: gold;
+}
+
+.star-rating label:hover:before, .star-rating label:hover ~ label:before
+	{
+	color: gold;
+}
 </style>
 
 </head>
 <body>
 	<h2>글 보기</h2>
-	
+
 	<div>
 		<p>제목 :</p>
 		<p>${recipeBoard.recipeBoardTitle }</p>
 	</div>
-	
 	<div>
 		<p>작성자 : ${recipeBoard.memberId }</p>
 		<!-- boardDateCreated 데이터 포멧 변경 -->
@@ -56,20 +58,6 @@
 			pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardCreatedDate" />
 		<p>작성일 : ${recipeBoardCreatedDate }</p>
 	</div>
-	
-	<div>
-	    <c:if test="${recipeBoard.thumbnailPath != null}">
-	        <!-- 썸네일 이미지 경로를 사용해 이미지를 표시 -->
-	        <img 
-	            src="${pageContext.request.contextPath}/uploads/${recipeBoard.thumbnailPath}" 
-	            alt="썸네일 이미지" 
-	            style="max-width: 300px; max-height: 300px;">
-	    </c:if>
-	    <c:if test="${recipeBoard.thumbnailPath == null}">
-	        <p>썸네일 이미지가 없습니다.</p>
-	    </c:if>
-	</div>
-	
 	<div>
 		<textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
 	</div>
@@ -77,15 +65,12 @@
 	<div>
 		<p>타입 : ${typeName}</p>
 	</div>
-	
 	<div>
 		<p>방법 : ${methodName}</p>
 	</div>
-	
 	<div>
 		<p>상황 : ${situationName}</p>
 	</div>
-	
 	<div>
 		<p>재료 :</p>
 		<ul>
@@ -94,7 +79,6 @@
 			</c:forEach>
 		</ul>
 	</div>
-	
 	<div>
 		<p>첨부 이미지 :</p>
 		<c:forEach var="attach" items="${attachList}">
@@ -114,7 +98,7 @@
 		<input type="hidden" name="recipeBoardId"
 			value="${recipeBoard.recipeBoardId}">
 	</form>
-	
+
 	<script type="text/javascript">
         $(document).ready(function(){
             $('#deleteBoard').click(function(){
@@ -124,10 +108,10 @@
             });
         }); // end document
     </script>
-	
+
 	<input type="hidden" id="recipeBoardId"
 		value="${recipeBoard.recipeBoardId }">
-	
+
 	<div style="text-align: center;">
 		<input type="text" id="memberId"> <input type="text"
 			id="replyContent">
@@ -139,18 +123,20 @@
 		<div id="replies"></div>
 	</div>
 
-	
+
 	<hr>
 	<div style="text-align: center;">
 		<input type="text" id="reviewMemberId"><input type="text"
-			id="recipeReviewContent">
-	  	<span class="star-rating">
-	    	<input type="radio" name="reviewRating" id="star1" value="1"><label for="star1"></label>
-	    	<input type="radio" name="reviewRating" id="star2" value="2"><label for="star2"></label>
-	    	<input type="radio" name="reviewRating" id="star3" value="3"><label for="star3"></label>
-	    	<input type="radio" name="reviewRating" id="star4" value="4"><label for="star4"></label>
-	    	<input type="radio" name="reviewRating" id="star5" value="5"><label for="star5"></label>
-	  	</span>
+			id="recipeReviewContent"> <span class="star-rating"> <input
+			type="radio" name="reviewRating" id="star1" value="1"><label
+			for="star1"></label> <input type="radio" name="reviewRating"
+			id="star2" value="2"><label for="star2"></label> <input
+			type="radio" name="reviewRating" id="star3" value="3"><label
+			for="star3"></label> <input type="radio" name="reviewRating"
+			id="star4" value="4"><label for="star4"></label> <input
+			type="radio" name="reviewRating" id="star5" value="5"><label
+			for="star5"></label>
+		</span>
 		<button id="btnReviewAdd">리뷰 작성</button>
 	</div>
 	<hr>
@@ -239,100 +225,84 @@
                     	 });
                      }); // end btnReviewAdd.click()
                      
-                     // 게시판 댓글 전체 가져오기
+                  // 게시판 댓글 전체 가져오기
                      function getAllReply() {
-                        var recipeBoardId = $('#recipeBoardId').val();
+                       var recipeBoardId = $('#recipeBoardId').val();
+                       var url = '/project/recipeboard/all/' + recipeBoardId;
 
-                        var url = '/project/recipeboard/all/'
-                              + recipeBoardId;
+                       $.getJSON(url, function(data) {
+                         console.log(data);
 
-                        $
-                              .getJSON(
-                                    url,
-                                    function(data) {
-                                       // data : 서버에서 전송 받은 list 데이터가 저장되어 있음.
-                                       // getJSON()에서 json 데이터는
-                                       // javascript object로 자동 parsing됨.
-                                       console.log(data);
+                         var list = '';
 
-                                       var list = ''; // 댓글 데이터를 HTML에 표현할 문제열 변수
+                         $(data).each(function() {
+                           console.log(this);
+                           var replyDateCreated = new Date(this.replyDateCreated);
 
-                                       // $(컬렉션).each() : 컬렉션 데이터를 반복문으로 꺼내는 함수
-                                       $(data)
-                                             .each(
-                                                   function() {
-                                                      // this : 컬렉션의 각 인덱스 데이터를 의미
-                                                      console
-                                                            .log(this);
+                           list += '<div class="reply_item">' +
+                                   '<pre>' +
+                                     '<input type="hidden" id="replyId" value="' + this.replyId + '">' +
+                                     this.memberId +
+                                     '  ' +
+                                      '<span class="replyContentDisplay" data-reply-id="' + this.replyId + '">' + this.replyContent + '</span>' +  // 텍스트로 출력, data 속성 추가
+                                     '  ' +
+                                     replyDateCreated +
+                                     '  ' +
+                                     '<button class="btn_update" data-reply-id="' + this.replyId + '">수정</button>' + // data 속성 추가
+                                     '<button class="btn_delete" data-reply-id="' + this.replyId + '">삭제</button>' + // data 속성 추가
+                                   '</pre>' +
+                                  '</div>';
+                         });
 
-                                                      // 전송된 replyDateCreated는 문자열 형태이므로 날짜 형태로 변환이 필요
-                                                      var replyDateCreated = new Date(
-                                                            this.replyDateCreated)
+                         $('#replies').html(list);
 
-                                                      list += '<div class="reply_item">'
-                                                            + '<pre>'
-                                                            + '<input type="hidden" id="replyId" value="'+ this.replyId +'">'
-                                                            + this.memberId
-                                                            + '&nbsp;&nbsp;' // 공백
-                                                            + '<input type="text" id="replyContent" value="'+ this.replyContent +'">'
-                                                            + '&nbsp;&nbsp;'
-                                                            + replyDateCreated
-                                                            + '&nbsp;&nbsp;'
-                                                            + '<button class="btn_update" >수정</button>'
-                                                            + '<button class="btn_delete" >삭제</button>'
-                                                            + '</pre>'
-                                                            + '</div>';
-                                                   }); // end each()
+                         // 수정 버튼 클릭 이벤트
+                         $('#replies').on('click', '.btn_update', function() {
+                           var replyId = $(this).data('reply-id'); // data 속성에서 replyId 가져오기
+                           var replyContentSpan = $('.replyContentDisplay[data-reply-id="' + replyId + '"]'); // 수정할 span 요소 선택
+                           var currentContent = replyContentSpan.text(); // 기존 텍스트 내용 가져오기
 
-                                       $('#replies').html(list); // 저장된 데이터를 replies div 표현   
-                                    } // end function()
-                              ); // end getJSON()
-                     } // end getAllReply()
-                     
-                     
-                     // 수정 버튼을 클릭하면 선택된 댓글 수정
-                     $('#replies')
-                           .on(
-                                 'click',
-                                 '.reply_item .btn_update',
-                                 function() {
-                                    console.log(this);
+                        // span 요소를 text input으로 변경
+                           replyContentSpan.replaceWith('<input type="text" class="replyContentInput" data-reply-id="' + replyId + '" value="' + currentContent + '">');
 
-                                    // 선택된 댓글의 replyId, replyContent 값을 저장
-                                    // prevAll() : 선택된 노드 이전에 있는 모든 형제 노드를 접근
-                                    var replyId = $(this).prevAll(
-                                          '#replyId').val();
-                                    var replyContent = $(this)
-                                          .prevAll(
-                                                '#replyContent')
-                                          .val();
-                                    console.log("선택된 댓글 번호 : "
-                                          + replyId
-                                          + ", 댓글 내용 : "
-                                          + replyContent);
 
-                                    // ajax 요청
-                                    $
-                                          .ajax({
-                                             type : 'PUT',
-                                             url : '/project/recipeboard/replies/'
-                                                   + replyId,
-                                             headers : {
-                                                'Content-Type' : 'application/json'
-                                             },
-                                             data : replyContent,
-                                             success : function(
-                                                   result) {
-                                                console
-                                                      .log(result);
-                                                if (result == 1) {
-                                                   alert('댓글 수정 성공!');
-                                                   getAllReply();
-                                                }
+                           // 수정 완료 버튼 클릭 이벤트
+                             $('#replies').on('click', '.btn_update_complete', function() {
+                              
+                               var replyId = $(this).data('reply-id');
+                               var replyContentInput = $('.replyContentInput[data-reply-id="' + replyId + '"]');
+
+                               var updatedReplyContent = replyContentInput.val();
+                                 console.log("replyId : " + replyId + ", 수정할 내용 : " + updatedReplyContent);
+
+                                  $.ajax({
+                                       url: '/project/recipeboard/replies/' + replyId,
+                                         type: 'PUT',
+                                         contentType: 'application/json',
+                                         data: JSON.stringify({
+                                             replyId: replyId,
+                                             replyContent: updatedReplyContent
+                                         }),
+                                           success: function(result) {
+                                             console.log(result);
+                                             if (result == 1) {
+                                                 alert('댓글 수정 성공!');
+                                                getAllReply();
                                              }
-                                          });
+                                           },
+                                         error: function(xhr, status, error) {
+                                          console.error("댓글 수정 실패 :", error);
+                                         }
+                                     });
+                                 
+                                });
+                              
+                              // 수정 완료 버튼으로 변경
+                             $(this).replaceWith('<button class="btn_update_complete" data-reply-id="' + replyId + '">수정 완료</button>');
 
-                                 }); // end replies.on()   
+                         });
+                       });
+                     }   
 
                      // 삭제 버튼을 클릭하면 선택된 댓글 삭제
                      $('#replies')
@@ -368,6 +338,7 @@
                                           });
                                  }); // end replies.on
                                  
+                                 // 리뷰 전체 불러오기
                                  function getAllRecipeReview() {
                                 	 var recipeBoardId = $('#recipeBoardId').val();
                                 	 var url = '/project/recipeboard/allReviews/'
@@ -414,7 +385,90 @@
                                 	 					});
                                 	 				$('#reviews').html(list);
                                 	 			});
-                                 }               
+                                	
+                                	 
+                                     
+                                 }      
+                                
+                                 // 수정 버튼을 클릭하면 선택된 댓글 수정
+                                 $('#reviews')
+                                       .on(
+                                             'click',
+                                             '.review_item .btn_review_update',
+                                             function() {
+                                                console.log(this);
+
+                                                // 선택된 리뷰의 replyId, replyContent 값을 저장
+                                                // prevAll() : 선택된 노드 이전에 있는 모든 형제 노드를 접근
+                                                var recipeReviewId = $(this).prevAll(
+                                                      '#recipeReivewId').val();
+                                                var recipeReviewContent = $(this)
+                                                      .prevAll(
+                                                            '#recipeReviewContent')
+                                                      .val();
+                                                console.log("선택된 리뷰 번호 : "
+                                                      + recipeReviewId
+                                                      + ", 댓글 내용 : "
+                                                      + recipeReviewContent
+                                                	  + ", 리뷰 별점 : "
+                                                	  + reviewRating);
+
+                                                // ajax 요청
+                                                $
+                                                      .ajax({
+                                                         type : 'PUT',
+                                                         url : '/project/recipeboard/reviews/'
+                                                               + recipeReviewId,
+                                                         headers : {
+                                                            'Content-Type' : 'application/json'
+                                                         },
+                                                         data : JSON.stringify(obj),
+                                                         success : function(
+                                                               result) {
+                                                            console
+                                                                  .log(result);
+                                                            if (result == 1) {
+                                                               alert('리뷰 수정 성공!');
+                                                               getAllRecipeReview();
+                                                            }
+                                                         }
+                                                      });
+
+                                             }); // end review.on()   
+                                 
+                              // 삭제 버튼을 클릭하면 선택된 리뷰 삭제
+                                 $('#reviews')
+                                       .on(
+                                             'click',
+                                             '.review_item .btn_review_delete',
+                                             function() {
+                                                console.log(this);
+                                                var recipeBoardId = $(
+                                                      "#recipeBoardId").val(); // 게시판 번호 데이터
+                                                var recipeReviewId = $(this).prevAll(
+                                                      '#recipeReviewId').val(); // 댓글 번호 데이터
+
+                                                $
+                                                      .ajax({
+                                                         type : 'DELETE',
+                                                         url : '/project/recipeboard/reviews/'
+                                                               + recipeReviewId
+                                                               + '/'
+                                                               + recipeBoardId,
+                                                         headers : {
+                                                            'content-Type' : 'application/json'
+                                                         },
+                                                         success : function(
+                                                               result) {
+                                                            console
+                                                                  .log(result);
+                                                            if (result == 1) {
+                                                               alert('리뷰 삭제 성공!');
+                                                               getAllRecipeReview();
+                                                            }
+                                                         }
+                                                      });
+                                             }); // end reviews.on
                             
                   }); // end document()
                   

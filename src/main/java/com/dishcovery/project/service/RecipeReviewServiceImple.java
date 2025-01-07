@@ -24,19 +24,19 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
 	
 	
 	@Transactional(value = "transactionManager")
-	// transactionManage가 관리
+	// transactionManage媛� 愿�由�
 	
 	@Override
 	public int createRecipeReview(RecipeReviewVO recipeReviewVO) {
-		// 리뷰를 추가하면
-		// RecipeReview 테이블이 댓글에 등록
+		// 由щ럭瑜� 異붽��븯硫�
+		// RecipeReview �뀒�씠釉붿씠 �뙎湲��뿉 �벑濡�
 		log.info("CreateRecipeReview()");
 		int insertResult = recipeReviewMapper.insertRecipeReview(recipeReviewVO);
-		log.info(insertResult + "행 리뷰 추가");
+		log.info(insertResult + "�뻾 由щ럭 異붽�");
 //		int updateResult = recipeBoardMapper
 //				.updateRecipeReviewCount(recipeReviewVO.getRecipeBoardId(), 1);
-//		log.info(updateResult + "행 게시판 수정");
-		// board 테이블에 updateRecipeReviewCount 컬럼 추가 <- 리뷰 갯수 기록
+//		log.info(updateResult + "�뻾 寃뚯떆�뙋 �닔�젙");
+		// board �뀒�씠釉붿뿉 updateRecipeReviewCount 而щ읆 異붽� <- 由щ럭 媛��닔 湲곕줉
 		
 		return 1;
 				
@@ -47,15 +47,11 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
 		log.info("getAllRecipeReview()");
 		return recipeReviewMapper.selectListByRecipeBoardId(recipeBoardId);
 	}
-	// RecipeReview를 recipeBoardId로 불러옴
+	// RecipeReview瑜� recipeBoardId濡� 遺덈윭�샂
 	
 	@Override
-	public int updateRecipeReview(int recipeReviewId, String recipeReviewContent) {
-		log.info("recipeReviewContent");
-		RecipeReviewVO recipeReviewVO = new RecipeReviewVO();
-		recipeReviewVO.setRecipeReviewId(recipeReviewId);
-		recipeReviewVO.setRecipeReviewContent(recipeReviewContent);
-		recipeReviewVO.setReviewRating(recipeReviewId);
+	public int updateRecipeReview(RecipeReviewVO recipeReviewVO) {
+		log.info("recipeReviewVO");
 		return recipeReviewMapper.updateRecipeReview(recipeReviewVO);
 	}
 	
@@ -65,11 +61,11 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
 	public int deleteRecipeReview(int recipeReviewId, int recipeBoardId) {
 		log.info("deleteRecipeReview()");
 		int deleteResult = recipeReviewMapper.deleteRecipeReview(recipeReviewId);
-		log.info(deleteResult + "행 리뷰 삭제");
+		log.info(deleteResult + "�뻾 由щ럭 �궘�젣");
 //		int updateResult = recipeBoardMapper
 //				.updateRecipeReviewCount(recipeBoardId, -1);
-//		log.info(updateResult + "행 게시판 수정");
-		// board 테이블 updateRecipeReviewCount - 1 삭제
+//		log.info(updateResult + "�뻾 寃뚯떆�뙋 �닔�젙");
+		// board �뀒�씠釉� updateRecipeReviewCount - 1 �궘�젣
 		
 		return 1;
 	}

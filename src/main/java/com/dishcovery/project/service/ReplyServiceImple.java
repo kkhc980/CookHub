@@ -23,19 +23,16 @@ public class ReplyServiceImple implements ReplyService{
 	private RecipeBoardMapper recipeBoardMapper;
 		
 	@Transactional(value = "transactionManager")
-	// transactionManager가 관리
+	// transactionManager
 	@Override
 	public int createReply(ReplyVO replyVO) {
-		// 댓글을 추가하면
-		// Reply 테이블에 댓글이 등록
 		log.info("CreateReply()");
 		log.info("replyVO : " + replyVO.toString());
-		// ReplyVO 객체 전체 정보 로깅
 		int insertResult = replyMapper.insertReply(replyVO);
-		log.info(insertResult + "행 댓글 추가");
+		log.info(insertResult + "�뻾 �뙎湲� 異붽�");
 //		int updateResult = recipeBoardMapper
 //				.updateReplyCount(replyVO.getRecipeBoardId(), 1);
-//		log.info(updateResult + "행 게시판 수정");
+//		log.info(updateResult + "�뻾 寃뚯떆�뙋 �닔�젙");
 		return insertResult;
 	}
 	
@@ -57,16 +54,16 @@ public class ReplyServiceImple implements ReplyService{
 	}
 	
 	@Transactional(value = "transactionManager")
-	// transactionManager가 관리
+	// transactionManager
 	
 	@Override
 	public int deleteReply(int replyId, int recipeBoardId) {
 		log.info("deleteReply()");
 		int deleteResult = replyMapper.deleteReply(replyId);
-		log.info(deleteResult + "행 댓글 삭제");
+		log.info(deleteResult + "�뻾 �뙎湲� �궘�젣");
 //		int updateResult = recipeBoardMapper
 //				.updateReplyCount(recipeBoardId, -1);
-//		log.info(updateResult + "행 게시판 수정");
+//		log.info(updateResult + "�뻾 寃뚯떆�뙋 �닔�젙");
 		return 1;
 	}
 }

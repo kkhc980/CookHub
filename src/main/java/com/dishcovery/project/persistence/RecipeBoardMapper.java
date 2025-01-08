@@ -3,9 +3,17 @@ package com.dishcovery.project.persistence;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.dishcovery.project.domain.*;
+import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.MethodsVO;
+import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeHashtagsVO;
+import com.dishcovery.project.domain.RecipeIngredientsVO;
+import com.dishcovery.project.domain.SituationsVO;
+import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.util.Pagination;
 
 @Mapper
@@ -32,6 +40,8 @@ public interface RecipeBoardMapper {
     void deleteRecipeHashtagsByRecipeId(int recipeBoardId); // 특정 Recipe의 모든 해시태그 연결 삭제
     int getRecipeCountByHashtagId(int hashtagId); // 해시태그가 연결된 다른 게시글 수 확인
     void deleteHashtagById(int hashtagId);  // 해시태그 삭제
+    void deleteRecipeHashtagsByRecipeIdAndHashtagId(@Param("recipeBoardId") int recipeBoardId, @Param("hashtagId") int hashtagId);
+    List<String> getHashtagNamesByRecipeId(int recipeBoardId);
     
     // Types, Methods, Situations
     List<TypesVO> getAllTypes(); // 모든 Type 조회

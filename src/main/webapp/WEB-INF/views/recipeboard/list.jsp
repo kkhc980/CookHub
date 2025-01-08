@@ -45,8 +45,8 @@
 		    display: flex;
 		    flex-wrap: wrap;
 		    gap: 20px;
-		    justify-content: center; /* 가로 중앙 정렬 */
-		    align-items: center;    /* 세로 중앙 정렬 */
+		    justify-content: center;
+		    align-items: center;
 		}
 
         .recipe-card {

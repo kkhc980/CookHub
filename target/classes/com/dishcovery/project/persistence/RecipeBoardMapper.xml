@@ -208,4 +208,17 @@
 	<delete id="deleteHashtagById" parameterType="int">
 	    DELETE FROM hashtags WHERE hashtag_id = #{hashtagId}
 	</delete>
+	
+	<delete id="deleteRecipeHashtagsByRecipeIdAndHashtagId">
+	    DELETE FROM recipe_hashtags
+	    WHERE recipe_board_id = #{recipeBoardId}
+	      AND hashtag_id = #{hashtagId}
+	</delete>
+	
+	<select id="getHashtagNamesByRecipeId" parameterType="int" resultType="string">
+	    SELECT h.hashtag_name
+	    FROM recipe_hashtags rh
+	    INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+	    WHERE rh.recipe_board_id = #{recipeBoardId}
+	</select>
 </mapper>

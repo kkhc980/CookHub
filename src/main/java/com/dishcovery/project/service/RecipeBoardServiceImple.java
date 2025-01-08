@@ -2,7 +2,13 @@ package com.dishcovery.project.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dishcovery.project.domain.*;
+import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.MethodsVO;
+import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeDetailVO;
+import com.dishcovery.project.domain.RecipeHashtagsVO;
+import com.dishcovery.project.domain.RecipeIngredientsVO;
+import com.dishcovery.project.domain.SituationsVO;
+import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
 import com.dishcovery.project.util.FileUploadUtil;
 import com.dishcovery.project.util.PageMaker;
@@ -64,32 +78,29 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     @Override
     @Transactional
     public void updateRecipe(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, String hashtags, MultipartFile thumbnail) {
-        if (thumbnail == null || thumbnail.isEmpty()) {
-            throw new IllegalArgumentException("Thumbnail is required for updating a recipe.");
-        }
-
         try {
-            // 기존 썸네일 삭제 및 새 썸네일 저장
-            RecipeBoardVO existingRecipe = getByRecipeBoardId(recipeBoard.getRecipeBoardId());
-            if (existingRecipe != null && existingRecipe.getThumbnailPath() != null) {
-                FileUploadUtil.deleteFile("C:/uploads", existingRecipe.getThumbnailPath());
-            }
+            // 기존 로직 (썸네일 처리, 재료 업데이트 등)
 
-            String thumbnailPath = saveThumbnail(thumbnail);
-            recipeBoard.setThumbnailPath(thumbnailPath);
+            // 기존 해시태그 가져오기
+            List<String> existingHashtags = mapper.getHashtagNamesByRecipeId(recipeBoard.getRecipeBoardId());
 
-            // 레시피 업데이트
-            mapper.updateRecipeBoard(recipeBoard);
+            // 새롭게 전달된 해시태그 리스트 생성
+            List<String> newHashtags = hashtags != null ? Arrays.asList(hashtags.split(",")) : List.of();
 
-            // 기존 재료 정보 삭제 및 추가
-            mapper.deleteRecipeIngredientsByRecipeId(recipeBoard.getRecipeBoardId());
-            addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
+            List<String> hashtagsToRemove = existingHashtags.stream()
+            	    .filter(tag -> !newHashtags.contains(tag))
+            	    .collect(Collectors.toList());
 
-            // 기존 해시태그 삭제 및 추가
-            saveHashtagsForRecipe(recipeBoard.getRecipeBoardId(), hashtags);
+            	List<String> hashtagsToAdd = newHashtags.stream()
+            	    .filter(tag -> !existingHashtags.contains(tag))
+            	    .collect(Collectors.toList());
+
+            // 해시태그 추가 및 삭제
+            addHashtagsToRecipe(recipeBoard.getRecipeBoardId(), hashtagsToAdd);
+            removeHashtagsFromRecipe(recipeBoard.getRecipeBoardId(), hashtagsToRemove);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to update recipe with thumbnail and hashtags", e);
+            throw new RuntimeException("Failed to update recipe with hashtags", e);
         }
     }
 
@@ -148,7 +159,10 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         try {
             // 게시글에 연결된 해시태그 정보 가져오기
             List<HashtagsVO> hashtags = mapper.getHashtagsByRecipeId(recipeBoardId);
-
+            RecipeBoardVO existingRecipe = getByRecipeBoardId(recipeBoardId);
+            if (existingRecipe.getThumbnailPath() != null) {
+                deleteThumbnail(existingRecipe.getThumbnailPath());
+            }
             // 게시글 삭제 (해시태그 관계 포함)
             mapper.deleteRecipeHashtagsByRecipeId(recipeBoardId);
             mapper.deleteRecipeIngredientsByRecipeId(recipeBoardId);
@@ -316,5 +330,59 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         return mapper.getHashtagsByRecipeId(recipeBoardId).stream()
                      .map(HashtagsVO::getHashtagName)
                      .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional
+    public void addHashtagsToRecipe(int recipeBoardId, List<String> hashtagsToAdd) {
+        for (String hashtagName : hashtagsToAdd) {
+            // 유효성 검사: null 또는 빈 문자열은 제외
+            if (hashtagName == null || hashtagName.trim().isEmpty()) {
+                continue;
+            }
+
+            // 기존 해시태그가 있는지 확인
+            HashtagsVO existingHashtag = mapper.getHashtagByName(hashtagName.trim());
+            int hashtagId;
+
+            if (existingHashtag == null) {
+                // 해시태그가 없으면 새로 추가
+                hashtagId = mapper.getNextHashtagId();
+                HashtagsVO newHashtag = new HashtagsVO();
+                newHashtag.setHashtagId(hashtagId);
+                newHashtag.setHashtagName(hashtagName.trim());
+                mapper.insertHashtag(newHashtag);
+            } else {
+                // 기존 해시태그 사용
+                hashtagId = existingHashtag.getHashtagId();
+            }
+
+            // Recipe-Hashtag 연결 추가
+            RecipeHashtagsVO recipeHashtag = new RecipeHashtagsVO();
+            recipeHashtag.setRecipeBoardId(recipeBoardId);
+            recipeHashtag.setHashtagId(hashtagId);
+            mapper.insertRecipeHashtag(recipeHashtag);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeHashtagsFromRecipe(int recipeBoardId, List<String> hashtagsToRemove) {
+        for (String hashtagName : hashtagsToRemove) {
+            // 해시태그 ID 가져오기
+            HashtagsVO existingHashtag = mapper.getHashtagByName(hashtagName);
+            if (existingHashtag != null) {
+                int hashtagId = existingHashtag.getHashtagId();
+
+                // Recipe-Hashtag 관계 삭제
+                mapper.deleteRecipeHashtagsByRecipeIdAndHashtagId(recipeBoardId, hashtagId);
+
+                // 해당 해시태그가 다른 Recipe와 연결되지 않았다면 해시태그 삭제
+                int recipeCount = mapper.getRecipeCountByHashtagId(hashtagId);
+                if (recipeCount == 0) {
+                    mapper.deleteHashtagById(hashtagId);
+                }
+            }
+        }
     }
 }

@@ -37,6 +37,8 @@ public interface RecipeBoardService {
     List<HashtagsVO> getHashtagsByRecipeBoardId(int recipeBoardId); // 특정 레시피의 해시태그 조회
     void saveHashtagsForRecipe(int recipeBoardId, String hashtags); // 해시태그 저장
     List<String> getHashtagNamesByRecipeBoardId(int recipeBoardId);
+    void addHashtagsToRecipe(int recipeBoardId, List<String> hashtagsToAdd);
+    void removeHashtagsFromRecipe(int recipeBoardId, List<String> hashtagsToRemove);
     
     // Types, Methods, Situations
     List<TypesVO> getAllTypes();

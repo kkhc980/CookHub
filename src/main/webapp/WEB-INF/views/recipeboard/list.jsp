@@ -50,14 +50,18 @@
 		}
 
         .recipe-card {
-            width: 22%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            cursor: pointer;
-            background-color: #fff;
-            transition: transform 0.2s;
-        }
+	    width: 22%;
+	    border: 1px solid #ddd;
+	    border-radius: 5px;
+	    overflow: hidden;
+	    cursor: pointer;
+	    background-color: #fff;
+	    transition: transform 0.2s;
+	    display: flex; /* 카드 내부를 Flexbox로 설정 */
+	    flex-direction: column; /* 세로로 배치 */
+	    align-items: center; /* 수평 중앙 정렬 */
+	    justify-content: center; /* 수직 중앙 정렬 */
+	}
 
         .recipe-card:hover {
             transform: scale(1.05);

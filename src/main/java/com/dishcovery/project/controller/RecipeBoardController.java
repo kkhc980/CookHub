@@ -3,6 +3,7 @@ package com.dishcovery.project.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dishcovery.project.domain.HashtagsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
@@ -82,8 +84,10 @@ public class RecipeBoardController {
     public String registerRecipe(
             RecipeBoardVO recipeBoard,
             @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+            @RequestParam(value = "hashtags", required = false) String hashtags,
             @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
-        recipeBoardService.createRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
+    	log.info("Received hashtags: " + hashtags);
+    	recipeBoardService.createRecipe(recipeBoard, ingredientIds, hashtags, thumbnail);
         return "redirect:/recipeboard/list";
     }
 
@@ -100,6 +104,7 @@ public class RecipeBoardController {
         model.addAttribute("methodName", detail.getMethodName());
         model.addAttribute("situationName", detail.getSituationName());
         model.addAttribute("ingredients", detail.getIngredients());
+        model.addAttribute("hashtags", detail.getHashtags());
         return "recipeboard/detail";
     }
 
@@ -109,21 +114,25 @@ public class RecipeBoardController {
         if (recipeBoard == null) {
             return "redirect:/recipeboard/list";
         }
+
         model.addAttribute("recipeBoard", recipeBoard);
         model.addAttribute("selectedIngredientIds", recipeBoardService.getSelectedIngredientIdsByRecipeBoardId(recipeBoardId));
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
         model.addAttribute("methodsList", recipeBoardService.getAllMethods());
         model.addAttribute("situationsList", recipeBoardService.getAllSituations());
         model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
+        model.addAttribute("hashtags", recipeBoardService.getHashtagsByRecipeBoardId(recipeBoardId));
+
         return "recipeboard/update";
     }
 
     @PostMapping("/update")
     public String updateRecipe(RecipeBoardVO recipeBoard,
                                @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+                               @RequestParam(value = "hashtags", required = false) String hashtags,
                                @RequestPart(value = "thumbnail", required = true) MultipartFile thumbnail) {
         try {
-            recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
+        	recipeBoardService.updateRecipe(recipeBoard, ingredientIds, hashtags, thumbnail);
             return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
         } catch (IllegalArgumentException e) {
             log.error("Error updating recipe: " + e.getMessage());

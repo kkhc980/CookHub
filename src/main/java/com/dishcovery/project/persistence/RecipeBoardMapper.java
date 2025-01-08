@@ -24,6 +24,15 @@ public interface RecipeBoardMapper {
     void insertRecipeIngredient(RecipeIngredientsVO recipeIngredients); // Recipe에 재료 추가
     void deleteRecipeIngredientsByRecipeId(int recipeBoardId); // 특정 Recipe의 모든 재료 삭제
 
+    // Hashtags
+    List<HashtagsVO> getHashtagsByRecipeId(int recipeBoardId); // 특정 Recipe의 해시태그 조회
+    HashtagsVO getHashtagByName(String hashtagName); // 해시태그 이름으로 조회
+    void insertHashtag(HashtagsVO hashtag); // 새 해시태그 추가
+    void insertRecipeHashtag(RecipeHashtagsVO recipeHashtag); // Recipe-Hashtag 연결 추가
+    void deleteRecipeHashtagsByRecipeId(int recipeBoardId); // 특정 Recipe의 모든 해시태그 연결 삭제
+    int getRecipeCountByHashtagId(int hashtagId); // 해시태그가 연결된 다른 게시글 수 확인
+    void deleteHashtagById(int hashtagId);  // 해시태그 삭제
+    
     // Types, Methods, Situations
     List<TypesVO> getAllTypes(); // 모든 Type 조회
     List<MethodsVO> getAllMethods(); // 모든 Method 조회
@@ -39,4 +48,5 @@ public interface RecipeBoardMapper {
 
     // Sequence
     int getNextRecipeBoardId(); // SEQUENCE에서 다음 Recipe ID 가져오기
+    int getNextHashtagId();
 }

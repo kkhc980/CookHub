@@ -41,6 +41,19 @@
 	{
 	color: gold;
 }
+  .hashtags {
+    margin-top: 20px;
+  }
+  .hashtags span {
+    display: inline-block;
+    background-color: #f1f1f1;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 15px;
+    font-size: 14px;
+    color: #333;
+  }
+  
 </style>
 
 </head>
@@ -79,6 +92,15 @@
 			</c:forEach>
 		</ul>
 	</div>
+
+    <!-- 해시태그 표시 -->
+	<div class="hashtags">
+		<h3>Hashtags:</h3>
+		<c:forEach var="hashtag" items="${hashtags}">
+			<span>#${hashtag.hashtagName}</span>
+		</c:forEach>
+	</div>
+	
 	<div>
 		<p>첨부 이미지 :</p>
 		<c:forEach var="attach" items="${attachList}">
@@ -102,7 +124,7 @@
 	<script type="text/javascript">
         $(document).ready(function(){
             $('#deleteBoard').click(function(){
-                if(confirm('삭제하시겠습니까?')){
+                if(confirm('삭제하시겠습니까?')) {
                     $('#deleteForm').submit(); // form 데이터 전송
                 }
             });
@@ -122,7 +144,6 @@
 	<div style="text-align: center;">
 		<div id="replies"></div>
 	</div>
-
 
 	<hr>
 	<div style="text-align: center;">
@@ -477,7 +498,5 @@
                   
                                    
    </script>
-
-
 </body>
 </html>

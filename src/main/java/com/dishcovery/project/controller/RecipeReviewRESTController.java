@@ -50,16 +50,15 @@ public class RecipeReviewRESTController {
 		return new ResponseEntity<List<RecipeReviewVO>>(list, HttpStatus.OK);
 	}
 
-	@PutMapping("reviews/{recipeReviewId}")
-	public ResponseEntity<Integer> updateRecipeReview(@PathVariable("recipeReviewId") int recipeReviewId,
-			@RequestBody String recipeContent) {
+	@PutMapping("/reviews/{recipeReviewId}")
+	public ResponseEntity<Integer> updateRecipeReview(@RequestBody RecipeReviewVO recipeReviewVO) {
 		log.info("updateRecipeReview()");
-		log.info("recipeReviewId = " + recipeReviewId);
-		int result = recipeReviewService.updateRecipeReview(recipeReviewId, recipeContent);
+		log.info("recipeReviewVO = " + recipeReviewVO);
+		int result = recipeReviewService.updateRecipeReview(recipeReviewVO);
 		return new ResponseEntity<Integer>(result, HttpStatus.OK);
 	}
 
-	@DeleteMapping("reviews/{recipeReviewId}/{recipeBoardId}")
+	@DeleteMapping("/reviews/{recipeReviewId}/{recipeBoardId}")
 	public ResponseEntity<Integer> deleteRecipeReview(@PathVariable("recipeReviewId") int recipeReviewId,
 		@PathVariable("recipeBoardId") int recipeBoardId) {
 	log.info("deleteRecipe()");

@@ -142,11 +142,56 @@
         .register-button:hover {
             background-color: #45a049;
         }
+        
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 60%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Recipe Board</h1>
 
+
+	<!-- 검색창 및 버튼 -->
+    <div class="search-container">
+        <form method="GET" action="" id="searchForm">
+            <input 
+                type="text" 
+                name="hashtag" 
+                value="${param.hashtag}" 
+                placeholder="Enter hashtags to search..." 
+                class="search-input">
+            <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+    
     <!-- Filters Section -->
     <div class="filters-container">
         <!-- Type Filter -->
@@ -209,26 +254,26 @@
     </div>
 
     <!-- Pagination Section -->
-<div class="pagination-container">
-    <c:if test="${pageMaker.prev}">
-        <a class="pagination-link" 
-           href="?pageNum=${pageMaker.startNum - 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}">
-            이전
-        </a>
-    </c:if>
-    <c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
-        <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}" 
-           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}">
-            ${pageNum}
-        </a>
-    </c:forEach>
-    <c:if test="${pageMaker.next}">
-        <a class="pagination-link" 
-           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}">
-            다음
-        </a>
-    </c:if>
-</div>
+	<div class="pagination-container">
+	    <c:if test="${pageMaker.prev}">
+	        <a class="pagination-link" 
+	           href="?pageNum=${pageMaker.startNum - 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	            이전
+	        </a>
+	    </c:if>
+	    <c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
+	        <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}" 
+	           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	            ${pageNum}
+	        </a>
+	    </c:forEach>
+	    <c:if test="${pageMaker.next}">
+	        <a class="pagination-link" 
+	           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	            다음
+	        </a>
+	    </c:if>
+	</div>
 
     <script>
         function applyFilter(key, value) {

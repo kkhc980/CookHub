@@ -142,6 +142,15 @@
 	        <if test="typeId != null">AND rb.type_id = #{typeId}</if>
 	        <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
 	        <if test="methodId != null">AND rb.method_id = #{methodId}</if>
+	        <if test="hashtag != null and hashtag != ''">
+	            AND EXISTS (
+		        SELECT 1
+		        FROM recipe_hashtags rh
+		        INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+		        WHERE rh.recipe_board_id = rb.recipe_board_id
+		        AND h.hashtag_name LIKE '%' || #{hashtag} || '%'
+		    )
+        	</if>
 	    ) WHERE rn BETWEEN #{start} AND #{end}
 	</select>
 	
@@ -162,6 +171,15 @@
 	    <if test="typeId != null">AND rb.type_id = #{typeId}</if>
 	    <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
 	    <if test="methodId != null">AND rb.method_id = #{methodId}</if>
+	    <if test="hashtag != null and hashtag != ''">
+            AND EXISTS (
+	        SELECT 1
+	        FROM recipe_hashtags rh
+	        INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+	        WHERE rh.recipe_board_id = rb.recipe_board_id
+	        AND h.hashtag_name LIKE '%' || #{hashtag} || '%'
+	    )
+  		</if>
 	</select>
 
 	<select id="getHashtagsByRecipeId" parameterType="int" resultType="com.dishcovery.project.domain.HashtagsVO">

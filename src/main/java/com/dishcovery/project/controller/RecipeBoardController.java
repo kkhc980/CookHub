@@ -1,12 +1,10 @@
 package com.dishcovery.project.controller;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.RecipeBoardVO;
@@ -42,19 +39,21 @@ public class RecipeBoardController {
             @RequestParam(value = "typeId", defaultValue = "1") Integer typeId,
             @RequestParam(value = "situationId", defaultValue = "1") Integer situationId,
             @RequestParam(value = "methodId", defaultValue = "1") Integer methodId,
+            @RequestParam(value = "hashtag", required = false) String hashtag, // 추가
             Model model) {
-
+    	 
         // Pagination 설정
         Pagination pagination = new Pagination(pageNum, pageSize);
         pagination.setIngredientIdsFromString(ingredientIdsStr);
         pagination.setTypeId(typeId != null ? typeId : 1);
         pagination.setSituationId(situationId != null ? situationId : 1);
         pagination.setMethodId(methodId != null ? methodId : 1);
-        
+        pagination.setHashtag(hashtag); // 추가
+
         // RecipeBoard 목록 및 관련 데이터 가져오기
         Map<String, Object> result = recipeBoardService.getRecipeBoardListWithFilters(
                 recipeBoardService.preprocessPagination(pagination));
-
+        
         // 모델에 데이터 추가
         model.addAllAttributes(result);
         model.addAttribute("selectedTypeId", typeId);
@@ -63,6 +62,7 @@ public class RecipeBoardController {
         model.addAttribute("ingredientIdsStr", pagination.getIngredientIdsAsString());
         model.addAttribute("selectedPageNum", pageNum);
         model.addAttribute("selectedIngredientIds", ingredientIdsStr != null ? Arrays.asList(ingredientIdsStr.split(",")) : List.of("1"));
+        model.addAttribute("searchHashtag", hashtag); // 추가
 
         // 공통 레이아웃에 포함될 페이지 설정
         model.addAttribute("pageContent", "recipeboard/list.jsp");

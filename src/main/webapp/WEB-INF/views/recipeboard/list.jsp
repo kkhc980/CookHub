@@ -142,11 +142,55 @@
         .register-button:hover {
             background-color: #45a049;
         }
+        
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 60%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Recipe Board</h1>
 
+
+	<!-- 검색창 및 버튼 -->
+    <div class="search-container">
+        <form method="GET" action="" id="searchForm">
+            <input 
+                type="text" 
+                name="hashtag" 
+                value="${param.hashtag}" 
+                placeholder="Enter hashtags to search..." 
+                class="search-input">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+    
     <!-- Filters Section -->
     <div class="filters-container">
         <!-- Type Filter -->

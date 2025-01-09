@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+   pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
@@ -13,33 +13,33 @@
 
 <style>
 .star-rating {
-	display: inline-block;
-	direction: rtl; /* 별을 오른쪽부터 채우도록 설정 */
-	font-size: 20px; /* 별 크기 */
-	color: lightgray;
+   display: inline-block;
+   direction: rtl; /* 별을 오른쪽부터 채우도록 설정 */
+   font-size: 20px; /* 별 크기 */
+   color: lightgray;
 }
 
 .star-rating input[type="radio"] {
-	display: none;
+   display: none;
 }
 
 .star-rating label {
-	cursor: pointer;
+   cursor: pointer;
 }
 
 .star-rating label:before {
-	content: '★';
-	display: inline-block;
-	transition: color 0.2s;
+   content: '★';
+   display: inline-block;
+   transition: color 0.2s;
 }
 
 .star-rating input[type="radio"]:checked ~ label:before {
-	color: gold;
+   color: gold;
 }
 
 .star-rating label:hover:before, .star-rating label:hover ~ label:before
-	{
-	color: gold;
+   {
+   color: gold;
 }
   .hashtags {
     margin-top: 20px;
@@ -58,70 +58,70 @@
 
 </head>
 <body>
-	<h2>글 보기</h2>
+   <h2>글 보기</h2>
 
-	<div>
-		<p>제목 :</p>
-		<p>${recipeBoard.recipeBoardTitle }</p>
-	</div>
-	<div>
-		<p>작성자 : ${recipeBoard.memberId }</p>
-		<!-- boardDateCreated 데이터 포멧 변경 -->
-		<fmt:formatDate value="${recipeBoard.recipeBoardCreatedDate }"
-			pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardCreatedDate" />
-		<p>작성일 : ${recipeBoardCreatedDate }</p>
-	</div>
-	<div>
-		<textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
-	</div>
+   <div>
+      <p>제목 :</p>
+      <p>${recipeBoard.recipeBoardTitle }</p>
+   </div>
+   <div>
+      <p>작성자 : ${recipeBoard.memberId }</p>
+      <!-- boardDateCreated 데이터 포멧 변경 -->
+      <fmt:formatDate value="${recipeBoard.recipeBoardCreatedDate }"
+         pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardCreatedDate" />
+      <p>작성일 : ${recipeBoardCreatedDate }</p>
+   </div>
+   <div>
+      <textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
+   </div>
 
-	<div>
-		<p>타입 : ${typeName}</p>
-	</div>
-	<div>
-		<p>방법 : ${methodName}</p>
-	</div>
-	<div>
-		<p>상황 : ${situationName}</p>
-	</div>
-	<div>
-		<p>재료 :</p>
-		<ul>
-			<c:forEach var="ingredient" items="${ingredients}">
-				<li>${ingredient.ingredientName}</li>
-			</c:forEach>
-		</ul>
-	</div>
+   <div>
+      <p>타입 : ${typeName}</p>
+   </div>
+   <div>
+      <p>방법 : ${methodName}</p>
+   </div>
+   <div>
+      <p>상황 : ${situationName}</p>
+   </div>
+   <div>
+      <p>재료 :</p>
+      <ul>
+         <c:forEach var="ingredient" items="${ingredients}">
+            <li>${ingredient.ingredientName}</li>
+         </c:forEach>
+      </ul>
+   </div>
 
     <!-- 해시태그 표시 -->
-	<div class="hashtags">
-		<h3>Hashtags:</h3>
-		<c:forEach var="hashtag" items="${hashtags}">
-			<span>#${hashtag.hashtagName}</span>
-		</c:forEach>
-	</div>
-	
-	<div>
-		<p>첨부 이미지 :</p>
-		<c:forEach var="attach" items="${attachList}">
-			<img
-				src="${pageContext.request.contextPath}${attach.recipeBoardPath}"
-				alt="첨부 이미지" style="max-width: 300px;">
-			<br>
-		</c:forEach>
-	</div>
-	<button onclick="location.href='recipeboard/list'">글 목록</button>
-	<button
-		onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글
-		수정</button>
-	<button type="button" id="deleteBoard">글 삭제</button>
-	<form id="deleteForm"
-		action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
-		<input type="hidden" name="recipeBoardId"
-			value="${recipeBoard.recipeBoardId}">
-	</form>
+   <div class="hashtags">
+      <h3>Hashtags:</h3>
+      <c:forEach var="hashtag" items="${hashtags}">
+         <span>#${hashtag.hashtagName}</span>
+      </c:forEach>
+   </div>
+   
+   <div>
+      <p>첨부 이미지 :</p>
+      <c:forEach var="attach" items="${attachList}">
+         <img
+            src="${pageContext.request.contextPath}${attach.recipeBoardPath}"
+            alt="첨부 이미지" style="max-width: 300px;">
+         <br>
+      </c:forEach>
+   </div>
+   <button onclick="location.href='recipeboard/list'">글 목록</button>
+   <button
+      onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글
+      수정</button>
+   <button type="button" id="deleteBoard">글 삭제</button>
+   <form id="deleteForm"
+      action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
+      <input type="hidden" name="recipeBoardId"
+         value="${recipeBoard.recipeBoardId}">
+   </form>
 
-	<script type="text/javascript">
+   <script type="text/javascript">
         $(document).ready(function(){
             $('#deleteBoard').click(function(){
                 if(confirm('삭제하시겠습니까?')) {
@@ -131,41 +131,41 @@
         }); // end document
     </script>
 
-	<input type="hidden" id="recipeBoardId"
-		value="${recipeBoard.recipeBoardId }">
+   <input type="hidden" id="recipeBoardId"
+      value="${recipeBoard.recipeBoardId }">
 
-	<div style="text-align: center;">
-		<input type="text" id="memberId"> <input type="text"
-			id="replyContent">
-		<button id="btnAdd">댓글 작성</button>
-	</div>
+   <div style="text-align: center;">
+      <input type="text" id="memberId"> <input type="text"
+         id="replyContent">
+      <button id="btnAdd">댓글 작성</button>
+   </div>
 
-	<hr>
-	<div style="text-align: center;">
-		<div id="replies"></div>
-	</div>
+   <hr>
+   <div style="text-align: center;">
+      <div id="replies"></div>
+   </div>
 
-	<hr>
-	<div style="text-align: center;">
-		<input type="text" id="reviewMemberId"><input type="text"
-			id="recipeReviewContent"> <span class="star-rating"> <input
-			type="radio" name="reviewRating" id="star1" value="1"><label
-			for="star1"></label> <input type="radio" name="reviewRating"
-			id="star2" value="2"><label for="star2"></label> <input
-			type="radio" name="reviewRating" id="star3" value="3"><label
-			for="star3"></label> <input type="radio" name="reviewRating"
-			id="star4" value="4"><label for="star4"></label> <input
-			type="radio" name="reviewRating" id="star5" value="5"><label
-			for="star5"></label>
-		</span>
-		<button id="btnReviewAdd">리뷰 작성</button>
-	</div>
-	<hr>
-	<div style="text-align: center;">
-		<div id="reviews"></div>
-	</div>
+   <hr>
+   <div style="text-align: center;">
+      <input type="text" id="reviewMemberId"><input type="text"
+         id="recipeReviewContent"> <span class="star-rating"> <input
+         type="radio" name="reviewRating" id="star1" value="1"><label
+         for="star1"></label> <input type="radio" name="reviewRating"
+         id="star2" value="2"><label for="star2"></label> <input
+         type="radio" name="reviewRating" id="star3" value="3"><label
+         for="star3"></label> <input type="radio" name="reviewRating"
+         id="star4" value="4"><label for="star4"></label> <input
+         type="radio" name="reviewRating" id="star5" value="5"><label
+         for="star5"></label>
+      </span>
+      <button id="btnReviewAdd">리뷰 작성</button>
+   </div>
+   <hr>
+   <div style="text-align: center;">
+      <div id="reviews"></div>
+   </div>
 
-	<script type="text/javascript">
+   <script type="text/javascript">
       $(document)
             .ready(
                   function() {
@@ -206,48 +206,45 @@
                         });
                      }); // end btn Add.click()
                      
-                     $('#btnReviewAdd').click(function(){
-                    	 var recipeBoardId = $('#recipeBoardId').val(); // 게시판 번호
-                    	 var memberId = $('#reviewMemberId').val(); // 작성자 데이터
-                    	 var recipeReviewContent = $('#recipeReviewContent').val();
-                    	 var reviewRating = $("input[name='reviewRating']:checked").val();
-                                        
-                                         	 
-                    	 if(!reviewRating) {
-                    		 alert('0점 이외의 별점을 입력하세요');
-                    		 return;
-                    	 }
-                    	 
-                    	
-                    	 
-                    	 var obj = {
-                    		'recipeBoardId' : recipeBoardId, //게시글 전달
-                    		'memberId' : memberId,
-                    		'recipeReviewContent' : recipeReviewContent,
-                    		'reviewRating' : reviewRating
-                    	 }
-                    	 console.log("전송 데이터:", obj);
-                    	 
-                    	 // $.ajax로 송수신
-                    	 $.ajax({
-                    		 type : 'POST',
-                    		 url : '/project/recipeboard/reviews/detail',
-                    		 headers : {// 헤더정보
-                    			 'Content-Type' : 'application/json' // json content-type 설정
-                    		 },
-                    		 data : JSON.stringify(obj), // JSON으로 변환
-                    		 success : function(result) { // 전송 성공 시 서버에서 result값 전송
-                    			 console.log(result);
-                    		 	 if(result == 1) {
-                    		 		 alert('리뷰 입력 성공');
-                    		 		 getAllRecipeReview();
-                    		 	 } else {
-                    		 		 alert('리뷰 입력 실패');
-                    		 	 }
-                    			 
-                    		 }
-                    	 });
-                     }); // end btnReviewAdd.click()
+                     $('#btnReviewAdd').click(function() {
+                           var recipeBoardId = $('#recipeBoardId').val();
+                           var memberId = $('#reviewMemberId').val();
+                           var recipeReviewContent = $('#recipeReviewContent').val();
+
+                           // 입력된 별점 값을 반전 (1 -> 5, 2 -> 4, ...)
+                           var reviewRating = $("input[name='reviewRating']:checked").val();
+                           reviewRating = 6 - parseInt(reviewRating, 10); // RTL에 따른 별점 값 반전
+
+                           if (!reviewRating) {
+                               alert('0점 이외의 별점을 입력하세요');
+                               return;
+                           }
+
+                           var obj = {
+                               'recipeBoardId': recipeBoardId,
+                               'memberId': memberId,
+                               'recipeReviewContent': recipeReviewContent,
+                               'reviewRating': reviewRating
+                           };
+
+                           console.log("전송 데이터:", obj);
+
+                           $.ajax({
+                               type: 'POST',
+                               url: '/project/recipeboard/reviews/detail',
+                               headers: { 'Content-Type': 'application/json' },
+                               data: JSON.stringify(obj),
+                               success: function(result) {
+                                   console.log(result);
+                                   if (result == 1) {
+                                       alert('리뷰 입력 성공');
+                                       getAllRecipeReview();
+                                   } else {
+                                       alert('리뷰 입력 실패');
+                                   }
+                               }
+                           });
+                       });
                      
                   // 게시판 댓글 전체 가져오기
                      function getAllReply() {
@@ -364,53 +361,52 @@
                                  
                                  // 리뷰 전체 불러오기
                                  function getAllRecipeReview() {
-                                	 var recipeBoardId = $('#recipeBoardId').val();
-                                	 var url = '/project/recipeboard/allReviews/'
-                                	 			+ recipeBoardId;
-                                	 $
-                                	 		.getJSON(
-                                	 			url,
-                                	 			function(data) {
-                                	 				console.log(data);
-                                	 				var list = '';
-                                	 				$(data)
-                                	 					.each(
-                                	 					function() {
-                                	 						console
-                                	 							.log(this);
-                                	 						recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
-                                	 						
-                                	 						var starRatingHTML = '';
-                                	 						for (let i = 1; i < 6; i++) {
-                                	 							if(i <= this.reviewRating) {
-                                	 								starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
-                                	 							} else {
-                                	 								starRatingHTML += '<span style="color:lightgray;">★</span>'; // 빈 별
-                                	 							}
-                                	 						}
-                                	 						
-                                	 						list += '<div class="review_item">'
-                                	 						+ '<pre>'
-                                	 						+ '<input type="hidden" id="recipeReviewId" value="' + this.recipeReviewId + '">'
-                                	 						+ this.memberId
-                                	 						+ '&nbsp;&nbsp;'
-                                	 						+ '<input type="text" id="recipeReviewContent" value="' + this.recipeReviewContent + '">'
-                                	 						+ '&nbsp;&nbsp;'
-                                	 						+ '<br>'
-                                	 						+ '<span style="font-size: 1.2em;">' + starRatingHTML + '</span>' // 별점 추가
-                                	 						+ '&nbsp;&nbsp;'
-                                	 						+ recipeReviewDateCreated
-                                	 						+ '&nbsp;&nbsp;'
-                                	 						+ '<button class="btn_review_update" >수정</button>'
-                                	 						+ '<button class="btn_review_delete" >삭제</button>'
-                                	 						+ '</pre>'
-                                	 						+ '</div>';
-                                	 						
-                                	 					});
-                                	 				$('#reviews').html(list);
-                                	 			});
-                                	
-                                	 
+                                    var recipeBoardId = $('#recipeBoardId').val();
+                                    var url = '/project/recipeboard/allReviews/'
+                                             + recipeBoardId;
+                                    $
+                                          .getJSON(
+                                             url,
+                                             function(data) {
+                                                console.log("리뷰 데이터:", data);
+                                                var list = '';
+                                                $(data)
+                                                   .each(
+                                                   function() {
+                                                      console.log("별점 값:", this.reviewRating);
+                                                      recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
+                                                      
+                                                      var starRatingHTML = '';
+                                                      for (let i = 1; i <= 5; i++) {
+                                                          if (i <= this.reviewRating) {
+                                                              starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
+                                                          } else {
+                                                              starRatingHTML += '<span style="color:lightgray;">★</span>'; // 빈 별
+                                                          }
+                                                      }
+                                                      
+                                                      list += '<div class="review_item">'
+                                                      + '<pre>'
+                                                      + '<input type="hidden" id="recipeReviewId" value="' + this.recipeReviewId + '">'
+                                                      + this.memberId
+                                                      + '&nbsp;&nbsp;'
+                                                      + '<input type="text" id="recipeReviewContent" value="' + this.recipeReviewContent + '">'
+                                                      + '&nbsp;&nbsp;'
+                                                      + '<br>'
+                                                      + '<span style="font-size: 1.2em;">' + starRatingHTML + '</span>' // 별점 추가
+                                                      + '&nbsp;&nbsp;'
+                                                      + recipeReviewDateCreated
+                                                      + '&nbsp;&nbsp;'
+                                                      + '<button class="btn_review_update" >수정</button>'
+                                                      + '<button class="btn_review_delete" >삭제</button>'
+                                                      + '</pre>'
+                                                      + '</div>';
+                                                      
+                                                   });
+                                                $('#reviews').html(list);
+                                             });
+                                   
+                                    
                                      
                                  }      
                                 
@@ -434,8 +430,8 @@
                                                       + recipeReviewId
                                                       + ", 댓글 내용 : "
                                                       + recipeReviewContent
-                                                	  + ", 리뷰 별점 : "
-                                                	  + reviewRating);
+                                                     + ", 리뷰 별점 : "
+                                                     + reviewRating);
 
                                                 // ajax 요청
                                                 $

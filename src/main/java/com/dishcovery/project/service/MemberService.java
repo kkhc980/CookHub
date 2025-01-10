@@ -9,8 +9,7 @@ public interface MemberService {
 
     int registerMember(MemberVO memberVO);
 
-    MemberVO getMemberById(int memberId);
-
+    MemberVO getMemberByEmail(String email);
 
     List<Integer> getAllId();
 

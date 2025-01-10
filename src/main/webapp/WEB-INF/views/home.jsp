@@ -3,16 +3,19 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Home</title>
+    <title>Home</title>
 </head>
 <body>
 <h1>
-	Hello world!  
+    Hello world!
 </h1>
 
-<P>  The time on the sefdfrver is ${serverTime}. </P>
+<P> The time on the sever is ${serverTime}. </P>
 
-<div><a href="member/enroll">회원가입 이동 테스트</a></div>
+<c:if test="${empty sessionScope.loginMember}">
+    <div><a href="member/signup">회원가입 이동 테스트</a></div>
+    <div><a href="member/login">로그인 이동 테스트</a></div>
+</c:if>
 <div>test kimheeseung</div>
 <div>test kill</div>
 </body>

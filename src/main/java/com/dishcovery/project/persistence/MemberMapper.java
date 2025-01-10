@@ -11,4 +11,5 @@ public interface MemberMapper {
     int selectDupCheckEmail(String email);
     void updateAuthKey(Map<String, String> map);
     void updateAuthStatus(Map<String, String> map);
+    MemberVO selectEmail(String email);
 }

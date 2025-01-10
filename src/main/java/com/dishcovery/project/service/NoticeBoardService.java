@@ -1,23 +1,23 @@
 package com.dishcovery.project.service;
 
-import java.util.List;
-
 import com.dishcovery.project.domain.NoticeBoardVO;
+
+import java.util.List;
 
 public interface NoticeBoardService {
 
-    // ¸ğµç °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
+    // ëª¨ë“  ê³µì§€ì‚¬í•­ì„ ì¡°íšŒí•˜ëŠ” ë©”ì„œë“œ
     List<NoticeBoardVO> getAllNoticeBoards();
 
-    // Æ¯Á¤ °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
+    // íŠ¹ì • ê³µì§€ì‚¬í•­ì„ ì¡°íšŒí•˜ëŠ” ë©”ì„œë“œ
     NoticeBoardVO getNoticeBoardById(int noticeBoardId);
 
-    // °øÁö»çÇ×À» µî·ÏÇÏ´Â ¸Ş¼­µå
+    // ê³µì§€ì‚¬í•­ì„ ë“±ë¡í•˜ëŠ” ë©”ì„œë“œ
     void addNoticeBoard(NoticeBoardVO noticeBoard);
 
-    // °øÁö»çÇ×À» ¼öÁ¤ÇÏ´Â ¸Ş¼­µå
+    // ê³µì§€ì‚¬í•­ì„ ìˆ˜ì •í•˜ëŠ” ë©”ì„œë“œ
     void updateNoticeBoard(NoticeBoardVO noticeBoard);
 
-    // °øÁö»çÇ×À» »èÁ¦ÇÏ´Â ¸Ş¼­µå
+    // ê³µì§€ì‚¬í•­ì„ ì‚­ì œí•˜ëŠ” ë©”ì„œë“œ
     void deleteNoticeBoard(int noticeBoardId);
 }

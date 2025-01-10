@@ -24,8 +24,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberVO getMemberById(int memberId) {
-        return null;
+    public MemberVO getMemberByEmail(String email) {
+        MemberVO memberVO = memberMapper.selectEmail(email);
+
+        return memberVO;
     }
 
     @Override

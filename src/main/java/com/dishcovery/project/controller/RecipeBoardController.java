@@ -39,19 +39,21 @@ public class RecipeBoardController {
             @RequestParam(value = "typeId", defaultValue = "1") Integer typeId,
             @RequestParam(value = "situationId", defaultValue = "1") Integer situationId,
             @RequestParam(value = "methodId", defaultValue = "1") Integer methodId,
+            @RequestParam(value = "hashtag", required = false) String hashtag, // 추가
             Model model) {
-
+    	 
         // Pagination 설정
         Pagination pagination = new Pagination(pageNum, pageSize);
         pagination.setIngredientIdsFromString(ingredientIdsStr);
         pagination.setTypeId(typeId != null ? typeId : 1);
         pagination.setSituationId(situationId != null ? situationId : 1);
         pagination.setMethodId(methodId != null ? methodId : 1);
-        
+        pagination.setHashtag(hashtag); // 추가
+
         // RecipeBoard 목록 및 관련 데이터 가져오기
         Map<String, Object> result = recipeBoardService.getRecipeBoardListWithFilters(
                 recipeBoardService.preprocessPagination(pagination));
-
+        
         // 모델에 데이터 추가
         model.addAllAttributes(result);
         model.addAttribute("selectedTypeId", typeId);
@@ -60,6 +62,7 @@ public class RecipeBoardController {
         model.addAttribute("ingredientIdsStr", pagination.getIngredientIdsAsString());
         model.addAttribute("selectedPageNum", pageNum);
         model.addAttribute("selectedIngredientIds", ingredientIdsStr != null ? Arrays.asList(ingredientIdsStr.split(",")) : List.of("1"));
+        model.addAttribute("searchHashtag", hashtag); // 추가
 
         // 공통 레이아웃에 포함될 페이지 설정
         model.addAttribute("pageContent", "recipeboard/list.jsp");
@@ -82,8 +85,10 @@ public class RecipeBoardController {
     public String registerRecipe(
             RecipeBoardVO recipeBoard,
             @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+            @RequestParam(value = "hashtags", required = false) String hashtags,
             @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
-        recipeBoardService.createRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
+    	log.info("Received hashtags: " + hashtags);
+    	recipeBoardService.createRecipe(recipeBoard, ingredientIds, hashtags, thumbnail);
         return "redirect:/recipeboard/list";
     }
 
@@ -100,6 +105,7 @@ public class RecipeBoardController {
         model.addAttribute("methodName", detail.getMethodName());
         model.addAttribute("situationName", detail.getSituationName());
         model.addAttribute("ingredients", detail.getIngredients());
+        model.addAttribute("hashtags", detail.getHashtags());
         return "recipeboard/detail";
     }
 
@@ -109,21 +115,25 @@ public class RecipeBoardController {
         if (recipeBoard == null) {
             return "redirect:/recipeboard/list";
         }
+
         model.addAttribute("recipeBoard", recipeBoard);
         model.addAttribute("selectedIngredientIds", recipeBoardService.getSelectedIngredientIdsByRecipeBoardId(recipeBoardId));
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
         model.addAttribute("methodsList", recipeBoardService.getAllMethods());
         model.addAttribute("situationsList", recipeBoardService.getAllSituations());
         model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
+        model.addAttribute("hashtags", recipeBoardService.getHashtagsByRecipeBoardId(recipeBoardId));
+
         return "recipeboard/update";
     }
 
     @PostMapping("/update")
     public String updateRecipe(RecipeBoardVO recipeBoard,
                                @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+                               @RequestParam(value = "hashtags", required = false) String hashtags,
                                @RequestPart(value = "thumbnail", required = true) MultipartFile thumbnail) {
         try {
-            recipeBoardService.updateRecipeWithIngredients(recipeBoard, ingredientIds, thumbnail);
+        	recipeBoardService.updateRecipe(recipeBoard, ingredientIds, hashtags, thumbnail);
             return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
         } catch (IllegalArgumentException e) {
             log.error("Error updating recipe: " + e.getMessage());

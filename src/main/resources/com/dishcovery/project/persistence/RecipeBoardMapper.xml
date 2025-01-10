@@ -142,6 +142,15 @@
 	        <if test="typeId != null">AND rb.type_id = #{typeId}</if>
 	        <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
 	        <if test="methodId != null">AND rb.method_id = #{methodId}</if>
+	        <if test="hashtag != null and hashtag != ''">
+	            AND EXISTS (
+		        SELECT 1
+		        FROM recipe_hashtags rh
+		        INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+		        WHERE rh.recipe_board_id = rb.recipe_board_id
+		        AND h.hashtag_name LIKE '%' || #{hashtag} || '%'
+		    )
+        	</if>
 	    ) WHERE rn BETWEEN #{start} AND #{end}
 	</select>
 	
@@ -162,6 +171,72 @@
 	    <if test="typeId != null">AND rb.type_id = #{typeId}</if>
 	    <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
 	    <if test="methodId != null">AND rb.method_id = #{methodId}</if>
+	    <if test="hashtag != null and hashtag != ''">
+            AND EXISTS (
+	        SELECT 1
+	        FROM recipe_hashtags rh
+	        INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+	        WHERE rh.recipe_board_id = rb.recipe_board_id
+	        AND h.hashtag_name LIKE '%' || #{hashtag} || '%'
+	    )
+  		</if>
 	</select>
 
+	<select id="getHashtagsByRecipeId" parameterType="int" resultType="com.dishcovery.project.domain.HashtagsVO">
+	    SELECT h.hashtag_id AS hashtagId, h.hashtag_name AS hashtagName
+	    FROM recipe_hashtags rh
+	    INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+	    WHERE rh.recipe_board_id = #{recipeBoardId}
+	</select>
+
+    <!-- Hashtags: 해시태그 이름으로 해시태그 조회 -->
+    <select id="getHashtagByName" parameterType="string" resultType="com.dishcovery.project.domain.HashtagsVO">
+        SELECT hashtag_id AS hashtagId, hashtag_name AS hashtagName
+        FROM hashtags
+        WHERE hashtag_name = #{hashtagName}
+    </select>
+
+	<select id="getNextHashtagId" resultType="int">
+    	SELECT hashtags_seq.NEXTVAL FROM dual
+	</select>
+	
+    <!-- Hashtags: 새로운 해시태그 추가 -->
+    <insert id="insertHashtag" parameterType="com.dishcovery.project.domain.HashtagsVO">
+	    INSERT INTO hashtags (hashtag_id, hashtag_name)
+	    VALUES (#{hashtagId}, #{hashtagName})
+	</insert>
+
+    <!-- RecipeHashtags: Recipe-Hashtag 연결 추가 -->
+    <insert id="insertRecipeHashtag" parameterType="com.dishcovery.project.domain.RecipeHashtagsVO">
+        INSERT INTO recipe_hashtags (recipe_board_id, hashtag_id)
+        VALUES (#{recipeBoardId}, #{hashtagId})
+    </insert>
+
+    <!-- 게시글 ID로 해시태그와의 관계 삭제 -->
+	<delete id="deleteRecipeHashtagsByRecipeId" parameterType="int">
+	    DELETE FROM recipe_hashtags WHERE recipe_board_id = #{recipeBoardId}
+	</delete>
+	
+	<!-- 특정 해시태그가 연결된 게시글 수 확인 -->
+	<select id="getRecipeCountByHashtagId" parameterType="int" resultType="int">
+	    SELECT COUNT(*) FROM recipe_hashtags WHERE hashtag_id = #{hashtagId}
+	</select>
+	
+	<!-- 특정 해시태그 삭제 -->
+	<delete id="deleteHashtagById" parameterType="int">
+	    DELETE FROM hashtags WHERE hashtag_id = #{hashtagId}
+	</delete>
+	
+	<delete id="deleteRecipeHashtagsByRecipeIdAndHashtagId">
+	    DELETE FROM recipe_hashtags
+	    WHERE recipe_board_id = #{recipeBoardId}
+	      AND hashtag_id = #{hashtagId}
+	</delete>
+	
+	<select id="getHashtagNamesByRecipeId" parameterType="int" resultType="string">
+	    SELECT h.hashtag_name
+	    FROM recipe_hashtags rh
+	    INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+	    WHERE rh.recipe_board_id = #{recipeBoardId}
+	</select>
 </mapper>

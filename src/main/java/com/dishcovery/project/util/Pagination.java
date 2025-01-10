@@ -23,7 +23,8 @@ public class Pagination {
     private Integer typeId; // 타입 ID
     private Integer situationId; // 상황 ID
     private Integer methodId; // 방법 ID
-
+    private String hashtag;
+    
 	public Pagination() {
 		this.pageNum = 1; // 기본 페이지 번호 설정
 		this.pageSize = 8; // 기본 페이지 사이즈 설정
@@ -83,6 +84,9 @@ public class Pagination {
         }
         if (this.methodId == null) {
             this.methodId = 1; // 기본값: "전체"
+        }
+        if (this.hashtag == null || this.hashtag.trim().isEmpty()) {
+            this.hashtag = null; // hashtag는 빈 문자열이면 null로 처리
         }
     }
 

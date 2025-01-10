@@ -79,7 +79,7 @@ public class MemberController {
             session.setAttribute("loginMember", loginMember);
             System.out.println("loginMember : " + loginMember);
             System.out.println("로그인 성공");
-            return "";
+            return "/";
         } else {
             System.out.println("로그인 실패");
             return "/member/login";

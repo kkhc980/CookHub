@@ -2,6 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dishcovery.project.persistence.MemberMapper">
+    <resultMap id="MemberResultMap" type="com.dishcovery.project.domain.MemberVO">
+        <id property="memberId" column="MEMBER_ID" />
+        <result property="email" column="EMAIL" />
+        <result property="password" column="PASSWORD" />
+        <result property="name" column="NAME" />
+        <result property="phone" column="PHONE_NUMBER" />
+        <result property="createdAt" column="CREATED_AT" />
+        <result property="updatedAt" column="UPDATED_AT" />
+        <result property="authKey" column="AUTH_KEY" />
+        <result property="authStatus" column="AUTH_STATUS" />
+    </resultMap>
     <!-- 회원 가입 -->
     <insert id="insert" parameterType="com.dishcovery.project.domain.MemberVO">
         INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER)
@@ -16,17 +27,24 @@
     </select>
 
     <!-- 이메일 인증 키 발급 -->
-    <update id="updateAuthKey" parameterType="com.dishcovery.project.domain.MemberVO">
+    <update id="updateAuthKey" parameterType="java.util.Map">
         UPDATE MEMBER
         SET AUTH_KEY = #{authKey}
         WHERE EMAIL = #{email}
     </update>
 
     <!-- 이메일 인증 후 로그인 권한 부여 -->
-    <update id="updateAuthStatus" parameterType="com.dishcovery.project.domain.MemberVO">
+    <update id="updateAuthStatus" parameterType="java.util.Map">
         UPDATE MEMBER
         SET AUTH_STATUS = 1
         WHERE EMAIL = #{email}
           AND AUTH_KEY = #{authKey}
     </update>
+
+    <!-- 유저 확인 -->
+    <select id="selectEmail" resultMap="MemberResultMap">
+        SELECT *
+        FROM MEMBER
+        WHERE EMAIL = #{email}
+    </select>
 </mapper>

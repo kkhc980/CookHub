@@ -46,9 +46,11 @@ public class MailSendService {
         MimeMessage mail = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mail, true, "UTF-8");
-            String mailContent = "<h1>[이메일 인증]</h1><br><p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>"
+            String mailContent = "<html><head><meta charset='UTF-8'></head><body>" +
+                    "<h1>[이메일 인증]</h1><br><p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>"
                     + "<a href='http://localhost:8080/project/member/signUpConfirm?email="
-                    + email + "&authKey=" + authKey + "' target='_blank'>이메일 인증 확인</a>";
+                    + email + "&authKey=" + authKey + "' target='_blank'>이메일 인증 확인</a>" +
+                    "</body></html>";
 
             helper.setSubject("회원가입 이메일 인증");
             helper.setText(mailContent, true); // 두 번째 인자를 true 로 설정하면 HTML 메일로 처리

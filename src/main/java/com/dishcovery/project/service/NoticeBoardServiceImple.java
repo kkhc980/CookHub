@@ -1,52 +1,51 @@
 package com.dishcovery.project.service;
 
-import java.util.List;
-
+import com.dishcovery.project.domain.NoticeBoardVO;
+import com.dishcovery.project.persistence.NoticeBoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dishcovery.project.domain.NoticeBoardVO;
-import com.dishcovery.project.persistence.NoticeBoardMapper;
+import java.util.List;
 
-	@Service
-	public class NoticeBoardServiceImple implements NoticeBoardService {
+@Service
+public class NoticeBoardServiceImple implements NoticeBoardService {
 
-	    // NoticeBoardMapper¸¦ ÀÚµ¿À¸·Î ÁÖÀÔ
-	    @Autowired
-	    private NoticeBoardMapper noticeBoardMapper;
+    // NoticeBoardMapperë¥¼ ìë™ìœ¼ë¡œ ì£¼ì…
+    @Autowired
+    private NoticeBoardMapper noticeBoardMapper;
 
-	    // ¸ğµç °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public List<NoticeBoardVO> getAllNoticeBoards() {
-	        // MapperÀÇ selectAllNoticeBoards ¸Ş¼­µå È£Ãâ
-	        return noticeBoardMapper.selectAllNoticeBoards();
-	    }
+    // ëª¨ë“  ê³µì§€ì‚¬í•­ì„ ì¡°íšŒí•˜ëŠ” ë©”ì„œë“œ
+    @Override
+    public List<NoticeBoardVO> getAllNoticeBoards() {
+        // Mapperì˜ selectAllNoticeBoards ë©”ì„œë“œ í˜¸ì¶œ
+        return noticeBoardMapper.selectAllNoticeBoards();
+    }
 
-	    // Æ¯Á¤ °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public NoticeBoardVO getNoticeBoardById(int noticeBoardId) {
-	        // MapperÀÇ selectNoticeBoardById ¸Ş¼­µå È£Ãâ
-	        return noticeBoardMapper.selectNoticeBoardById(noticeBoardId);
-	    }
+    // íŠ¹ì • ê³µì§€ì‚¬í•­ì„ ì¡°íšŒí•˜ëŠ” ë©”ì„œë“œ
+    @Override
+    public NoticeBoardVO getNoticeBoardById(int noticeBoardId) {
+        // Mapperì˜ selectNoticeBoardById ë©”ì„œë“œ í˜¸ì¶œ
+        return noticeBoardMapper.selectNoticeBoardById(noticeBoardId);
+    }
 
-	    // °øÁö»çÇ×À» µî·ÏÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public void addNoticeBoard(NoticeBoardVO noticeBoard) {
-	        // MapperÀÇ insertNoticeBoard ¸Ş¼­µå È£Ãâ
-	        noticeBoardMapper.insertNoticeBoard(noticeBoard);
-	    }
+    // ê³µì§€ì‚¬í•­ì„ ë“±ë¡í•˜ëŠ” ë©”ì„œë“œ
+    @Override
+    public void addNoticeBoard(NoticeBoardVO noticeBoard) {
+        // Mapperì˜ insertNoticeBoard ë©”ì„œë“œ í˜¸ì¶œ
+        noticeBoardMapper.insertNoticeBoard(noticeBoard);
+    }
 
-	    // °øÁö»çÇ×À» ¼öÁ¤ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public void updateNoticeBoard(NoticeBoardVO noticeBoard) {
-	        // MapperÀÇ updateNoticeBoard ¸Ş¼­µå È£Ãâ
-	        noticeBoardMapper.updateNoticeBoard(noticeBoard);
-	    }
+    // ê³µì§€ì‚¬í•­ì„ ìˆ˜ì •í•˜ëŠ” ë©”ì„œë“œ
+    @Override
+    public void updateNoticeBoard(NoticeBoardVO noticeBoard) {
+        // Mapperì˜ updateNoticeBoard ë©”ì„œë“œ í˜¸ì¶œ
+        noticeBoardMapper.updateNoticeBoard(noticeBoard);
+    }
 
-	    // °øÁö»çÇ×À» »èÁ¦ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public void deleteNoticeBoard(int noticeBoardId) {
-	        // MapperÀÇ deleteNoticeBoard ¸Ş¼­µå È£Ãâ
-	        noticeBoardMapper.deleteNoticeBoard(noticeBoardId);
-	    }
-	}
+    // ê³µì§€ì‚¬í•­ì„ ì‚­ì œí•˜ëŠ” ë©”ì„œë“œ
+    @Override
+    public void deleteNoticeBoard(int noticeBoardId) {
+        // Mapperì˜ deleteNoticeBoard ë©”ì„œë“œ í˜¸ì¶œ
+        noticeBoardMapper.deleteNoticeBoard(noticeBoardId);
+    }
+}

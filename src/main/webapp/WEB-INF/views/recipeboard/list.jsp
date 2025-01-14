@@ -6,6 +6,9 @@
 <html>
 <head>
     <title>Recipe Board List</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -280,6 +283,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set(key, value);
             urlParams.set("pageNum", "1");
+            
+            urlParams.delete("hashtag");
             window.location.search = urlParams.toString();
         }
 
@@ -336,11 +341,41 @@
 
                     // 필터 변경 시 pageNum을 항상 1로 초기화
                     urlParams.set("pageNum", "1");
+                    urlParams.delete("hashtag");
 
                     window.location.search = urlParams.toString();
                 });
             });
         });
     </script>
+    
+    <script>
+	    $(document).ready(function () {
+	        // 자동완성 적용
+	        $(".search-input").autocomplete({
+	            source: function (request, response) {
+	                $.ajax({
+	                    url: "${pageContext.request.contextPath}/autocomplete", // Spring Controller의 URL
+	                    type: "GET",
+	                    data: {
+	                        q: request.term // 입력된 검색어
+	                    },
+	                    success: function (data) {
+	                        response(data); // 결과를 autocomplete에 전달
+	                    },
+	                    error: function (xhr) {
+	                        console.error("Error fetching autocomplete suggestions:", xhr);
+	                    }
+	                });
+	            },
+	            minLength: 1, // 최소 몇 글자 입력 후 동작할지 설정
+	            select: function (event, ui) {
+	                $(".search-input").val(ui.item.value); // 선택한 항목을 입력창에 삽입
+	                $("#searchForm").submit(); // 자동으로 폼 제출
+	            }
+	        });
+	    });
+	</script>
+
 </body>
 </html>

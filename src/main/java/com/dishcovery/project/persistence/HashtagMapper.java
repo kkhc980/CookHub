@@ -1,0 +1,10 @@
+package com.dishcovery.project.persistence;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface HashtagMapper {
+    List<String> findHashtags(String query);
+}

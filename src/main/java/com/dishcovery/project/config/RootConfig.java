@@ -1,17 +1,19 @@
 package com.dishcovery.project.config;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 // root-context.xml과 동일
 @Configuration
@@ -38,6 +40,17 @@ public class RootConfig {
     public SqlSessionFactory sqlSessionFactory() throws Exception { 
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource());
+        
+        // MyBatis Mapper XML 위치 설정
+        sqlSessionFactoryBean.setMapperLocations(
+            new PathMatchingResourcePatternResolver().getResources("classpath:com/dishcovery/project/persistence/HashtagMapper.xml")
+        );
+
+        // MyBatis 설정 추가 (underscore to camel case)
+        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        configuration.setMapUnderscoreToCamelCase(true); // snake_case -> camelCase 자동 매핑 활성화
+        sqlSessionFactoryBean.setConfiguration(configuration);
+        
         return (SqlSessionFactory) sqlSessionFactoryBean.getObject();
     }
     

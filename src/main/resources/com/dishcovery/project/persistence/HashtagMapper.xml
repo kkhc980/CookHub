@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.HashtagMapper">
+
+    <!-- 해시태그 검색 SQL -->
+    <select id="findHashtags" parameterType="string" resultType="string">
+        <![CDATA[
+        SELECT HASHTAG_NAME
+        FROM (
+            SELECT HASHTAG_NAME
+            FROM hashtags
+            WHERE LOWER(HASHTAG_NAME) LIKE '%' || #{query} || '%'
+            ORDER BY HASHTAG_NAME
+        )
+        WHERE ROWNUM <= 5
+        ]]>
+    </select>
+
+</mapper>

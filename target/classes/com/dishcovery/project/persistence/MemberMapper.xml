@@ -13,10 +13,23 @@
         <result property="authKey" column="AUTH_KEY" />
         <result property="authStatus" column="AUTH_STATUS" />
     </resultMap>
+
+    <resultMap id="MemberRoleResultMap" type="com.dishcovery.project.domain.MemberRole">
+        <id property="roleId" column="ROLE_ID" />
+        <result property="memberId" column="MEMBER_ID" />
+        <result property="roleName" column="ROLE_NAME" />
+    </resultMap>
+
     <!-- 회원 가입 -->
-    <insert id="insert" parameterType="com.dishcovery.project.domain.MemberVO">
+    <insert id="insert">
         INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER)
         VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone})
+    </insert>
+
+    <!-- 권한 정보 등록 -->
+    <insert id="insertMemberRole">
+        INSERT INTO MEMBER_ROLE
+        VALUES (MEMBER_ROLE_SEQ.nextval, #{memberId}, 'ROLE_MEMBER')
     </insert>
 
     <!-- 이메일 중복 체크 -->

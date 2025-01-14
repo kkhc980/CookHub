@@ -14,7 +14,7 @@
 
 <c:if test="${empty sessionScope.loginMember}">
     <div><a href="member/signup">회원가입 이동 테스트</a></div>
-    <div><a href="member/login">로그인 이동 테스트</a></div>
+    <div><a href="auth/login">로그인 이동 테스트</a></div>
 </c:if>
 <div>test kimheeseung</div>
 <div>test kill</div>

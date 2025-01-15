@@ -18,9 +18,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public int registerMember(MemberVO memberVO) {
-        int result = memberMapper.insert(memberVO);
-
-        return result;
+        int insertMemberResult = memberMapper.insert(memberVO);
+        log.info(insertMemberResult + "행 회원 정보 등록");
+        int insertMemberRoleResult = memberMapper.insertMemberRole(memberVO.getMemberId());
+        log.info(insertMemberRoleResult + "행 권한 정보 등록");
+        return 1;
     }
 
     @Override

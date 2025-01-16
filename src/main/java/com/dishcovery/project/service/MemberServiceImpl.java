@@ -31,10 +31,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberVO getMemberByEmail(String email) {
-        MemberVO memberVO = memberMapper.selectEmail(email);
-
-        return memberVO;
+    public MemberDTO getMemberByEmail(String email) {
+        log.info("getMemberByEmail");
+        return toDTO(memberMapper.selectEmail(email));
     }
 
     @Override

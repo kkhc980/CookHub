@@ -1,15 +1,17 @@
 package com.dishcovery.project.controller;
 
 import com.dishcovery.project.domain.MemberDTO;
-import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -80,7 +82,7 @@ public class MemberController {
     // 로그인 패스워드 비교
     @PostMapping(value = "/login")
     public String loginMethod(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        MemberVO loginMember = memberService.getMemberByEmail(email);
+        MemberDTO loginMember = memberService.getMemberByEmail(email);
         if (loginMember != null && loginMember.getAuthStatus() == 1 && passwordEncoder.matches(password, loginMember.getPassword())) {
             session.setAttribute("loginMember", loginMember);
             System.out.println("loginMember : " + loginMember);
@@ -100,8 +102,22 @@ public class MemberController {
         return "redirect:/auth/login";
     }
 
-    @GetMapping("/update")
-    public String moveMemberUpdatePage() {
-        return "/member/update";
+    @GetMapping("/detail")
+    public void moveMemberDetailPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        // @AuthenticationPrincipal : 인증된 사용자의 Principal을 주입
+        log.info("moveDetailPage");
+        log.info("userDetails : " + userDetails);
+        String email = userDetails.getUsername();
+        MemberDTO memberDTO = memberService.getMemberByEmail(email);
+        model.addAttribute("memberDTO", memberDTO);
     }
+
+    @GetMapping("/update")
+    public void moveMemberUpdatePage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("moveUpdatePage");
+        String email = userDetails.getUsername();
+        MemberDTO memberDTO = memberService.getMemberByEmail(email);
+        model.addAttribute("memberDTO", memberDTO);
+    }
+
 }

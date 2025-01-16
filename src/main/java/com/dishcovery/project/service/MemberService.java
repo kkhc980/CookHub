@@ -14,9 +14,9 @@ public interface MemberService {
 
     List<Integer> getAllId();
 
-    int updateMember(MemberVO memberVO);
+    int updateMember(MemberDTO memberDTO);
 
-    int deleteMember(int memberId);
+    int deleteMember(String email);
 
     MemberVO processSocialLogin(String name);
 

@@ -3,21 +3,21 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dishcovery.project.persistence.MemberMapper">
     <resultMap id="MemberResultMap" type="com.dishcovery.project.domain.MemberVO">
-        <id property="memberId" column="MEMBER_ID" />
-        <result property="email" column="EMAIL" />
-        <result property="password" column="PASSWORD" />
-        <result property="name" column="NAME" />
-        <result property="phone" column="PHONE_NUMBER" />
-        <result property="createdAt" column="CREATED_AT" />
-        <result property="updatedAt" column="UPDATED_AT" />
-        <result property="authKey" column="AUTH_KEY" />
-        <result property="authStatus" column="AUTH_STATUS" />
+        <id property="memberId" column="MEMBER_ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="PHONE_NUMBER"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="authKey" column="AUTH_KEY"/>
+        <result property="authStatus" column="AUTH_STATUS"/>
     </resultMap>
 
     <resultMap id="MemberRoleResultMap" type="com.dishcovery.project.domain.MemberRole">
-        <id property="roleId" column="ROLE_ID" />
-        <result property="memberId" column="MEMBER_ID" />
-        <result property="roleName" column="ROLE_NAME" />
+        <id property="roleId" column="ROLE_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="roleName" column="ROLE_NAME"/>
     </resultMap>
 
     <!-- 회원 가입 -->
@@ -25,7 +25,7 @@
         INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER)
         VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone})
     </insert>
-    
+
     <insert id="insertMemberRole">
         INSERT INTO MEMBER_ROLE (ROLE_ID, MEMBER_ID)
         VALUES (MEMBER_ROLE_SEQ.nextval, #{memberId})
@@ -53,12 +53,33 @@
           AND AUTH_KEY = #{authKey}
     </update>
 
+    <update id="updateMember">
+        UPDATE MEMBER
+        SET PASSWORD     = #{password},
+            NAME         = #{name},
+            PHONE_NUMBER = #{phone},
+            UPDATED_AT   = sysdate
+        WHERE EMAIL = #{email}
+    </update>
+
+    <update id="updateMemberAuthStatus">
+        UPDATE MEMBER
+        SET AUTH_STATUS = 2
+        WHERE EMAIL = #{email}
+    </update>
+
+    <update id="updateMemberRole">
+        UPDATE MEMBER_ROLE
+        SET ROLE_NAME = 'ROLE_DELETE'
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
     <!-- 유저 확인 -->
     <select id="selectEmail" resultMap="MemberResultMap">
         SELECT *
         FROM MEMBER
         WHERE EMAIL = #{email}
-        AND AUTH_STATUS = 1
+          AND AUTH_STATUS = 1
     </select>
 
     <select id="checkUser" resultMap="MemberResultMap">

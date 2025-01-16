@@ -20,8 +20,8 @@
     <input type="submit" value="로그인">
     <!-- CSRF 토큰 -->
     <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+    <button type="button" onclick="location.href='../member/signup'">회원가입</button>
 </form>
-<button type="button" onclick="location.href='../member/signup'">회원가입</button>
 </form>
 </body>
 </html>

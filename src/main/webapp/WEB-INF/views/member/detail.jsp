@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +11,7 @@
 <p>이메일 : ${memberDTO.email }</p>
 <p>회원 이름 : ${memberDTO.name }</p>
 <p>전화 번호 : ${memberDTO.phone }</p>
-<p>회원 등록일 : ${memberDTO.createdAt }</p>
+<p>회원 등록일 : <fmt:formatDate value="${memberDTO.createdAt}" pattern="yyyy년 M월 d일 E요일"/></p>
 <button id="updateMember">정보 수정</button>
 <button id="deleteMember">회원 탈퇴</button>
 <form id="deleteForm" action="delete" method="POST">

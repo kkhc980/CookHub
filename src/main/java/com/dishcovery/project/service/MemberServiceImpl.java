@@ -42,13 +42,24 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int updateMember(MemberVO memberVO) {
-        return 0;
+    public int updateMember(MemberDTO memberDTO) {
+        log.info("updateMember");
+        return memberMapper.updateMember(toEntity(memberDTO));
     }
 
     @Override
-    public int deleteMember(int memberId) {
-        return 0;
+    public int deleteMember(String email) {
+        log.info("deleteMember");
+
+        MemberDTO memberDTO = getMemberByEmail(email);
+
+        int deleteMember = memberMapper.updateMemberAuthStatus(email);
+        log.info(deleteMember + "row deleteMember");
+
+        int deleteMemberRole = memberMapper.updateMemberRole(toEntity(memberDTO).getMemberId());
+        log.info(deleteMemberRole + "row deleteMemberRole");
+
+        return 1;
     }
 
     @Override

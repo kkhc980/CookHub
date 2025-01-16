@@ -12,9 +12,7 @@
 
 <P> The time on the sever is ${serverTime}. </P>
 
-
-<div><a href="member/signup">회원가입 이동 테스트</a></div>
-<div><a href="auth/login">로그인 이동 테스트</a></div>
+<div><a href="recipeboard/list">레시피 보드 리스트 이동</a></div>
 <div>test kimheeseung</div>
 <div>test kill</div>
 </body>

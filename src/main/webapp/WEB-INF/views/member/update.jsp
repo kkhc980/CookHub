@@ -43,13 +43,21 @@
                 <span id="pwConfirmMsg"></span>
 
                 <h3 class="update-title">
-                    <label for="name">이름</label>
+                    <label for="userName">이름</label>
                 </h3>
                 <span>
-                    <input id="name" type="text" name="name" title="이름" maxlength="10"
+                    <input id="userName" type="text" name="name" title="이름" maxlength="10"
                            value="${memberDTO.name }">	<br>
                 </span>
                 <span id="nameMsg"></span>
+
+                <h3 class="update-title">
+                    <label for="phone">전화번호</label>
+                </h3>
+                <span>
+                    <input id="phone" type="text" name="phone" title="전화번호" value="${memberDTO.phone }"> <br>
+                </span>
+                <span id="phoneMsg"></span>
             </div>
         </div>
         <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
@@ -62,6 +70,7 @@
         var pwFlag = false; // memberPw 유효성 변수
         var pwConfirmFlag = false; // pwConfirm 유효성 변수
         var nameFlag = false; // memberName 유효성 변수
+        var phoneFlag = true;
 
         // 비밀번호 유효성 검사
         $('#password').blur(function () {
@@ -116,8 +125,8 @@
         });
 
         // 이름 유효성 검사
-        $('#memberName').blur(function () {
-            var memberName = $('#name').val(); // 입력한 데이터 값
+        $('#userName').blur(function () {
+            var memberName = $('#userName').val(); // 입력한 데이터 값
 
             if (memberName.trim() === '') { // 이름이 입력되지 않았을 경우
                 $('#nameMsg').html('필수 입력입니다.');
@@ -128,7 +137,27 @@
                 $('#nameMsg').html('');
                 nameFlag = true; // 유효성 true
             }
+        });
 
+        // 전화번호 유효성 검사 (input 이벤트로 변경)
+        $('#phone').on('input', function () {
+            var phoneNumber = $('#phone').val(); // 입력한 데이터 값
+            var phoneRegex = /^010-\d{4}-\d{4}$/;
+
+            if (!phoneRegex.test(phoneNumber) && phoneNumber.length > 0) {
+                $('#phoneMsg').html('잘못된 전화번호 형식입니다.');
+                $('#phoneMsg').css('color', 'red');
+                phoneFlag = false;
+            }
+            else if(phoneNumber.length === 0){
+                $('#phoneMsg').html('필수 입력입니다.');
+                $('#phoneMsg').css('color', 'red');
+                phoneFlag = false;
+            }
+            else{
+                $('#phoneMsg').html('');
+                phoneFlag = true;
+            }
         });
 
         // 회원 정보 form 데이터 전송
@@ -136,12 +165,11 @@
             console.log('pwFlag : ' + pwFlag);
             console.log('pwConfirmFlag : ' + pwConfirmFlag);
             console.log('nameFlag : ' + nameFlag);
+            console.log('phoneFlag : ' + phoneFlag);
 
-            setTimeout(function () {
-                if (pwFlag && pwConfirmFlag && nameFlag) { // 입력된 데이터가 모두 유효한 경우
-                    $('#modifyForm').submit(); // form 전송 실행
-                }
-            }, 500); // 0.5초 후에 실행
+            if (pwFlag && pwConfirmFlag && nameFlag && phoneFlag) { // 입력된 데이터가 모두 유효한 경우
+                $('#updateForm').submit(); // form 전송 실행
+            }
         });
     });
 </script>

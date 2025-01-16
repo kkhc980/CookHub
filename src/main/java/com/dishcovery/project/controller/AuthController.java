@@ -23,7 +23,7 @@ public class AuthController {
 
     // 로그인 페이지 요청을 처리하여 jsp 페이지를 호출하는 메서드
     @GetMapping("/login")
-    public void loginGET(String error, String logout, Model model) {
+    public String loginGET(String error, String logout, Model model) {
         // error : 에러 발생시 정보 저장
         // logout : 로그아웃 정보 저장
         log.info("loginGET()");
@@ -39,5 +39,9 @@ public class AuthController {
         if(logout != null) {
             model.addAttribute("logoutMsg", "로그아웃 되었습니다!");
         }
+
+        model.addAttribute("pageContent", "auth/login.jsp");
+
+        return "layout";
     }
 }

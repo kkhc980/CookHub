@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -93,12 +95,18 @@ public class RecipeBoardController {
     }
 
     @GetMapping("/detail/{recipeBoardId}")
-    public String getRecipeDetail(@PathVariable int recipeBoardId, Model model) {
+    public String getRecipeDetail(@PathVariable int recipeBoardId, Model model, HttpServletRequest request) {
         RecipeDetailVO detail = recipeBoardService.getRecipeDetailById(recipeBoardId);
 
         if (detail == null) {
             return "redirect:/recipeboard/list";
         }
+        
+        // 클라이언트 IP 주소 가져오기
+        String ipAddress = getClientIp(request);
+
+        // 조회수 증가 처리 (IP 기반 하루 한 번 제한)
+        recipeBoardService.increaseViewCountIfEligible((int) recipeBoardId, ipAddress);
 
         model.addAttribute("recipeBoard", detail.getRecipeBoard());
         model.addAttribute("typeName", detail.getTypeName());
@@ -109,6 +117,25 @@ public class RecipeBoardController {
         return "recipeboard/detail";
     }
 
+    private String getClientIp(HttpServletRequest request) {
+        // 1. 프록시나 로드 밸런서에서 전달된 헤더 확인
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // X-Forwarded-For 헤더에 여러 IP가 포함될 수 있으므로, 첫 번째 IP를 가져옵니다
+            return ip.split(",")[0].trim();
+        }
+
+        // 2. 직접 연결된 클라이언트의 IP 가져오기
+        ip = request.getRemoteAddr();
+
+        // 3. IPv6 로컬 호스트 주소를 IPv4로 변환 (테스트용)
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
+            ip = "192.168.0.139"; // 개발 PC의 실제 IP로 대체 (테스트용)
+        }
+
+        return ip;
+    }
+    
     @GetMapping("/update/{recipeBoardId}")
     public String updateForm(@PathVariable int recipeBoardId, Model model) {
         RecipeBoardVO recipeBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);

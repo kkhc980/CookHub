@@ -239,4 +239,41 @@
 	    INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
 	    WHERE rh.recipe_board_id = #{recipeBoardId}
 	</select>
+	
+	<!-- 오늘 해당 IP로 조회 기록 확인 -->
+    <select id="isViewLogged" resultType="int" parameterType="com.dishcovery.project.domain.RecipeBoardViewLogVO">
+	    SELECT COUNT(*)
+	    FROM RECIPE_BOARD_VIEW_LOG
+	    WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+	      AND IP_ADDRESS = #{ipAddress}
+	      AND VIEW_DATE = TRUNC(SYSDATE)
+    </select>
+
+    <!-- 조회 기록 추가 -->
+    <insert id="logView" parameterType="com.dishcovery.project.domain.RecipeBoardViewLogVO">
+        INSERT INTO RECIPE_BOARD_VIEW_LOG (LOG_ID, RECIPE_BOARD_ID, IP_ADDRESS, VIEW_DATE)
+        VALUES (SEQ_LOG_ID.NEXTVAL, #{recipeBoardId}, #{ipAddress}, TRUNC(SYSDATE))
+    </insert>
+
+    <!-- 조회수 증가 -->
+    <update id="increaseViewCount" parameterType="int">
+        UPDATE RECIPE_BOARD
+        SET VIEW_COUNT = VIEW_COUNT + 1
+        WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+    </update>
+    
+    <!-- 이전 날짜 조회 기록 삭제 -->
+    <delete id="deleteOldViewLogs">
+    <![CDATA[
+	    DELETE FROM RECIPE_BOARD_VIEW_LOG
+	    WHERE TRUNC(VIEW_DATE) < TRUNC(SYSDATE)
+	]]>
+	</delete>
+    
+    <!-- 저장된 썸네일 조회 -->
+    <select id="getAllThumbnailPaths" resultType="string">
+	    SELECT thumbnail_path
+	    FROM recipe_board
+	    WHERE thumbnail_path IS NOT NULL
+	</select>
 </mapper>

@@ -10,6 +10,7 @@ import com.dishcovery.project.domain.HashtagsVO;
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeBoardViewLogVO;
 import com.dishcovery.project.domain.RecipeHashtagsVO;
 import com.dishcovery.project.domain.RecipeIngredientsVO;
 import com.dishcovery.project.domain.SituationsVO;
@@ -59,4 +60,19 @@ public interface RecipeBoardMapper {
     // Sequence
     int getNextRecipeBoardId(); // SEQUENCE에서 다음 Recipe ID 가져오기
     int getNextHashtagId();
+    
+    // 조회 기록 여부 확인
+    int isViewLogged(RecipeBoardViewLogVO viewLogVO);
+
+    // 조회 기록 추가
+    void logView(RecipeBoardViewLogVO viewLogVO);
+
+    // 조회수 증가
+    void increaseViewCount(int recipeBoardId);
+    
+    // 이전 날짜 조회 기록 삭제
+    int deleteOldViewLogs();
+    
+    // 저장된 썸네일 조회
+    List<String> getAllThumbnailPaths();
 }

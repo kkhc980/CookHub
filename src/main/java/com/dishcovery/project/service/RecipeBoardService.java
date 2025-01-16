@@ -51,4 +51,13 @@ public interface RecipeBoardService {
 
     // Thumbnail Management
     Optional<Resource> getThumbnailByRecipeBoardId(int recipeBoardId); // Optional로 리소스 반환
+    
+    /**
+     * 게시글 조회수를 증가시킵니다.
+     * 동일한 IP는 하루에 한 번만 조회수를 증가시킵니다.
+     *
+     * @param recipeBoardId 게시글 ID
+     * @param ipAddress     클라이언트 IP 주소
+     */
+    void increaseViewCountIfEligible(int recipeBoardId, String ipAddress);
 }

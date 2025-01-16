@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -18,6 +19,7 @@ import com.zaxxer.hikari.HikariDataSource;
 // root-context.xml과 동일
 @Configuration
 @EnableTransactionManagement // 트랜잭션 어노테이션 활성화
+@EnableScheduling
 @ComponentScan(basePackages = {"com.dishcovery.project"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
 public class RootConfig {

@@ -22,6 +22,7 @@ import com.dishcovery.project.domain.HashtagsVO;
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeBoardViewLogVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.domain.RecipeHashtagsVO;
 import com.dishcovery.project.domain.RecipeIngredientsVO;
@@ -385,4 +386,23 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
             }
         }
     }
+    
+    @Override
+    public void increaseViewCountIfEligible(int recipeBoardId, String ipAddress) {
+        RecipeBoardViewLogVO viewLogVO = new RecipeBoardViewLogVO();
+        viewLogVO.setRecipeBoardId(recipeBoardId);
+        viewLogVO.setIpAddress(ipAddress);
+
+        int viewLogCount = mapper.isViewLogged(viewLogVO);
+        System.out.println("View log count for IP " + ipAddress + " on recipeBoardId " + recipeBoardId + ": " + viewLogCount);
+
+        if (viewLogCount == 0) {
+            mapper.logView(viewLogVO);
+            mapper.increaseViewCount(recipeBoardId);
+            System.out.println("View logged and count increased for IP " + ipAddress);
+        } else {
+            System.out.println("Duplicate view detected for IP " + ipAddress + " on recipeBoardId " + recipeBoardId);
+        }
+    }
+    
 }

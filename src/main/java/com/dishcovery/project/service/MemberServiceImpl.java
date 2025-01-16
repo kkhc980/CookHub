@@ -22,7 +22,7 @@ public class MemberServiceImpl implements MemberService {
         int insertMemberResult = memberMapper.insert(toEntity(memberDTO));
         log.info(insertMemberResult + " member register");
 
-        int memberId = memberMapper.selectEmail(memberDTO.getEmail()).getMemberId();
+        int memberId = memberMapper.checkUser(memberDTO.getEmail()).getMemberId();
         log.info(memberId + " check");
 
         int insertMemberRoleResult = memberMapper.insertMemberRole(memberId);

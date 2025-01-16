@@ -5,8 +5,6 @@
 <html>
 <head>
     <title>Register Recipe</title>
-    <meta name="_csrf" content="${_csrf.token}"/>
-    <meta name="_csrf_header" content="${_csrf.headerName}"/>
     <style>
         .selection-container {
             margin-bottom: 20px;
@@ -266,8 +264,6 @@
 
         <!-- Submit Button -->
         <button type="submit">Submit</button>
-        <!-- CSRF 토큰 -->
-        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
     </form>
 </body>
 </html>

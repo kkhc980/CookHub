@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/src/main/java/com/dishcovery/project/controller/RecipeBoardController.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/dishcovery/project/persistence/NoticeBoardMapper.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/dishcovery/project/service/NoticeBoardService.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/dishcovery/project/service/NoticeBoardServiceImple.java" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

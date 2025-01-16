@@ -6,6 +6,9 @@
 <html>
 <head>
     <title>Recipe Board List</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,19 +48,23 @@
 		    display: flex;
 		    flex-wrap: wrap;
 		    gap: 20px;
-		    justify-content: center; /* 가로 중앙 정렬 */
-		    align-items: center;    /* 세로 중앙 정렬 */
+		    justify-content: center;
+		    align-items: center;
 		}
 
         .recipe-card {
-            width: 22%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            cursor: pointer;
-            background-color: #fff;
-            transition: transform 0.2s;
-        }
+	    width: 22%;
+	    border: 1px solid #ddd;
+	    border-radius: 5px;
+	    overflow: hidden;
+	    cursor: pointer;
+	    background-color: #fff;
+	    transition: transform 0.2s;
+	    display: flex; /* 카드 내부를 Flexbox로 설정 */
+	    flex-direction: column; /* 세로로 배치 */
+	    align-items: center; /* 수평 중앙 정렬 */
+	    justify-content: center; /* 수직 중앙 정렬 */
+	}
 
         .recipe-card:hover {
             transform: scale(1.05);
@@ -120,11 +127,74 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        
+        .register-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .register-button:hover {
+            background-color: #45a049;
+        }
+        
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 60%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Recipe Board</h1>
 
+
+	<!-- 검색창 및 버튼 -->
+    <div class="search-container">
+        <form method="GET" action="" id="searchForm">
+            <input 
+                type="text" 
+                name="hashtag" 
+                value="${param.hashtag}" 
+                placeholder="Enter hashtags to search..." 
+                class="search-input">
+            <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+    
     <!-- Filters Section -->
     <div class="filters-container">
         <!-- Type Filter -->
@@ -169,6 +239,8 @@
         </div>
     </div>
 
+ <!-- 등록 버튼 -->
+    <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-button">등록</a>
     <!-- Recipe List Section -->
     <div class="recipe-list">
         <c:forEach var="recipe" items="${recipeList}">
@@ -185,32 +257,34 @@
     </div>
 
     <!-- Pagination Section -->
-<div class="pagination-container">
-    <c:if test="${pageMaker.prev}">
-        <a class="pagination-link" 
-           href="?pageNum=${pageMaker.startNum - 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}">
-            이전
-        </a>
-    </c:if>
-    <c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
-        <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}" 
-           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}">
-            ${pageNum}
-        </a>
-    </c:forEach>
-    <c:if test="${pageMaker.next}">
-        <a class="pagination-link" 
-           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}">
-            다음
-        </a>
-    </c:if>
-</div>
+	<div class="pagination-container">
+	    <c:if test="${pageMaker.prev}">
+	        <a class="pagination-link" 
+	           href="?pageNum=${pageMaker.startNum - 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	            이전
+	        </a>
+	    </c:if>
+	    <c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
+	        <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}" 
+	           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	            ${pageNum}
+	        </a>
+	    </c:forEach>
+	    <c:if test="${pageMaker.next}">
+	        <a class="pagination-link" 
+	           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	            다음
+	        </a>
+	    </c:if>
+	</div>
 
     <script>
         function applyFilter(key, value) {
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set(key, value);
             urlParams.set("pageNum", "1");
+            
+            urlParams.delete("hashtag");
             window.location.search = urlParams.toString();
         }
 
@@ -267,11 +341,41 @@
 
                     // 필터 변경 시 pageNum을 항상 1로 초기화
                     urlParams.set("pageNum", "1");
+                    urlParams.delete("hashtag");
 
                     window.location.search = urlParams.toString();
                 });
             });
         });
     </script>
+    
+    <script>
+	    $(document).ready(function () {
+	        // 자동완성 적용
+	        $(".search-input").autocomplete({
+	            source: function (request, response) {
+	                $.ajax({
+	                    url: "${pageContext.request.contextPath}/autocomplete", // Spring Controller의 URL
+	                    type: "GET",
+	                    data: {
+	                        q: request.term // 입력된 검색어
+	                    },
+	                    success: function (data) {
+	                        response(data); // 결과를 autocomplete에 전달
+	                    },
+	                    error: function (xhr) {
+	                        console.error("Error fetching autocomplete suggestions:", xhr);
+	                    }
+	                });
+	            },
+	            minLength: 1, // 최소 몇 글자 입력 후 동작할지 설정
+	            select: function (event, ui) {
+	                $(".search-input").val(ui.item.value); // 선택한 항목을 입력창에 삽입
+	                $("#searchForm").submit(); // 자동으로 폼 제출
+	            }
+	        });
+	    });
+	</script>
+
 </body>
 </html>

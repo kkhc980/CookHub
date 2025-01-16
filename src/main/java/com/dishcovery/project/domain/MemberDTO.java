@@ -1,18 +1,17 @@
 package com.dishcovery.project.domain;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-public class MemberVO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class MemberDTO {
     private int memberId;
     private String email;
     private String password;

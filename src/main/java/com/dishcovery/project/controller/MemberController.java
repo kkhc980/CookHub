@@ -1,5 +1,6 @@
 package com.dishcovery.project.controller;
 
+import com.dishcovery.project.domain.MemberDTO;
 import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/member")
 @Log4j
 public class MemberController {
     @Autowired
@@ -30,7 +33,7 @@ public class MemberController {
     private MailSendService mss;
 
     // 이메일 중복 확인 처리
-    @PostMapping("/member/emailCheck")
+    @PostMapping("/emailCheck")
     public ResponseEntity<String> checkEmailDuplication(@RequestParam String email) {
         boolean isDuplicate = memberService.selectDupCheckEmail(email);
         if (isDuplicate) {
@@ -40,39 +43,42 @@ public class MemberController {
         }
     }
 
-    @GetMapping("/member/signup")
-    public String moveSignupPage() {
-        return "/member/signup";
+    @GetMapping("/signup")
+    public void moveSignupPage() {
+        log.info("moveSignupPage");
     }
 
     // 회원 가입 처리
-    @PostMapping("/member/signup")
-    public String registerMember(MemberVO memberVO) {
-        String password = memberVO.getPassword();
-        memberVO.setPassword(passwordEncoder.encode(password));
-        int result = memberService.registerMember(memberVO);
+    @PostMapping("/signup")
+    public String registerMember(MemberDTO memberDTO) {
+        String password = memberDTO.getPassword();
+        memberDTO.setPassword(passwordEncoder.encode(password));
+        int result = memberService.registerMember(memberDTO);
+        log.info(result + "행 등록");
 
         //임의의 authKey 생성 & 이메일 발송
-        String authKey = mss.sendAuthMail(memberVO.getEmail());
-        memberVO.setAuthKey(authKey);
+        String authKey = mss.sendAuthMail(memberDTO.getEmail());
+        memberDTO.setAuthKey(authKey);
 
         Map<String, String> map = new HashMap<String, String>();
-        map.put("email", memberVO.getEmail());
-        map.put("authKey", memberVO.getAuthKey());
+        map.put("email", memberDTO.getEmail());
+        map.put("authKey", memberDTO.getAuthKey());
         System.out.println(map);
 
         //DB에 authKey 업데이트
-        memberService.updateAuthKey(map);
-        return "/";
+        int updateResult = memberService.updateAuthKey(map);
+        log.info(updateResult + "행 수정");
+
+        return "redirect:/auth/login";
     }
 
-    @GetMapping("/member/login")
-    public String moveLoginPage() {
-        return "/member/login";
+    @GetMapping("/login")
+    public void moveLoginPage() {
+        log.info("moveLoginPage");
     }
 
     // 로그인 패스워드 비교
-    @PostMapping(value = "/member/login")
+    @PostMapping(value = "/login")
     public String loginMethod(@RequestParam String email, @RequestParam String password, HttpSession session) {
         MemberVO loginMember = memberService.getMemberByEmail(email);
         if (loginMember != null && loginMember.getAuthStatus() == 1 && passwordEncoder.matches(password, loginMember.getPassword())) {
@@ -87,14 +93,14 @@ public class MemberController {
     }
 
     // 메일 인증
-    @GetMapping("/member/signUpConfirm")
+    @GetMapping("/signUpConfirm")
     public String signUpConfirm(@RequestParam Map<String, String> map) {
         //email, authKey 가 일치할경우 authStatus 업데이트
         memberService.updateAuthStatus(map);
-        return "/member/login";
+        return "redirect:/auth/login";
     }
 
-    @GetMapping("/member/update")
+    @GetMapping("/update")
     public String moveMemberUpdatePage() {
         return "/member/update";
     }

@@ -5,6 +5,8 @@
 <html>
 <head>
     <title>Register Recipe</title>
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
     <style>
         .selection-container {
             margin-bottom: 20px;
@@ -26,7 +28,7 @@
         .selection-container li input {
             margin-right: 5px;
         }
-        
+
         .thumbnail-preview {
             margin-top: 10px;
         }
@@ -34,9 +36,105 @@
             max-width: 200px;
             max-height: 200px;
         }
+
+        .hashtag-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .hashtag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 15px;
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .hashtag .remove-hashtag {
+            margin-left: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: red;
+        }
     </style>
     
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const hashtagInput = document.getElementById("hashtagInput");
+        const hashtagList = document.getElementById("hashtagList");
+        const hashtagsHiddenInput = document.getElementById("hashtagsHiddenInput");
+
+        // 해시태그 목록 저장용
+        let hashtags = [];
+
+        // 엔터 키 입력 시 해시태그 추가
+        hashtagInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault(); // 폼 제출 방지
+                const value = hashtagInput.value.trim(); // 공백 제거
+                if (value && !hashtags.includes(value)) {
+                    console.log("New hashtag entered:", value); // 디버깅: 입력값 확인
+                    addHashtag(value);
+                    hashtagInput.value = ""; // 입력 필드 초기화
+                } else if (hashtags.includes(value)) {
+                    console.log("Duplicate hashtag ignored:", value); // 중복 확인
+                    alert("This hashtag is already added.");
+                } else {
+                    console.log("Invalid or empty hashtag ignored."); // 유효하지 않은 값
+                }
+            }
+        });
+
+        // 해시태그 추가 함수
+        function addHashtag(value) {
+		    console.log("Adding hashtag to UI:", value); // 디버깅용
+		
+		    // 해시태그 목록에 추가
+		    hashtags.push(value);
+		
+		    // UI에 해시태그 추가
+		    const hashtagElement = document.createElement("div");
+		    hashtagElement.className = "hashtag";
+		
+		    // 해시태그 텍스트 추가
+		    const hashtagText = document.createTextNode("#" + value); // 문자열 결합으로 해시태그 표시
+		    hashtagElement.appendChild(hashtagText);
+		
+		    // X 버튼 추가
+		    const removeButton = document.createElement("span");
+		    removeButton.className = "remove-hashtag";
+		    removeButton.textContent = "x";
+		    removeButton.addEventListener("click", function () {
+		        removeHashtag(value, hashtagElement);
+		    });
+		
+		    hashtagElement.appendChild(removeButton);
+		    hashtagList.appendChild(hashtagElement);
+		
+		    console.log("Hashtag added to UI element:", hashtagElement); // 디버깅용
+		
+		    // 히든 필드 업데이트
+		    updateHiddenInput();
+		}
+
+        // 해시태그 제거 함수
+        function removeHashtag(value, element) {
+            console.log("Hashtag removed:", value); // 디버깅: 제거된 값 확인
+            hashtags = hashtags.filter((tag) => tag !== value); // 목록에서 제거
+            hashtagList.removeChild(element); // UI에서 제거
+
+            // 히든 필드 업데이트
+            updateHiddenInput();
+        }
+
+        // 히든 필드 업데이트
+        function updateHiddenInput() {
+            hashtagsHiddenInput.value = hashtags.join(","); // 콤마로 연결된 문자열 저장
+            console.log("Updated hidden input value:", hashtagsHiddenInput.value); // 디버깅: 숨겨진 필드 값 확인
+        }
+    });
+
         function validateAndPreviewThumbnail(input) {
             const previewImage = document.getElementById('thumbnailPreview');
             const noThumbnailMessage = document.getElementById('noThumbnailMessage');
@@ -86,13 +184,23 @@
         <label for="recipeBoardContent">Content:</label>
         <textarea id="recipeBoardContent" name="recipeBoardContent" rows="5" cols="50" required></textarea>
         <br><br>
-        
+
         <!-- Thumbnail Upload -->
         <label for="thumbnail">Thumbnail Image (Required):</label>
         <input type="file" id="thumbnail" name="thumbnail" accept="image/*" onchange="validateAndPreviewThumbnail(this)" required>
         <div class="thumbnail-preview">
             <p id="noThumbnailMessage" style="color: red;">No thumbnail selected. Please upload an image.</p>
             <img id="thumbnailPreview" src="#" alt="Thumbnail Preview" style="display: none;">
+        </div>
+        <br><br>
+
+        <!-- Hashtags -->
+        <div class="selection-container">
+            <h3>Hashtags</h3>
+            <input type="text" id="hashtagInput" placeholder="Enter hashtag and press Enter" />
+            <div id="hashtagList" class="hashtag-container"></div>
+            <!-- Hidden input to store hashtags as comma-separated values -->
+            <input type="hidden" id="hashtagsHiddenInput" name="hashtags">
         </div>
         <br><br>
 
@@ -158,6 +266,8 @@
 
         <!-- Submit Button -->
         <button type="submit">Submit</button>
+        <!-- CSRF 토큰 -->
+        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
     </form>
 </body>
 </html>

@@ -1,9 +1,9 @@
 package com.dishcovery.project.config;
 
-import javax.servlet.Filter;
-
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import javax.servlet.Filter;
 
 // web.xml과 동일
 public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitializer{
@@ -11,7 +11,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
 	@Override
 	protected Class<?>[] getRootConfigClasses() {
 		
-		return new Class[] {RootConfig.class}; // RootConfig, SecurityConfig 클래스 리턴
+		return new Class[] {RootConfig.class, SecurityConfig.class}; // RootConfig, SecurityConfig 클래스 리턴
 	}
 
 	@Override

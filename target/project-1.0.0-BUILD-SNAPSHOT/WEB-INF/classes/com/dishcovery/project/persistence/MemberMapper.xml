@@ -61,6 +61,12 @@
         AND AUTH_STATUS = 1
     </select>
 
+    <select id="checkUser" resultMap="MemberResultMap">
+        SELECT *
+        FROM MEMBER
+        WHERE EMAIL = #{email}
+    </select>
+
     <select id="selectRoleByMemberId" resultMap="MemberRoleResultMap">
         SELECT *
         FROM MEMBER_ROLE

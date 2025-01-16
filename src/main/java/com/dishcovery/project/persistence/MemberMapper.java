@@ -11,8 +11,8 @@ public interface MemberMapper {
     int insert(MemberVO memberVO);
     int insertMemberRole(int memberId);
     int selectDupCheckEmail(String email);
-    void updateAuthKey(Map<String, String> map);
-    void updateAuthStatus(Map<String, String> map);
+    int updateAuthKey(Map<String, String> map);
+    int updateAuthStatus(Map<String, String> map);
     MemberVO selectEmail(String email);
     MemberRole selectRoleByMemberId(int memberId);
 }

@@ -1,5 +1,6 @@
 package com.dishcovery.project.service;
 
+import com.dishcovery.project.domain.MemberDTO;
 import com.dishcovery.project.domain.MemberVO;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 public interface MemberService {
 
-    int registerMember(MemberVO memberVO);
+    int registerMember(MemberDTO memberDTO);
 
     MemberVO getMemberByEmail(String email);
 
@@ -21,8 +22,8 @@ public interface MemberService {
 
     boolean selectDupCheckEmail(String email);
 
-    void updateAuthStatus(Map<String, String> map);
+    int updateAuthStatus(Map<String, String> map);
 
-    void updateAuthKey(Map<String, String> map);
+    int updateAuthKey(Map<String, String> map);
 
 }

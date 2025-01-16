@@ -21,12 +21,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private MemberMapper memberMapper;
 
-    // 전송된 username 으로 사용자 정보를 조회하고, UserDetails 에 저장하여 리턴하는 메서드
+    // 전송된 email 으로 사용자 정보를 조회하고, UserDetails 에 저장하여 리턴하는 메서드
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("loadUserByUsername()");
-        log.info(email);
-        // 사용자 ID를 이용하여 회원 정보와 권한 정보를 조회
+        log.info("email : " + email);
+        // 이메일을 이용하여 회원 정보와 권한 정보를 조회
         MemberVO member = memberMapper.selectEmail(email);
         MemberRole role = memberMapper.selectRoleByMemberId(member.getMemberId());
 

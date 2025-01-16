@@ -5,6 +5,8 @@
 <html>
 <head>
     <title>Register Recipe</title>
+    <meta name="_csrf" content="${_csrf.token}" />
+	<meta name="_csrf_header" content="${_csrf.headerName}" />
     <style>
         .selection-container {
             margin-bottom: 20px;
@@ -62,7 +64,40 @@
         const hashtagInput = document.getElementById("hashtagInput");
         const hashtagList = document.getElementById("hashtagList");
         const hashtagsHiddenInput = document.getElementById("hashtagsHiddenInput");
+/*         const registerForm = document.getElementById("registerForm");
+        
+        // 폼 제출 시 JavaScript로 전송 처리
+        registerForm.addEventListener("submit", function (e) {
+            e.preventDefault(); // 기본 폼 제출 방지
 
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content; // CSRF 토큰
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content; // CSRF 헤더 이름
+
+            // Ajax 요청으로 폼 데이터를 전송하는 방법
+            const formData = new FormData(registerForm); // 폼 데이터를 가져옴
+
+            // CSRF 토큰을 요청 헤더에 추가
+            const request = new XMLHttpRequest();
+            request.open("POST", registerForm.action, true);
+            request.setRequestHeader(csrfHeader, csrfToken); // 헤더에 CSRF 토큰 추가
+
+            // 폼 데이터 전송
+            request.onload = function () {
+                if (request.status === 200) {
+                    alert("폼이 성공적으로 제출되었습니다.");
+                    window.location.href = registerForm.action.replace("register", "list");
+                    // 성공적으로 제출된 후 처리 로직을 추가할 수 있습니다.
+                } else {
+                    alert("폼 제출에 실패했습니다.");
+                    console.error("에러 상태 코드:", request.status);
+                    console.error("응답 내용:", request.responseText);
+                }
+            };
+
+            // 폼 데이터를 전송
+            request.send(formData);
+        });
+ */
         // 해시태그 목록 저장용
         let hashtags = [];
 
@@ -170,7 +205,7 @@
 </head>
 <body>
     <h1>Register a New Recipe</h1>
-    <form action="${pageContext.request.contextPath}/recipeboard/register" method="post" enctype="multipart/form-data">
+    <form id="registerForm" action="${pageContext.request.contextPath}/recipeboard/register" method="post" enctype="multipart/form-data">
         <input type="hidden" id="memberId" name="memberId" value="1">
         
         <!-- Title -->
@@ -261,7 +296,7 @@
                 </c:forEach>
             </ul>
         </div>
-
+		<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
         <!-- Submit Button -->
         <button type="submit">Submit</button>
     </form>

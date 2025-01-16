@@ -6,6 +6,8 @@
 <html>
 <head>
     <title>Update Recipe</title>
+    <meta name="_csrf" content="${_csrf.token}" />
+	<meta name="_csrf_header" content="${_csrf.headerName}" />
     <style>
     .thumbnail-preview {
         margin-top: 10px;
@@ -185,6 +187,7 @@
 <body>
     <h1>Update Recipe</h1>
     <form action="${pageContext.request.contextPath}/recipeboard/update" method="post" enctype="multipart/form-data">
+    	<!-- CSRF 토큰 추가 -->
         <input type="hidden" name="recipeBoardId" value="${recipeBoard.recipeBoardId}">
 
         <!-- Recipe Title -->
@@ -297,6 +300,7 @@
 		<br><br>
 
         <!-- Submit Button -->
+        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
         <button type="submit">Update</button>
     </form>
 </body>

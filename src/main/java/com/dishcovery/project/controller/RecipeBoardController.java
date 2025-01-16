@@ -1,6 +1,7 @@
 package com.dishcovery.project.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.RecipeBoardVO;
@@ -89,7 +92,7 @@ public class RecipeBoardController {
             @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
             @RequestParam(value = "hashtags", required = false) String hashtags,
             @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail) {
-    	log.info("Received hashtags: " + hashtags);
+    	log.info("POST 요청 도달 - Recipe 등록");
     	recipeBoardService.createRecipe(recipeBoard, ingredientIds, hashtags, thumbnail);
         return "redirect:/recipeboard/list";
     }
@@ -179,5 +182,20 @@ public class RecipeBoardController {
         return recipeBoardService.getThumbnailByRecipeBoardId(recipeBoardId)
                 .map(resource -> ResponseEntity.ok(resource))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping("/csrf-debug")
+    @ResponseBody
+    public Map<String, String> debugCsrf(HttpServletRequest request) {
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        Map<String, String> csrfInfo = new HashMap<>();
+        if (csrfToken != null) {
+            csrfInfo.put("token", csrfToken.getToken());
+            csrfInfo.put("headerName", csrfToken.getHeaderName());
+            csrfInfo.put("parameterName", csrfToken.getParameterName());
+        } else {
+            csrfInfo.put("error", "CSRF 토큰을 생성할 수 없습니다.");
+        }
+        return csrfInfo;
     }
 }

@@ -80,7 +80,33 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     @Transactional
     public void updateRecipe(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, String hashtags, MultipartFile thumbnail) {
         try {
-            // 기존 로직 (썸네일 처리, 재료 업데이트 등)
+        	// 기존 레시피 정보 가져오기
+            RecipeBoardVO existingRecipe = getByRecipeBoardId(recipeBoard.getRecipeBoardId());
+            if (existingRecipe == null) {
+                throw new IllegalArgumentException("Recipe not found with ID: " + recipeBoard.getRecipeBoardId());
+            }
+
+            // 썸네일 처리
+            if (thumbnail == null || thumbnail.isEmpty()) {
+                // 파일이 선택되지 않았을 경우 기존 썸네일 유지
+                recipeBoard.setThumbnailPath(existingRecipe.getThumbnailPath());
+            } else {
+                // 기존 썸네일 삭제
+                if (existingRecipe.getThumbnailPath() != null) {
+                    FileUploadUtil.deleteFile("C:/uploads", existingRecipe.getThumbnailPath());
+                }
+                // 새 썸네일 저장
+                String thumbnailPath = saveThumbnail(thumbnail);
+                recipeBoard.setThumbnailPath(thumbnailPath);
+            }
+
+            // 레시피 업데이트
+            mapper.updateRecipeBoard(recipeBoard);
+
+            // 기존 재료 정보 삭제 및 추가
+            mapper.deleteRecipeIngredientsByRecipeId(recipeBoard.getRecipeBoardId());
+            addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
+
 
             // 기존 해시태그 가져오기
             List<String> existingHashtags = mapper.getHashtagNamesByRecipeId(recipeBoard.getRecipeBoardId());

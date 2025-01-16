@@ -1,6 +1,5 @@
 package com.dishcovery.project.config;
 
-import com.dishcovery.project.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,12 +11,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.multipart.support.MultipartFilter;
+
+import com.dishcovery.project.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    // 비밀번호 암호화를 위한 BCryptPasswordEncoder 를 빈으로 생성
+    // 비밀번호 암호화를 위한 BCryptPasswordEncoder를 빈으로 생성
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -28,28 +30,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
                 .antMatchers("/member/detail").access("hasRole('ROLE_MEMBER')")
-                .antMatchers("/member/update").access("hasRole('ROLE_MEMBER')");
+                .antMatchers("/member/update").access("hasRole('ROLE_MEMBER')")
+                .antMatchers("/recipeboard/register").permitAll();
 
         // 접근 제한 경로 설정
         httpSecurity.exceptionHandling().accessDeniedPage("/auth/accessDenied");
 
-        httpSecurity.formLogin().loginPage("/auth/login") // 커스텀 로그인 url 설정
+        httpSecurity.formLogin().loginPage("/auth/login") // 커스텀 로그인 URL 설정
                 .usernameParameter("email") // 이메일 파라미터 설정
                 .passwordParameter("password") // 비밀번호 파라미터 설정
-                .defaultSuccessUrl("/recipeboard/list"); // 접근 제한 설정이 되어 있지 않은 url에서 로그인 성공 시 이동할 url 설정
+                .defaultSuccessUrl("/recipeboard/list"); // 로그인 성공 시 이동할 URL 설정
 
-        httpSecurity.logout().logoutUrl("/auth/logout") // logout url 설정
-                .logoutSuccessUrl("/recipeboard/list") // 로그아웃 성공 시 이동할 url 설정
+        httpSecurity.logout().logoutUrl("/auth/logout") // 로그아웃 URL 설정
+                .logoutSuccessUrl("/recipeboard/list") // 로그아웃 성공 시 이동할 URL 설정
                 .invalidateHttpSession(true); // 세션 무효화 설정
 
-
-        // header 정보에 xssProtection 기능 설정
-//		httpSecurity.headers().xssProtection().block(true);
-//		httpSecurity.headers().contentSecurityPolicy("script-src 'self' https://code.jquery.com 'unsafe-inline' 'unsafe-eval'");
-
-        // encoding 필터를 Csrf 필터보다 먼저 실행
+        // Encoding 필터를 Csrf 필터보다 먼저 실행
         httpSecurity.addFilterBefore(encodingFilter(), CsrfFilter.class);
-
+        httpSecurity.addFilterBefore(multipartFilter(), CsrfFilter.class);
     }
 
     // AuthenticationManagerBuilder 객체를 통해 인증 기능을 구성
@@ -67,6 +65,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // CharacterEncodingFilter 빈 생성
     @Bean
     public CharacterEncodingFilter encodingFilter() {
-        return new CharacterEncodingFilter("UTF-8");
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        return filter;
+    }
+    
+    @Bean
+    public MultipartFilter multipartFilter() {
+        MultipartFilter multipartFilter = new MultipartFilter();
+        multipartFilter.setMultipartResolverBeanName("multipartResolver");
+        return multipartFilter;
     }
 }

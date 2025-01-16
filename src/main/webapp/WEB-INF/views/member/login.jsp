@@ -11,6 +11,5 @@
     <input type="submit" value="로그인">
     <button type="button" onclick="location.href='../member/signup'">회원가입</button>
 </form>
-</form>
 </body>
 </html>

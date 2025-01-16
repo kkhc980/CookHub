@@ -4,7 +4,7 @@
     <title>Login</title>
     <meta name="_csrf" content="${_csrf.token}"/>
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" ></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
 <body>
 <!-- 에러 메시지 출력 -->
@@ -21,7 +21,7 @@
     <!-- CSRF 토큰 -->
     <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
 </form>
-    <button type="button" onclick="location.href='../member/signup'">회원가입</button>
+<button type="button" onclick="location.href='../member/signup'">회원가입</button>
 </form>
 </body>
 </html>

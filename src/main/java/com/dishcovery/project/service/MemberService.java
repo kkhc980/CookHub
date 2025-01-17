@@ -8,15 +8,15 @@ import java.util.Map;
 
 public interface MemberService {
 
-    int registerMember(MemberDTO memberDTO);
+    int registerMember(MemberDTO memberDTO); // 회원 정보 등록
 
-    MemberVO getMemberByEmail(String email);
+    MemberDTO getMemberByEmail(String email); // 회원 정보 조회
 
     List<Integer> getAllId();
 
-    int updateMember(MemberVO memberVO);
+    int updateMember(MemberDTO memberDTO);
 
-    int deleteMember(int memberId);
+    int deleteMember(String email);
 
     MemberVO processSocialLogin(String name);
 

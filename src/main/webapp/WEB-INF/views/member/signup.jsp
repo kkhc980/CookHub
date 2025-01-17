@@ -3,9 +3,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Enroll</title>
+    <title>Signup</title>
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script type="text/javascript">
+        $(document).ajaxSend(function(e, xhr, opt){
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            xhr.setRequestHeader(header, token);
+        });
+
         function validate() {
             //전송 보내기전 (submit 버튼 클릭시) 입력값들이 유효한지 검사
 
@@ -88,6 +97,8 @@
             <td><input type="submit" value="가입하기"></td>
         </tr>
     </table>
+    <!-- CSRF 토큰 -->
+    <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
 </form>
 </body>
 </html>

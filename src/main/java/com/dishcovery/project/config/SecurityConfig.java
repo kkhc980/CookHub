@@ -31,7 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.authorizeRequests()
                 .antMatchers("/member/detail").access("hasRole('ROLE_MEMBER')")
                 .antMatchers("/member/update").access("hasRole('ROLE_MEMBER')")
-                .antMatchers("/recipeboard/register").permitAll();
+                .antMatchers("/recipeboard/register").permitAll()
+        		.antMatchers("/recipeboard/update").permitAll()
+        		.antMatchers("/recipeboard/delete").permitAll();
 
         // 접근 제한 경로 설정
         httpSecurity.exceptionHandling().accessDeniedPage("/auth/accessDenied");

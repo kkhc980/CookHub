@@ -61,17 +61,12 @@ public interface RecipeBoardMapper {
     int getNextRecipeBoardId(); // SEQUENCE에서 다음 Recipe ID 가져오기
     int getNextHashtagId();
     
-    // 조회 기록 여부 확인
-    int isViewLogged(RecipeBoardViewLogVO viewLogVO);
-
-    // 조회 기록 추가
-    void logView(RecipeBoardViewLogVO viewLogVO);
-
-    // 조회수 증가
-    void increaseViewCount(int recipeBoardId);
-    
-    // 이전 날짜 조회 기록 삭제
-    int deleteOldViewLogs();
+    // ViewLog
+    int isViewLogged(RecipeBoardViewLogVO viewLogVO); // 조회 기록 여부 확인
+    void logView(RecipeBoardViewLogVO viewLogVO); // 조회 기록 추가
+    void increaseViewCount(int recipeBoardId); // 조회수 증가 
+    int deleteOldViewLogs(); // 이전 날짜 조회 기록 삭제
+    void deleteRecipeViewLogsByRecipeId(int recipeBoardId); // 조회 기록 삭제
     
     // 저장된 썸네일 조회
     List<String> getAllThumbnailPaths();

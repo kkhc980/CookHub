@@ -117,6 +117,7 @@
    <button type="button" id="deleteBoard">글 삭제</button>
    <form id="deleteForm"
       action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
       <input type="hidden" name="recipeBoardId"
          value="${recipeBoard.recipeBoardId}">
    </form>

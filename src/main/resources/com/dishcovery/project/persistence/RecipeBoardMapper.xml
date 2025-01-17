@@ -276,4 +276,8 @@
 	    FROM recipe_board
 	    WHERE thumbnail_path IS NOT NULL
 	</select>
+	
+	<delete id="deleteRecipeViewLogsByRecipeId" parameterType="int">
+	    DELETE FROM RECIPE_BOARD_VIEW_LOG WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+	</delete>
 </mapper>

@@ -191,6 +191,7 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
                 deleteThumbnail(existingRecipe.getThumbnailPath());
             }
             // 게시글 삭제 (해시태그 관계 포함)
+            mapper.deleteRecipeViewLogsByRecipeId(recipeBoardId);
             mapper.deleteRecipeHashtagsByRecipeId(recipeBoardId);
             mapper.deleteRecipeIngredientsByRecipeId(recipeBoardId);
             mapper.deleteRecipeBoard(recipeBoardId);

@@ -1,9 +1,9 @@
 package com.dishcovery.project.config;
 
+import javax.servlet.Filter;
+
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
-
-import javax.servlet.Filter;
 
 // web.xml과 동일
 public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitializer{

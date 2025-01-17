@@ -22,8 +22,7 @@ public class BoardScheduler {
         this.mapper = mapper;
     }
 
-    // 매일 자정에 오래된 로그 삭제
-    @Scheduled(cron = "0 0 0 * * ?")// 매일 자정 실행
+    @Scheduled(cron = "0 30 12 * * ?")// 매일 12시 30분 실행
     public void scheduledDeleteOldViewLogs() {
         deleteOldViewLogs();
         log.info("Scheduled task executed: Old view logs deleted.");
@@ -41,8 +40,8 @@ public class BoardScheduler {
         }
     }
     
-    // 매일 자정에 실행
-    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE) // 필요에 따라 실행 주기 변경
+//    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE) // 10초 후 스케줄러 실행 (테스트용)
+    @Scheduled(cron = "0 30 12 * * ?") // 매일 12시 30분 실행
     public void cleanUnusedThumbnails() {
         log.info("Starting cleanup of unused thumbnails...");
 

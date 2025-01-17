@@ -28,12 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("email : " + email);
         // 이메일을 이용하여 회원 정보와 권한 정보를 조회
         MemberVO member = memberMapper.selectEmail(email);
-        MemberRole role = memberMapper.selectRoleByMemberId(member.getMemberId());
 
         // 조회된 회원 정보가 없을 경우 예외 처리
         if (member == null) {
             throw new UsernameNotFoundException("UsernameNotFound");
         }
+
+        MemberRole role = memberMapper.selectRoleByMemberId(member.getMemberId());
 
         // 회원의 역할을 Spring Security의 GrantedAuthority 타입으로 변환하여 리스트에 추가
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();

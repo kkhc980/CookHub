@@ -21,7 +21,7 @@
 		resultMap="noticeBoardResultMap">
 		SELECT
 		NOTICE_BOARD_ID, NOTICE_BOARD_TITLE, NOTICE_BOARD_CONTENT, MEMBER_ID,
-		NOTICE_BOARD_DATE_CREATED
+		NOTICE_BOARD_CREATED_DATE
 		FROM NOTICE_BOARD
 	</select>
 
@@ -30,7 +30,7 @@
 		resultMap="noticeBoardResultMap">
 		SELECT
 		NOTICE_BOARD_ID, NOTICE_BOARD_TITLE, NOTICE_BOARD_CONTENT, MEMBER_ID,
-		NOTICE_BOARD_DATE_CREATED
+		NOTICE_BOARD_CREATED_DATE
 		FROM NOTICE_BOARD
 		WHERE NOTICE_BOARD_ID = #{noticeBoardId}
 	</select>
@@ -40,7 +40,7 @@
 		parameterType="com.dishcovery.project.domain.NoticeBoardVO">
 		INSERT INTO NOTICE_BOARD (
 		NOTICE_BOARD_TITLE, NOTICE_BOARD_CONTENT, MEMBER_ID,
-		NOTICE_BOARD_DATE_CREATED
+		NOTICE_BOARD_CREATED_DATE
 		) VALUES (
 		#{noticeBoardTitle}, #{noticeBoardContent}, #{memberId},
 		#{noticeBoardDateCreated}
@@ -55,7 +55,7 @@
 		NOTICE_BOARD_TITLE = #{noticeBoardTitle},
 		NOTICE_BOARD_CONTENT = #{noticeBoardContent},
 		MEMBER_ID = #{memberId},
-		NOTICE_BOARD_DATE_CREATED = #{noticeBoardDateCreated}
+		NOTICE_BOARD_CREATED_DATE = #{noticeBoardDateCreated}
 		WHERE NOTICE_BOARD_ID = #{noticeBoardId}
 	</update>
 

@@ -25,14 +25,14 @@
 		<tbody>
 			<c:forEach var="NoticeBoardVO" items="${noticeBoardList }">
 				<tr>
-					<td>${RecipeBoardVO.recipeBoardId }</td>
-					<td><a href="detail?noticeBoardId=${NoticeBoardVO.NoticeBoardId }">
-					${NoticeBoardVO.NoticeBoardTitle }</a></td>
-					<td>${RecipeBoardVO.memberId }</td>
+					<td>${NoticeBoardVO.noticeBoardId }</td>
+					<td><a href="detail?noticeBoardId=${NoticeBoardVO.noticeBoardId }">
+					${NoticeBoardVO.noticeBoardTitle }</a></td>
+					<td>${NoticeBoardVO.memberId }</td>
 					<!-- boardDateCreated 데이터 포멧 변경 -->
-					<fmt:formatDate value="${NoticeBoardVO.noticeBoardDateCreated }"
+					<fmt:formatDate value="${NoticeBoardVO.noticeBoardCreatedDate }"
 						pattern="yyyy-MM-dd HH:mm:ss" var="boardDateCreated" />
-					<td>${noticeBoardDateCreated }</td>
+					<td>${noticeBoardCreatedDate }</td>
 				</tr>
 			</c:forEach>
 		</tbody>

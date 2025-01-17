@@ -9,9 +9,21 @@
         .navbar {
             display: flex;
             justify-content: space-between;
+            align-items: center; /* 수직 가운데 정렬 */
             background-color: #333;
             padding: 10px;
             color: white;
+        }
+        .navbar .left-menu { /* 왼쪽 메뉴 그룹 */
+            display: flex;
+        }
+
+        .navbar .center-logo { /* 가운데 로고 스타일 */
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff9900;
+            flex-grow: 1; /* 남은 공간 모두 차지 */
+            text-align: center;
         }
 
         .navbar a {
@@ -25,24 +37,49 @@
         }
 
         .navbar .logged-in-menu {
-            display: flex; /* flexbox 적용 */
-            align-items: center; /* 수직 가운데 정렬 (선택적) */
+            display: flex;
+            align-items: center;
         }
 
-        /* 로그아웃 버튼 스타일링 */
-        .navbar .logged-in-menu form input[type="submit"] {
-            background: none; /* 배경 제거 */
-            border: none; /* 테두리 제거 */
-            text-decoration: none; /* 밑줄 제거 */
-            color: white; /* 글자색 */
-            cursor: pointer; /* 마우스 커서 */
-            padding: 0; /* 패딩 제거 */
-            font-size: inherit; /* 부모 폰트 크기 상속 */
-            margin-left: 10px;
+        /* 드롭다운 메뉴 스타일링 */
+        .dropdown {
+            position: relative;
+            display: inline-block;
         }
 
-        .navbar .logged-in-menu form input[type="submit"]:hover {
-            color: #ff9900; /* hover 시 글자색 */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            margin-top: 5px;
+        }
+
+        .dropdown-content a,
+        .dropdown-content form {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .dropdown-content form input[type="submit"] {
+            background: none;
+            border: none;
+            text-decoration: none;
+            color: black;
+            cursor: pointer;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        .dropdown-content a:hover,
+        .dropdown-content form input[type="submit"]:hover {
+            background-color: #f1f1f1;
+            color: #ff9900;
         }
 
         .content {
@@ -53,20 +90,28 @@
 <body>
 <!-- 공통 네비게이션 바 -->
 <div class="navbar">
-    <div>
+    <div class="left-menu">
         <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
         <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
         <a href="${pageContext.request.contextPath}/rankingboard/list">랭킹</a>
     </div>
+    <span class="center-logo">COOKHUB</span>
     <div>
         <!-- 로그인 상태 -->
         <sec:authorize access="isAuthenticated()">
             <div class="logged-in-menu">
-                <a href="${pageContext.request.contextPath}/member/detail"><sec:authentication property="principal.name" />님</a>
-                <form action="../auth/logout" method="post">
-                    <input type="submit" value="로그아웃">
-                    <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
-                </form>
+                <div class="dropdown">
+                    <a href="#" onclick="toggleDropdown(event)">
+                        <sec:authentication property="principal.name" />님
+                    </a>
+                    <div class="dropdown-content" id="userDropdown">
+                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
+                        <form action="../auth/logout" method="post">
+                            <input type="submit" value="로그아웃">
+                            <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+                        </form>
+                    </div>
+                </div>
             </div>
         </sec:authorize>
         <!-- 로그아웃 상태 -->
@@ -76,10 +121,31 @@
         </sec:authorize>
     </div>
 </div>
-
 <!-- 페이지별 콘텐츠 -->
 <div class="content">
     <jsp:include page="${pageContent}"/>
 </div>
+<script>
+    function toggleDropdown(event) {
+        event.preventDefault();
+        var dropdown = document.getElementById('userDropdown');
+        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown a')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.style.display === 'block') {
+                    openDropdown.style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
 </body>
 </html>

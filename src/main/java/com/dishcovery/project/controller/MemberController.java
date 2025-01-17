@@ -58,25 +58,53 @@ public class MemberController {
     // 회원 가입 처리
     @PostMapping("/signup")
     public String registerMember(MemberDTO memberDTO) {
+//        String password = memberDTO.getPassword();
+//        memberDTO.setPassword(passwordEncoder.encode(password));
+//        int result = memberService.registerMember(memberDTO);
+//        log.info(result + "행 등록");
+//
+//        //임의의 authKey 생성 & 이메일 발송
+//        String authKey = mss.getKey(6);
+//        // String authKey = mss.sendAuthMail(memberDTO.getEmail());
+//        memberDTO.setAuthKey(authKey);
+//
+//        Map<String, String> map = new HashMap<String, String>();
+//        map.put("email", memberDTO.getEmail());
+//        map.put("authKey", memberDTO.getAuthKey());
+//
+//        //DB에 authKey 업데이트
+//        int updateResult = memberService.updateAuthKey(map);
+//        log.info(updateResult + "행 수정");
+
+        int result = signupMember(memberDTO);
+        if (result == 1) {
+            mss.sendAuthMail(memberDTO.getEmail(), memberDTO.getAuthKey());
+            return "redirect:/auth/login";
+        }
+
+        return "redirect:/member/signup";
+    }
+
+    public int signupMember(MemberDTO memberDTO) {
         String password = memberDTO.getPassword();
         memberDTO.setPassword(passwordEncoder.encode(password));
         int result = memberService.registerMember(memberDTO);
         log.info(result + "행 등록");
 
         //임의의 authKey 생성 & 이메일 발송
-        String authKey = mss.sendAuthMail(memberDTO.getEmail());
+        String authKey = mss.getKey(6);
+        // String authKey = mss.sendAuthMail(memberDTO.getEmail());
         memberDTO.setAuthKey(authKey);
 
         Map<String, String> map = new HashMap<String, String>();
         map.put("email", memberDTO.getEmail());
         map.put("authKey", memberDTO.getAuthKey());
-        System.out.println(map);
 
         //DB에 authKey 업데이트
         int updateResult = memberService.updateAuthKey(map);
         log.info(updateResult + "행 수정");
 
-        return "redirect:/auth/login";
+        return updateResult;
     }
 
     // 메일 인증

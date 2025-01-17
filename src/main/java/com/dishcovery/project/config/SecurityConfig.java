@@ -1,7 +1,11 @@
 package com.dishcovery.project.config;
 
+import com.dishcovery.project.service.CustomUserDetailsService;
+import com.dishcovery.project.util.CustomAuthenticationFailureHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,11 +17,14 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
 
-import com.dishcovery.project.service.CustomUserDetailsService;
+import java.util.concurrent.Executor;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     // 비밀번호 암호화를 위한 BCryptPasswordEncoder를 빈으로 생성
     @Bean
@@ -29,11 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-                .antMatchers("/member/detail").access("hasRole('ROLE_MEMBER')")
-                .antMatchers("/member/update").access("hasRole('ROLE_MEMBER')")
-                .antMatchers("/recipeboard/register").permitAll()
-        		.antMatchers("/recipeboard/update").permitAll()
-        		.antMatchers("/recipeboard/delete").permitAll();
+                .antMatchers("/member/detail").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+                .antMatchers("/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+                .antMatchers("/recipeboard/register").permitAll();
 
         // 접근 제한 경로 설정
         httpSecurity.exceptionHandling().accessDeniedPage("/auth/accessDenied");
@@ -41,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.formLogin().loginPage("/auth/login") // 커스텀 로그인 URL 설정
                 .usernameParameter("email") // 이메일 파라미터 설정
                 .passwordParameter("password") // 비밀번호 파라미터 설정
+                .failureHandler(customAuthenticationFailureHandler) // 사용자 정의 AuthenticationFailureHandler 적용
                 .defaultSuccessUrl("/recipeboard/list"); // 로그인 성공 시 이동할 URL 설정
 
         httpSecurity.logout().logoutUrl("/auth/logout") // 로그아웃 URL 설정
@@ -78,5 +84,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         MultipartFilter multipartFilter = new MultipartFilter();
         multipartFilter.setMultipartResolverBeanName("multipartResolver");
         return multipartFilter;
+    }
+
+    // 스레드 풀 설정
+    public Executor mailExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5); // 기본 스레드 수
+        executor.setMaxPoolSize(10); // 최대 스레드 수
+        executor.setThreadNamePrefix("email-thread");
+        executor.initialize();
+        return executor;
     }
 }

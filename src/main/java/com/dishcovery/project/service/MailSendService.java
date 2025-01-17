@@ -3,6 +3,7 @@ package com.dishcovery.project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -18,7 +19,7 @@ public class MailSendService {
     private JavaMailSender mailSender;
 
     //인증키 생성
-    private String getKey(int size) {
+    public String getKey(int size) {
         this.size = size;
         return getAuthCode();
     }
@@ -38,9 +39,10 @@ public class MailSendService {
     }
 
     //인증메일 보내기
-    public String sendAuthMail(String email) {
+    @Async // 비동기 처리 및 스레드 풀 지정
+    public void sendAuthMail(String email, String authKey) {
         //6자리 난수 인증번호 생성
-        String authKey = getKey(6);
+        // String authKey = getKey(6);
 
         //인증메일 보내기
         MimeMessage mail = mailSender.createMimeMessage();
@@ -59,7 +61,6 @@ public class MailSendService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
-        return authKey;
+        // return authKey;
     }
 }

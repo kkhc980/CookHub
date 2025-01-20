@@ -45,6 +45,8 @@
         .dropdown {
             position: relative;
             display: inline-block;
+            /* 드롭다운 메뉴가 이름 텍스트 시작점에 맞춰지도록 추가 */
+            text-align: left;
         }
 
         .dropdown-content {
@@ -55,6 +57,10 @@
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
             margin-top: 5px;
+            left: 0;
+            max-height: 300px; /* 최대 높이 설정 */
+            overflow-y: auto;   /* 세로 스크롤 추가 */
+            white-space: nowrap; /* 내용이 길어질 경우 한 줄로 표시 */
         }
 
         .dropdown-content a,
@@ -131,10 +137,29 @@
         var dropdown = document.getElementById('userDropdown');
         if (dropdown.style.display === 'none' || dropdown.style.display === '') {
             dropdown.style.display = 'block';
+            adjustDropdownPosition(dropdown);
         } else {
             dropdown.style.display = 'none';
         }
     }
+
+    function adjustDropdownPosition(dropdown) {
+        var rect = dropdown.getBoundingClientRect();
+        var windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+        // 드롭다운의 오른쪽 끝이 화면을 넘어가는지 확인
+        if (rect.right > windowWidth) {
+            // 넘어가면 드롭다운의 오른쪽 끝을 화면 오른쪽 끝에 맞춤
+            dropdown.style.left = 'auto';
+            dropdown.style.right = '0';
+
+        } else {
+            // 넘어가지 않으면 기존 위치 유지 (왼쪽 정렬)
+            dropdown.style.left = '0';
+            dropdown.style.right = 'auto';
+        }
+    }
+
     window.onclick = function(event) {
         if (!event.target.matches('.dropdown a')) {
             var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -145,7 +170,7 @@
                 }
             }
         }
-    }
+    };
 </script>
 </body>
 </html>

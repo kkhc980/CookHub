@@ -20,31 +20,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/member")
 @Log4j
 public class MemberController {
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder;
+    private final MailSendService mss;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private MailSendService mss;
+    public MemberController(MemberService memberService, PasswordEncoder passwordEncoder, MailSendService mss) {
+        this.memberService = memberService;
+        this.passwordEncoder = passwordEncoder;
+        this.mss = mss;
+    }
 
     // 이메일 중복 확인 처리
     @PostMapping("/emailCheck")
     public ResponseEntity<String> checkEmailDuplication(@RequestParam String email) {
-        boolean isDuplicate = memberService.selectDupCheckEmail(email);
-        if (isDuplicate) {
-            return new ResponseEntity<>("fail", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("ok", HttpStatus.OK);
-        }
+        return memberService.selectDupCheckEmail(email) ?
+                new ResponseEntity<>("fail", HttpStatus.OK) :
+                new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     @GetMapping("/signup")
@@ -58,53 +56,25 @@ public class MemberController {
     // 회원 가입 처리
     @PostMapping("/signup")
     public String registerMember(MemberDTO memberDTO) {
-//        String password = memberDTO.getPassword();
-//        memberDTO.setPassword(passwordEncoder.encode(password));
-//        int result = memberService.registerMember(memberDTO);
-//        log.info(result + "행 등록");
-//
-//        //임의의 authKey 생성 & 이메일 발송
-//        String authKey = mss.getKey(6);
-//        // String authKey = mss.sendAuthMail(memberDTO.getEmail());
-//        memberDTO.setAuthKey(authKey);
-//
-//        Map<String, String> map = new HashMap<String, String>();
-//        map.put("email", memberDTO.getEmail());
-//        map.put("authKey", memberDTO.getAuthKey());
-//
-//        //DB에 authKey 업데이트
-//        int updateResult = memberService.updateAuthKey(map);
-//        log.info(updateResult + "행 수정");
-
-        int result = signupMember(memberDTO);
+        // 임의의 authKey 생성
+        String authKey = mss.getKey(6);
+        int result = signupMember(memberDTO, authKey);
         if (result == 1) {
-            mss.sendAuthMail(memberDTO.getEmail(), memberDTO.getAuthKey());
+            mss.sendAuthMail(memberDTO.getEmail(), authKey);
             return "redirect:/auth/login";
         }
 
         return "redirect:/member/signup";
     }
 
-    public int signupMember(MemberDTO memberDTO) {
-        String password = memberDTO.getPassword();
-        memberDTO.setPassword(passwordEncoder.encode(password));
+    private int signupMember(MemberDTO memberDTO, String authKey) {
+        memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
+        memberDTO.setAuthKey(authKey);
+
         int result = memberService.registerMember(memberDTO);
         log.info(result + "행 등록");
 
-        //임의의 authKey 생성 & 이메일 발송
-        String authKey = mss.getKey(6);
-        // String authKey = mss.sendAuthMail(memberDTO.getEmail());
-        memberDTO.setAuthKey(authKey);
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("email", memberDTO.getEmail());
-        map.put("authKey", memberDTO.getAuthKey());
-
-        //DB에 authKey 업데이트
-        int updateResult = memberService.updateAuthKey(map);
-        log.info(updateResult + "행 수정");
-
-        return updateResult;
+        return result;
     }
 
     // 메일 인증
@@ -158,5 +128,13 @@ public class MemberController {
         SecurityContextHolder.clearContext();
         session.invalidate();
         return "redirect:/recipeboard/list";
+    }
+
+    @GetMapping("/findpw")
+    public String moveFindPassword(Model model) {
+        log.info("moveFindPassword");
+        model.addAttribute("pageContent", "member/findpw.jsp");
+
+        return "layout";
     }
 }

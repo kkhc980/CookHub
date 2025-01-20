@@ -22,8 +22,8 @@
 
     <!-- 회원 가입 -->
     <insert id="insert">
-        INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER)
-        VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone})
+        INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER, AUTH_KEY)
+        VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone}, #{authKey})
     </insert>
 
     <insert id="insertMemberRole">

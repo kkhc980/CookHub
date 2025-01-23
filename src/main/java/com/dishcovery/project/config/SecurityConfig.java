@@ -1,7 +1,7 @@
 package com.dishcovery.project.config;
 
 import com.dishcovery.project.service.CustomUserDetailsService;
-import com.dishcovery.project.util.CustomAuthenticationFailureHandler;
+import com.dishcovery.project.service.CustomAuthenticationFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -30,7 +30,7 @@ public class RootConfig {
     public DataSource dataSource() { // DataSource 객체 리턴 메서드
         HikariConfig config = new HikariConfig(); // 설정 객체
         config.setDriverClassName("oracle.jdbc.OracleDriver"); // jdbc 드라이버 정보
-        config.setJdbcUrl("jdbc:oracle:thin:@192.168.0.137:1521:xe"); // DB 연결 url
+        config.setJdbcUrl("jdbc:oracle:thin:@192.168.0.138:1521:xe"); // DB 연결 url
         config.setUsername("cookhub"); // DB 사용자 아이디
         config.setPassword("1234"); // DB 사용자 비밀번호
         

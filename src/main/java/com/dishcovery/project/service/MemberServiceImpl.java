@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,11 +36,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<Integer> getAllId() {
-        return null;
-    }
-
-    @Override
     public int updateMember(MemberDTO memberDTO) {
         log.info("updateMember");
         return memberMapper.updateMember(toEntity(memberDTO));
@@ -63,11 +57,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberVO processSocialLogin(String name) {
-        return null;
-    }
-
-    @Override
     public boolean selectDupCheckEmail(String email) {
         int result = memberMapper.selectDupCheckEmail(email);
         if (result == 1) return true;
@@ -84,6 +73,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public int updateAuthKey(Map<String, String> map) {
         int result = memberMapper.updateAuthKey(map);
+        return result;
+    }
+
+    @Override
+    public int updateTempPw(Map<String, String> map) {
+        int result = memberMapper.updateTempPw(map);
         return result;
     }
 

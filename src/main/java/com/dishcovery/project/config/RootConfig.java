@@ -22,7 +22,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement // 트랜잭션 어노테이션 활성화
 @EnableScheduling
-@ComponentScan(basePackages = {"com.dishcovery.project"})
+@ComponentScan(basePackages = {"com.dishcovery.project.service"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
 public class RootConfig {
 

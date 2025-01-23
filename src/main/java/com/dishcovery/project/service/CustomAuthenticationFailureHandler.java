@@ -1,4 +1,4 @@
-package com.dishcovery.project.util;
+package com.dishcovery.project.service;
 
 import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.persistence.MemberMapper;

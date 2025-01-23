@@ -29,6 +29,8 @@ import com.dishcovery.project.domain.RecipeIngredientsVO;
 import com.dishcovery.project.domain.SituationsVO;
 import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
+import com.dishcovery.project.persistence.RecipeRankingMapper;
+import com.dishcovery.project.persistence.RecipeViewStatsMapper;
 import com.dishcovery.project.util.FileUploadUtil;
 import com.dishcovery.project.util.PageMaker;
 import com.dishcovery.project.util.Pagination;
@@ -42,6 +44,11 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     @Autowired
     private RecipeBoardMapper mapper;
 
+    @Autowired
+    private RecipeViewStatsMapper viewStatsMapper;
+
+    @Autowired
+    private RecipeRankingMapper rankingMapper;
     @Override
     public RecipeBoardVO getByRecipeBoardId(int recipeBoardId) {
         log.info("Fetching recipe board entry with ID: " + recipeBoardId);
@@ -65,6 +72,8 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
             recipeBoard.setRecipeBoardId(nextId);
             mapper.insertRecipeBoard(recipeBoard);
 
+            // RecipeViewStats 초기화 (insertInitialViewStats 호출)
+            viewStatsMapper.insertInitialViewStats(nextId);
             // 재료 정보 추가
             addIngredientsToRecipe(nextId, ingredientIds);
 
@@ -195,7 +204,8 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
             mapper.deleteRecipeHashtagsByRecipeId(recipeBoardId);
             mapper.deleteRecipeIngredientsByRecipeId(recipeBoardId);
             mapper.deleteRecipeBoard(recipeBoardId);
-
+            rankingMapper.reorderRankPositions();
+            
             // 다른 게시글과 연결되지 않은 해시태그 삭제
             for (HashtagsVO hashtag : hashtags) {
                 int count = mapper.getRecipeCountByHashtagId(hashtag.getHashtagId());
@@ -426,6 +436,7 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         if (viewLogCount == 0) {
             mapper.logView(viewLogVO);
             mapper.increaseViewCount(recipeBoardId);
+            viewStatsMapper.incrementViewStats(recipeBoardId);
             System.out.println("View logged and count increased for IP " + ipAddress);
         } else {
             System.out.println("Duplicate view detected for IP " + ipAddress + " on recipeBoardId " + recipeBoardId);

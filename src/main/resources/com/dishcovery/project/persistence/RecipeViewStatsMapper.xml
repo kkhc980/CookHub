@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.RecipeViewStatsMapper">
+
+    <!-- 특정 레시피의 Daily, Weekly, Monthly View Count 증가 -->
+    <update id="incrementViewStats">
+        UPDATE RECIPE_VIEW_STATS
+        SET DAILY_VIEW_COUNT = DAILY_VIEW_COUNT + 1,
+            WEEKLY_VIEW_COUNT = WEEKLY_VIEW_COUNT + 1,
+            MONTHLY_VIEW_COUNT = MONTHLY_VIEW_COUNT + 1,
+            LAST_UPDATED_DATE = SYSDATE
+        WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+    </update>
+
+    <!-- 특정 레시피의 초기 ViewStats 데이터 삽입 -->
+    <insert id="insertInitialViewStats">
+        INSERT INTO RECIPE_VIEW_STATS (
+            STAT_ID,
+            RECIPE_BOARD_ID,
+            DAILY_VIEW_COUNT,
+            WEEKLY_VIEW_COUNT,
+            MONTHLY_VIEW_COUNT,
+            LAST_UPDATED_DATE
+        ) VALUES (
+            RECIPE_VIEW_STATS_SEQ.NEXTVAL,
+            #{recipeBoardId},
+            0, -- 초기값
+            0, -- 초기값
+            0, -- 초기값
+            SYSDATE
+        )
+    </insert>
+
+    <!-- Daily 조회수 초기화 -->
+    <update id="resetDailyViewStats">
+        UPDATE RECIPE_VIEW_STATS
+        SET DAILY_VIEW_COUNT = 0
+    </update>
+
+    <!-- Weekly 조회수 초기화 -->
+    <update id="resetWeeklyViewStats">
+        UPDATE RECIPE_VIEW_STATS
+        SET WEEKLY_VIEW_COUNT = 0
+    </update>
+
+    <!-- Monthly 조회수 초기화 -->
+    <update id="resetMonthlyViewStats">
+        UPDATE RECIPE_VIEW_STATS
+        SET MONTHLY_VIEW_COUNT = 0
+    </update>
+    
+	<select id="getViewStatsByType" resultType="com.dishcovery.project.domain.RecipeRankingVO">
+	    <![CDATA[
+	    SELECT 
+	        RANK() OVER (ORDER BY 
+	            CASE 
+	                WHEN #{type} = 'DAILY' THEN DAILY_VIEW_COUNT
+	                WHEN #{type} = 'WEEKLY' THEN WEEKLY_VIEW_COUNT
+	                WHEN #{type} = 'MONTHLY' THEN MONTHLY_VIEW_COUNT
+	            END DESC, 
+	            RECIPE_BOARD_ID ASC
+	        ) AS rankPosition,
+	        RECIPE_BOARD_ID AS recipeBoardId,
+	        CASE 
+	            WHEN #{type} = 'DAILY' THEN DAILY_VIEW_COUNT
+	            WHEN #{type} = 'WEEKLY' THEN WEEKLY_VIEW_COUNT
+	            WHEN #{type} = 'MONTHLY' THEN MONTHLY_VIEW_COUNT
+	        END AS viewCount
+	    FROM RECIPE_VIEW_STATS
+	    ]]>
+	</select>
+</mapper>

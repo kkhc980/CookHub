@@ -9,6 +9,9 @@
 <base href="${pageContext.request.contextPath}/">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <meta charset="UTF-8">
+    <!-- CSRF 토큰 추가 -->
+    <meta name="_csrf" content="${_csrf.token}" />
+    <meta name="_csrf_header" content="${_csrf.headerName}" />
 <title>${recipeBoard.recipeBoardTitle }</title>
 
 <style>
@@ -54,6 +57,13 @@
     color: #333;
   }
   
+  .thumbnail {
+    max-width: 200px;
+    max-height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    object-fit: cover;
+}
 </style>
 
 </head>
@@ -65,6 +75,11 @@
       <p>${recipeBoard.recipeBoardTitle }</p>
    </div>
    <div>
+      <p>Thumbnail:</p>
+      <img src="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}" 
+    	 alt="Thumbnail" class="thumbnail">
+   </div>
+   <div>
       <p>작성자 : ${recipeBoard.memberId }</p>
       <!-- boardDateCreated 데이터 포멧 변경 -->
       <fmt:formatDate value="${recipeBoard.recipeBoardCreatedDate }"
@@ -74,7 +89,7 @@
    <div>
       <textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
    </div>
-
+	
    <div>
       <p>타입 : ${typeName}</p>
    </div>
@@ -115,6 +130,12 @@
       onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글
       수정</button>
    <button type="button" id="deleteBoard">글 삭제</button>
+   
+   <div>
+   	<button id="like-button">좋아요</button>
+    <span id="like-count">0</span>
+   </div>
+
    <form id="deleteForm"
       action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
@@ -170,9 +191,51 @@
       $(document)
             .ready(
                   function() {
-                     getAllReply(); // reply 함수 호출
+                	 var contextRoot = '/project';
+                     // CSRF 토큰 설정
+                     var csrfToken = $('meta[name="_csrf"]').attr('content');
+                     var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+                     
+                	 getAllReply(); // reply 함수 호출
                      getAllRecipeReview(); // review 함수 호출
-                  
+                  	 
+                     // AJAX 전역 설정: 모든 요청에 CSRF 토큰 추가
+                     $.ajaxSetup({
+                         beforeSend: function (xhr) {
+                             xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 토큰을 헤더에 추가
+                         }
+                     });
+                     
+                	 // 좋아요 초기 상태 가져오기
+                     function loadLikeStatus() {
+                         var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
+                         $.get(contextRoot + '/recipeboard/' + recipeBoardId + '/like-count', function (response) {
+                             $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
+                         });
+                     }
+
+                     // 좋아요 버튼 클릭 이벤트
+                     $('#like-button').click(function () {
+                         var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
+                         $.ajax({
+                             type: 'POST',
+                             url: contextRoot + '/recipeboard/' + recipeBoardId + '/like', // 좋아요 토글 API
+                             success: function (response) {
+                                 if (response.liked) {
+                                     $('#like-button').text('좋아요 취소'); // 버튼 텍스트 변경
+                                     alert('좋아요를 눌렀습니다.');
+                                 } else {
+                                     $('#like-button').text('좋아요'); // 버튼 텍스트 변경
+                                     alert('좋아요를 취소했습니다.');
+                                 }
+                                 $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
+                             },
+                             error: function (xhr, status, error) {
+                                 console.error('좋아요 요청 실패:', xhr.status, xhr.responseText);
+                                 alert('좋아요 처리 중 오류가 발생했습니다. 상태 코드: ' + xhr.status);
+                             }
+                         });
+                     });
                      
                  
                      $('#btnAdd').click(function() {
@@ -490,7 +553,7 @@
                                                          }
                                                       });
                                              }); // end reviews.on
-                            
+                                 loadLikeStatus();
                   }); // end document()
                   
                                    

@@ -8,7 +8,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.dishcovery.project.config.RootConfig;
 import com.dishcovery.project.domain.RecipeReviewVO;
-import com.dishcovery.project.domain.ReplyVO;
 
 import lombok.extern.log4j.Log4j;
 

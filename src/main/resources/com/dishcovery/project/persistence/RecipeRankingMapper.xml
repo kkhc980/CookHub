@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.RecipeRankingMapper">
+	<resultMap id="RankingResultMap" type="map">
+	    <result property="rankPosition" column="RANK_POSITION"/>
+	    <result property="recipeBoardId" column="RECIPE_BOARD_ID"/>
+	    <result property="viewCount" column="VIEW_COUNT"/>
+	</resultMap>
+    <!-- 특정 유형의 랭킹 데이터를 가져오는 쿼리 -->
+	
+	<select id="getRankings" resultType="com.dishcovery.project.domain.RecipeRankingVO">
+	  <![CDATA[
+	    SELECT *
+	    FROM (
+	        SELECT 
+	            RANK_ID AS rankId,
+	            RANK_POSITION AS rankPosition,
+	            RECIPE_BOARD_ID AS recipeBoardId,
+	            VIEW_COUNT AS viewCount,
+	            RANK_TYPE AS rankType,
+	            UPDATED_DATE AS updatedDate
+	        FROM RECIPE_RANKINGS
+	        WHERE RANK_TYPE = #{rankType}
+	        ORDER BY VIEW_COUNT DESC, RECIPE_BOARD_ID ASC
+	    )
+	    WHERE ROWNUM <= 10
+	  ]]>
+	</select>
+
+
+	    <!-- 특정 유형의 기존 랭킹 데이터를 삭제 -->
+    <delete id="deleteRankingsByType">
+        DELETE FROM RECIPE_RANKINGS WHERE RANK_TYPE = #{rankType}
+    </delete>
+
+    <!-- 랭킹 데이터를 삽입 -->
+	<insert id="insertRankings" parameterType="map">
+	  INSERT INTO RECIPE_RANKINGS (
+	      RANK_ID, RANK_POSITION, RECIPE_BOARD_ID, VIEW_COUNT, RANK_TYPE, UPDATED_DATE
+	  )
+	  VALUES (
+	      RECIPE_RANKINGS_SEQ.NEXTVAL,
+	      #{rank.rankPosition},
+	      #{rank.recipeBoardId},
+	      #{rank.viewCount},
+	      #{rank.rankType},
+	      SYSDATE
+	  )
+	</insert>
+	
+	<update id="reorderRankPositions">
+	    UPDATE recipe_rankings r
+	    SET r.rank_position = (
+	        SELECT new_rank_position
+	        FROM (
+	            SELECT 
+	                ROW_NUMBER() OVER (ORDER BY view_count DESC) AS new_rank_position,
+	                rank_id
+	            FROM recipe_rankings
+	        ) rd
+	        WHERE rd.rank_id = r.rank_id
+	    )
+	</update>
+</mapper>

@@ -33,7 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/member/update").access("hasRole('ROLE_MEMBER')")
                 .antMatchers("/recipeboard/register").permitAll()
         		.antMatchers("/recipeboard/update").permitAll()
-        		.antMatchers("/recipeboard/delete").permitAll();
+        		.antMatchers("/recipeboard/delete").permitAll()
+        		.antMatchers("/recipeboard/detail").permitAll();
 
         // 접근 제한 경로 설정
         httpSecurity.exceptionHandling().accessDeniedPage("/auth/accessDenied");

@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.dishcovery.project.persistence.RecipeBoardMapper;
+import com.dishcovery.project.service.RecipeRankingService;
+import com.dishcovery.project.service.RecipeViewStatsService;
 
 import lombok.extern.log4j.Log4j;
 
@@ -16,10 +18,15 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class BoardScheduler {
 
+	
     private final RecipeBoardMapper mapper;
+    private final RecipeRankingService rankingService;
+    private final RecipeViewStatsService viewStatsService;
 
-    public BoardScheduler(RecipeBoardMapper mapper) {
+    public BoardScheduler(RecipeBoardMapper mapper, RecipeRankingService rankingService, RecipeViewStatsService viewStatsService) {
         this.mapper = mapper;
+        this.rankingService = rankingService;
+        this.viewStatsService = viewStatsService;
     }
 
     @Scheduled(cron = "0 30 12 * * ?")// 매일 12시 30분 실행
@@ -89,6 +96,48 @@ public class BoardScheduler {
                     }
                 }
             }
+        }
+    }
+    
+    @Scheduled(cron = "0 30 12 * * ?") // 매일 12시 30분에 실행
+    public void updateDailyRankingsAndReset() {
+        log.info("Starting daily ranking update and reset...");
+        try {
+            // 일일 랭킹 업데이트 및 초기화
+            rankingService.getRankings("DAILY");
+            rankingService.updateRankings("DAILY");	
+            viewStatsService.resetDailyViews();
+            log.info("Daily ranking updated and view counts reset.");
+        } catch (Exception e) {
+            log.error("Error during daily ranking update and reset.", e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 ? * MON") // 매주 월요일 자정에 실행
+    public void updateWeeklyRankingsAndReset() {
+        log.info("Starting weekly ranking update and reset...");
+        try {
+            // 주간 랭킹 업데이트 및 초기화
+            rankingService.getRankings("WEEKLY");
+            rankingService.updateRankings("WEEKLY");
+            viewStatsService.resetWeeklyViews();
+            log.info("Weekly ranking updated and view counts reset.");
+        } catch (Exception e) {
+            log.error("Error during weekly ranking update and reset.", e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 1 * ?") // 매월 1일 자정에 실행
+    public void updateMonthlyRankingsAndReset() {
+        log.info("Starting monthly ranking update and reset...");
+        try {
+            // 월간 랭킹 업데이트 및 초기화
+            rankingService.getRankings("MONTHLY");
+            rankingService.updateRankings("MONTHLY");
+            viewStatsService.resetMonthlyViews();
+            log.info("Monthly ranking updated and view counts reset.");
+        } catch (Exception e) {
+            log.error("Error during monthly ranking update and reset.", e);
         }
     }
 }

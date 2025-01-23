@@ -14,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -22,7 +23,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement // 트랜잭션 어노테이션 활성화
 @EnableScheduling
-@ComponentScan(basePackages = {"com.dishcovery.project"})
+@ComponentScan(basePackages = {"com.dishcovery.project.service"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
 public class RootConfig {
 
@@ -30,7 +31,7 @@ public class RootConfig {
     public DataSource dataSource() { // DataSource 객체 리턴 메서드
         HikariConfig config = new HikariConfig(); // 설정 객체
         config.setDriverClassName("oracle.jdbc.OracleDriver"); // jdbc 드라이버 정보
-        config.setJdbcUrl("jdbc:oracle:thin:@192.168.0.139:1521:xe"); // DB 연결 url
+        config.setJdbcUrl("jdbc:oracle:thin:@192.168.0.138:1521:xe"); // DB 연결 url
         config.setUsername("cookhub"); // DB 사용자 아이디
         config.setPassword("1234"); // DB 사용자 비밀번호
         
@@ -82,4 +83,12 @@ public class RootConfig {
 
         return mailSender;
     }
+    
+	@Bean
+	public CommonsMultipartResolver multipartResolver() {
+	    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+	    resolver.setDefaultEncoding("UTF-8");
+	    resolver.setMaxUploadSize(10485760); // 10MB
+	    return resolver;
+	}
 }

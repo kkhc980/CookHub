@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
 import com.dishcovery.project.domain.HashtagsVO;
 import com.dishcovery.project.domain.IngredientsVO;
@@ -18,7 +17,6 @@ import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.util.Pagination;
 
 @Mapper
-@Repository
 public interface RecipeBoardMapper {
 
     // RecipeBoard CRUD

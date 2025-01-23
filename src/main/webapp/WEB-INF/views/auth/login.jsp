@@ -22,6 +22,5 @@
     <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
     <button type="button" onclick="location.href='../member/signup'">회원가입</button>
 </form>
-</form>
 </body>
 </html>

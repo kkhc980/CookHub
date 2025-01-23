@@ -53,6 +53,13 @@
           AND AUTH_KEY = #{authKey}
     </update>
 
+    <!-- 임시 비밀번호 변경 -->
+    <update id="updateTempPw" parameterType="java.util.Map">
+        UPDATE MEMBER
+        SET PASSWORD = #{tempPw}
+        WHERE EMAIL = #{email}
+    </update>
+
     <update id="updateMember">
         UPDATE MEMBER
         SET PASSWORD     = #{password},

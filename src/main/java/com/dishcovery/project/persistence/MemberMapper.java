@@ -19,4 +19,5 @@ public interface MemberMapper {
     int updateMember(MemberVO memberVO);
     int updateMemberAuthStatus(String email);
     int updateMemberRole(int memberId);
+    int updateTempPw(Map<String, String> map);
 }

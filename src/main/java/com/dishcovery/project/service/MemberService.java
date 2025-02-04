@@ -1,9 +1,7 @@
 package com.dishcovery.project.service;
 
 import com.dishcovery.project.domain.MemberDTO;
-import com.dishcovery.project.domain.MemberVO;
 
-import java.util.List;
 import java.util.Map;
 
 public interface MemberService {
@@ -12,13 +10,9 @@ public interface MemberService {
 
     MemberDTO getMemberByEmail(String email); // 회원 정보 조회
 
-    List<Integer> getAllId();
-
     int updateMember(MemberDTO memberDTO);
 
     int deleteMember(String email);
-
-    MemberVO processSocialLogin(String name);
 
     boolean selectDupCheckEmail(String email);
 
@@ -26,4 +20,5 @@ public interface MemberService {
 
     int updateAuthKey(Map<String, String> map);
 
+    int updateTempPw(Map<String, String> map);
 }

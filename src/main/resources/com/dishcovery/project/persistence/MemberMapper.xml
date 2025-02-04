@@ -22,8 +22,8 @@
 
     <!-- 회원 가입 -->
     <insert id="insert">
-        INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER)
-        VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone})
+        INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER, AUTH_KEY)
+        VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone}, #{authKey})
     </insert>
 
     <insert id="insertMemberRole">
@@ -51,6 +51,14 @@
         SET AUTH_STATUS = 1
         WHERE EMAIL = #{email}
           AND AUTH_KEY = #{authKey}
+    </update>
+
+    <!-- 임시 비밀번호 변경 -->
+    <update id="updateTempPw" parameterType="java.util.Map">
+        UPDATE MEMBER
+        SET PASSWORD = #{tempPw},
+            UPDATED_AT = sysdate
+        WHERE EMAIL = #{email}
     </update>
 
     <update id="updateMember">

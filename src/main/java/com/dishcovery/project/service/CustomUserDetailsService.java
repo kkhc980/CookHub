@@ -11,10 +11,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 @Log4j
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -25,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("loadUserByUsername()");
-        log.info("email : " + email);
         // 이메일을 이용하여 회원 정보와 권한 정보를 조회
         MemberVO member = memberMapper.selectEmail(email);
 

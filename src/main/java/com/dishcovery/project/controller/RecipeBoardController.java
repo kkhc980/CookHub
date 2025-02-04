@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dishcovery.project.domain.CustomUser;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
@@ -146,6 +149,11 @@ public class RecipeBoardController {
             return "redirect:/recipeboard/list";
         }
 
+        Integer currentUserId = getCurrentUserId();
+        if (recipeBoard.getMemberId() != currentUserId) {
+            return "redirect:/recipeboard/list";
+        }
+        
         model.addAttribute("recipeBoard", recipeBoard);
         model.addAttribute("selectedIngredientIds", recipeBoardService.getSelectedIngredientIdsByRecipeBoardId(recipeBoardId));
         model.addAttribute("typesList", recipeBoardService.getAllTypes());
@@ -163,6 +171,13 @@ public class RecipeBoardController {
                                @RequestParam(value = "hashtags", required = false) String hashtags,
                                @RequestPart(value = "thumbnail", required = true) MultipartFile thumbnail) {
         try {
+        	Integer currentUserId = getCurrentUserId();
+            RecipeBoardVO existingBoard = recipeBoardService.getByRecipeBoardId(recipeBoard.getRecipeBoardId());
+
+            if (existingBoard == null || existingBoard.getMemberId() != currentUserId) { // 기본형 비교
+                return "redirect:/recipeboard/list";
+            }
+            
         	recipeBoardService.updateRecipe(recipeBoard, ingredientIds, hashtags, thumbnail);
             return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
         } catch (IllegalArgumentException e) {
@@ -173,6 +188,12 @@ public class RecipeBoardController {
 
     @PostMapping("/delete/{recipeBoardId}")
     public String deleteRecipe(@PathVariable int recipeBoardId) {
+    	Integer currentUserId = getCurrentUserId();
+    	RecipeBoardVO existingBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);
+    	if (existingBoard == null || existingBoard.getMemberId() != currentUserId) { // 기본형 비교
+    	        return "redirect:/recipeboard/list";
+    	    }
+    	
         recipeBoardService.deleteRecipe(recipeBoardId);
         return "redirect:/recipeboard/list";
     }
@@ -198,4 +219,14 @@ public class RecipeBoardController {
         }
         return csrfInfo;
     }
+    
+    private Integer getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUser) {
+            CustomUser customUser = (CustomUser) authentication.getPrincipal();
+            return customUser.getMemberVO().getMemberId(); // CustomUser에서 memberId를 가져옴
+        }
+        return null; // 인증되지 않은 경우 null 반환
+    }
+
 }

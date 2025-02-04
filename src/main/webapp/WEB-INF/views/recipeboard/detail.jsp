@@ -2,6 +2,8 @@
    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,15 +49,22 @@
   .hashtags {
     margin-top: 20px;
   }
-  .hashtags span {
-    display: inline-block;
-    background-color: #f1f1f1;
-    padding: 5px 10px;
-    margin: 5px;
-    border-radius: 15px;
-    font-size: 14px;
-    color: #333;
-  }
+	.hashtag-button {
+	   display: inline-block;
+	   background-color: #4CAF50;
+	   color: white;
+	   border: none;
+	   padding: 7px 15px;
+	   margin: 5px;
+	   border-radius: 15px;
+	   font-size: 14px;
+	   cursor: pointer;
+	}
+
+.hashtag-button:hover {
+   background-color: #45a049;
+}
+
   
   .thumbnail {
     max-width: 200px;
@@ -109,10 +118,12 @@
    </div>
 
     <!-- 해시태그 표시 -->
-   <div class="hashtags">
+	<div class="hashtags">
       <h3>Hashtags:</h3>
       <c:forEach var="hashtag" items="${hashtags}">
-         <span>#${hashtag.hashtagName}</span>
+         <button class="hashtag-button" data-hashtag="${hashtag.hashtagName}">
+            #${hashtag.hashtagName}
+         </button>
       </c:forEach>
    </div>
    
@@ -126,11 +137,16 @@
       </c:forEach>
    </div>
    <button onclick="location.href='recipeboard/list'">글 목록</button>
-   <button
-      onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글
-      수정</button>
-   <button type="button" id="deleteBoard">글 삭제</button>
-   
+	
+	<!-- 글 수정/삭제 버튼 -->
+	<sec:authorize access="isAuthenticated()">
+	<sec:authentication var="customUser" property="principal" />
+	   <c:if test="${recipeBoard.memberId == customUser.memberVO.memberId}">
+	      <button onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글 수정</button>
+	      <button type="button" id="deleteBoard">글 삭제</button>
+	   </c:if>
+	</sec:authorize>
+
    <div>
    	<button id="like-button">좋아요</button>
     <span id="like-count">0</span>
@@ -149,6 +165,12 @@
                 if(confirm('삭제하시겠습니까?')) {
                     $('#deleteForm').submit(); // form 데이터 전송
                 }
+            });
+            
+            $(".hashtag-button").click(function () {
+                var hashtag = $(this).data("hashtag");
+                var url = "${pageContext.request.contextPath}/recipeboard/list?hashtag=" + encodeURIComponent(hashtag);
+                window.location.href = url;
             });
         }); // end document
     </script>
@@ -206,36 +228,56 @@
                          }
                      });
                      
+                     var isLoggedIn = false;
+                     
                 	 // 좋아요 초기 상태 가져오기
                      function loadLikeStatus() {
                          var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
                          $.get(contextRoot + '/recipeboard/' + recipeBoardId + '/like-count', function (response) {
                              $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
                          });
+                         
+                      // 로그인한 사용자의 좋아요 여부 확인
+                         $.get(contextRoot + '/recipeboard/' + recipeBoardId + '/like-status', function(response) {
+                            isLoggedIn = true; // 로그인 확인
+                            if (response.liked) {
+                               $('#like-button').text('좋아요 취소');
+                            } else {
+                               $('#like-button').text('좋아요');
+                            }
+                         }).fail(function(xhr) {
+                        	if (xhr.status === 403) {
+                        	    console.warn('로그인이 필요합니다.'); // 경고만 출력, 네트워크 에러 발생 안함
+                        	    isLoggedIn = false;
+                        	    $('#like-button').text('로그인 후 사용 가능');
+                        	}
+                         });
                      }
 
                      // 좋아요 버튼 클릭 이벤트
                      $('#like-button').click(function () {
-                         var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
-                         $.ajax({
-                             type: 'POST',
-                             url: contextRoot + '/recipeboard/' + recipeBoardId + '/like', // 좋아요 토글 API
-                             success: function (response) {
-                                 if (response.liked) {
-                                     $('#like-button').text('좋아요 취소'); // 버튼 텍스트 변경
-                                     alert('좋아요를 눌렀습니다.');
-                                 } else {
-                                     $('#like-button').text('좋아요'); // 버튼 텍스트 변경
-                                     alert('좋아요를 취소했습니다.');
-                                 }
-                                 $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
-                             },
-                             error: function (xhr, status, error) {
-                                 console.error('좋아요 요청 실패:', xhr.status, xhr.responseText);
-                                 alert('좋아요 처리 중 오류가 발생했습니다. 상태 코드: ' + xhr.status);
-                             }
-                         });
-                     });
+				    var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
+				    $.ajax({
+				        type: 'POST',
+				        url: contextRoot + '/recipeboard/' + recipeBoardId + '/like', // 좋아요 토글 API
+				        success: function (response) {
+				            if (response.message === "로그인이 필요한 서비스입니다.") {
+				                alert(response.message); // 로그인 필요 메시지 표시
+				            } else {
+				                if (response.liked) {
+				                    $('#like-button').text('좋아요 취소'); // 버튼 텍스트 변경
+				                    alert('좋아요가 설정되었습니다.');
+				                } else {
+				                    $('#like-button').text('좋아요'); // 버튼 텍스트 변경
+				                    alert('좋아요가 취소되었습니다.');
+				                }
+				            }
+				            $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
+				        }
+				    });
+				});
+                     
+                     loadLikeStatus();
                      
                  
                      $('#btnAdd').click(function() {
@@ -553,7 +595,6 @@
                                                          }
                                                       });
                                              }); // end reviews.on
-                                 loadLikeStatus();
                   }); // end document()
                   
                                    

@@ -1,15 +1,16 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.RecipeLikeVO;
-import com.dishcovery.project.persistence.RecipeLikeMapper;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dishcovery.project.domain.RecipeLikeVO;
+import com.dishcovery.project.persistence.RecipeLikeMapper;
+
 @Service
-@RequiredArgsConstructor
 public class RecipeLikeServiceImple implements RecipeLikeService {
 
-    private final RecipeLikeMapper recipeLikeMapper;
+    @Autowired
+    private RecipeLikeMapper recipeLikeMapper;
 
     @Override
     public boolean toggleLike(int recipeBoardId, int memberId) {
@@ -17,19 +18,24 @@ public class RecipeLikeServiceImple implements RecipeLikeService {
         likeVO.setRecipeBoardId(recipeBoardId);
         likeVO.setMemberId(memberId);
 
-        int isLiked = recipeLikeMapper.isLiked(likeVO);
-
-        if (isLiked > 0) {
+        if (isLikedByUser(recipeBoardId, memberId)) {
+            // 좋아요 취소
             recipeLikeMapper.deleteLike(likeVO);
-            return false; // 좋아요 해제
+            return false;
         } else {
+            // 좋아요 추가
             recipeLikeMapper.insertLike(likeVO);
-            return true; // 좋아요 설정
+            return true;
         }
     }
 
     @Override
     public int getLikeCount(int recipeBoardId) {
         return recipeLikeMapper.getLikeCount(recipeBoardId);
+    }
+
+    @Override
+    public boolean isLikedByUser(int recipeBoardId, int memberId) {
+        return recipeLikeMapper.isLikedByUser(recipeBoardId, memberId) > 0;
     }
 }

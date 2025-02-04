@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <!DOCTYPE html>
 <html>
@@ -206,7 +207,10 @@
 <body>
     <h1>Register a New Recipe</h1>
     <form id="registerForm" action="${pageContext.request.contextPath}/recipeboard/register" method="post" enctype="multipart/form-data">
-        <input type="hidden" id="memberId" name="memberId" value="1">
+        <sec:authorize access="isAuthenticated()">
+		    <sec:authentication var="customUser" property="principal" />
+		    <input type="hidden" id="memberId" name="memberId" value="${customUser.memberVO.memberId}">
+		</sec:authorize>
         
         <!-- Title -->
         <label for="recipeBoardTitle">Title:</label>

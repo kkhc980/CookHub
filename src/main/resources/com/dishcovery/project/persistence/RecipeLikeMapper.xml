@@ -17,7 +17,7 @@
     </delete>
 
     <!-- 좋아요 여부 확인 -->
-    <select id="isLiked" resultType="int">
+    <select id="isLikedByUser" resultType="int">
         SELECT COUNT(*)
         FROM recipe_likes
         WHERE recipe_board_id = #{recipeBoardId} AND member_id = #{memberId}

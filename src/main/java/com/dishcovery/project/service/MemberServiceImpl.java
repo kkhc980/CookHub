@@ -4,9 +4,11 @@ import com.dishcovery.project.domain.MemberDTO;
 import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.persistence.MemberMapper;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -17,15 +19,19 @@ public class MemberServiceImpl implements MemberService {
     MemberMapper memberMapper;
 
     @Override
-    public int registerMember(MemberDTO memberDTO) {
+    public int registerMember(MemberDTO memberDTO, String authKey) {
+
+        Date currentDate = new Date();
+        Date expiresAt = DateUtils.addMinutes(currentDate, 60);
+
         int insertMemberResult = memberMapper.insert(toEntity(memberDTO));
         log.info(insertMemberResult + " member register");
 
-        int memberId = memberMapper.checkUser(memberDTO.getEmail()).getMemberId();
-        log.info(memberId + " check");
-
-        int insertMemberRoleResult = memberMapper.insertMemberRole(memberId);
+        int insertMemberRoleResult = memberMapper.insertMemberRole(memberDTO.getEmail());
         log.info(insertMemberRoleResult + " member_role register");
+
+        int insertMemberAuthKey = memberMapper.insertMemberAuthKey(memberDTO.getEmail(), authKey, expiresAt);
+        log.info(insertMemberAuthKey + " member_authKey register");
         return 1;
     }
 
@@ -44,14 +50,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public int deleteMember(String email) {
         log.info("deleteMember");
+        log.info("email : " + email);
 
-        MemberDTO memberDTO = getMemberByEmail(email);
-
-        int deleteMember = memberMapper.updateMemberAuthStatus(email);
-        log.info(deleteMember + "row deleteMember");
-
-        int deleteMemberRole = memberMapper.updateMemberRole(toEntity(memberDTO).getMemberId());
+        int deleteMemberRole = memberMapper.deleteMemberRole(email);
         log.info(deleteMemberRole + "row deleteMemberRole");
+
+        int deleteMember = memberMapper.deleteMember(email);
+        log.info(deleteMember + "row deleteMember");
 
         return 1;
     }
@@ -65,20 +70,36 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public int updateAuthStatus(Map<String, String> map) {
-        int result = memberMapper.updateAuthStatus(map);
+    public int updateAuthStatus(String email) {
+        int result = memberMapper.updateAuthStatus(email);
         return result;
     }
 
     @Override
-    public int updateAuthKey(Map<String, String> map) {
-        int result = memberMapper.updateAuthKey(map);
+    public int updateExpiresFlag(Map<String, String> map) {
+        int result = memberMapper.updateExpiresFlag(map);
         return result;
     }
 
     @Override
     public int updateTempPw(Map<String, String> map) {
         int result = memberMapper.updateTempPw(map);
+        return result;
+    }
+
+    @Override
+    public int deleteAuthKey(String email) {
+        int result = memberMapper.deleteAuthKey(email);
+        return result;
+    }
+
+    @Override
+    public int updateAuthKey(String email, String authKey) {
+
+        Date currentDate = new Date();
+        Date expiresAt = DateUtils.addMinutes(currentDate, 60);
+
+        int result = memberMapper.updateAuthKey(email, authKey, expiresAt);
         return result;
     }
 

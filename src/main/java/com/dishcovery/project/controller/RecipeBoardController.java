@@ -42,12 +42,13 @@ public class RecipeBoardController {
     @GetMapping("/list")
     public String list(
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-            @RequestParam(value = "pageSize", defaultValue = "4") int pageSize,
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize,
             @RequestParam(value = "ingredientIds", required = false) String ingredientIdsStr,
             @RequestParam(value = "typeId", defaultValue = "1") Integer typeId,
             @RequestParam(value = "situationId", defaultValue = "1") Integer situationId,
             @RequestParam(value = "methodId", defaultValue = "1") Integer methodId,
             @RequestParam(value = "hashtag", required = false) String hashtag, // 추가
+            @RequestParam(value = "sort", defaultValue = "latest") String sort,
             Model model) {
     	 
         // Pagination 설정
@@ -57,6 +58,7 @@ public class RecipeBoardController {
         pagination.setSituationId(situationId != null ? situationId : 1);
         pagination.setMethodId(methodId != null ? methodId : 1);
         pagination.setHashtag(hashtag); // 추가
+        pagination.setSort(sort);
 
         // RecipeBoard 목록 및 관련 데이터 가져오기
         Map<String, Object> result = recipeBoardService.getRecipeBoardListWithFilters(
@@ -71,6 +73,7 @@ public class RecipeBoardController {
         model.addAttribute("selectedPageNum", pageNum);
         model.addAttribute("selectedIngredientIds", ingredientIdsStr != null ? Arrays.asList(ingredientIdsStr.split(",")) : List.of("1"));
         model.addAttribute("searchHashtag", hashtag); // 추가
+        model.addAttribute("selectedSort", sort);
 
         // 공통 레이아웃에 포함될 페이지 설정
         model.addAttribute("pageContent", "recipeboard/list.jsp");

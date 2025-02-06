@@ -47,7 +47,12 @@ public interface RecipeBoardService {
 
     // Pagination & Filtering
     Map<String, Object> getRecipeBoardListWithFilters(Pagination pagination);
-    Pagination preprocessPagination(Pagination pagination);
+    default Pagination preprocessPagination(Pagination pagination) {
+        if (pagination.getSort() == null || pagination.getSort().isEmpty()) {
+            pagination.setSort("latest"); // 기본 정렬: 최신순
+        }
+        return pagination;
+    }
 
     // Thumbnail Management
     Optional<Resource> getThumbnailByRecipeBoardId(int recipeBoardId); // Optional로 리소스 반환

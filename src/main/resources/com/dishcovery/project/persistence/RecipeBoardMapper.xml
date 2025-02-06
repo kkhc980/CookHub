@@ -126,32 +126,50 @@
     <!-- Pagination and Filtering -->
 	<select id="getRecipeBoardListWithPaging" parameterType="com.dishcovery.project.util.Pagination" resultMap="RecipeBoardResultMap">
 	    SELECT * FROM (
-	        SELECT ROW_NUMBER() OVER (ORDER BY recipe_board_created_date DESC) AS rn, rb.*
+	        SELECT ROW_NUMBER() OVER (
+			<choose>
+			    <when test="pagination.sort == 'latest'">
+			        ORDER BY rb.recipe_board_created_date DESC
+			    </when>
+			    <when test="pagination.sort == 'view'">
+			        ORDER BY rb.view_count DESC
+			    </when>
+			    <when test="pagination.sort == 'rating'">
+			        ORDER BY rb.avg_rating DESC
+			    </when>
+			    <when test="pagination.sort == 'like'">
+			        ORDER BY rb.like_count DESC
+			    </when>
+			    <otherwise>
+			        ORDER BY rb.recipe_board_created_date DESC
+			    </otherwise>
+			</choose>
+        ) AS rn, rb.*
 	        FROM recipe_board rb
 	        WHERE 1=1
-	        <if test="ingredientIds != null and !ingredientIds.isEmpty()">
-	            <foreach item="ingredientId" collection="ingredientIds" open="" separator=" " close="">
+	        <if test="pagination.ingredientIds != null and !pagination.ingredientIds.isEmpty()">
+	            <foreach item="ingredientId" collection="pagination.ingredientIds" open="" separator=" " close="">
 	                AND EXISTS (
 	                    SELECT 1
 	                    FROM recipe_ingredients ri
 	                    WHERE ri.recipe_board_id = rb.recipe_board_id
-	                    AND ri.ingredient_id = #{ingredientId}
+	                    AND ri.ingredient_id = #{pagination.ingredientId}
 	                )
 	            </foreach>
 	        </if>
-	        <if test="typeId != null">AND rb.type_id = #{typeId}</if>
-	        <if test="situationId != null">AND rb.situation_id = #{situationId}</if>
-	        <if test="methodId != null">AND rb.method_id = #{methodId}</if>
-	        <if test="hashtag != null and hashtag != ''">
+	        <if test="pagination.typeId != null">AND rb.type_id = #{pagination.typeId}</if>
+	        <if test="pagination.situationId != null">AND rb.situation_id = #{pagination.situationId}</if>
+	        <if test="pagination.methodId != null">AND rb.method_id = #{pagination.methodId}</if>
+	        <if test="pagination.hashtag != null and pagination.hashtag != ''">
 	            AND EXISTS (
 		        SELECT 1
 		        FROM recipe_hashtags rh
 		        INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
 		        WHERE rh.recipe_board_id = rb.recipe_board_id
-		        AND h.hashtag_name LIKE '%' || #{hashtag} || '%'
+		        AND h.hashtag_name LIKE '%' || #{pagination.hashtag} || '%'
 		    )
         	</if>
-	    ) WHERE rn BETWEEN #{start} AND #{end}
+	    ) WHERE rn BETWEEN #{pagination.start} AND #{pagination.end}
 	</select>
 	
 	<select id="getTotalCountWithFilters" parameterType="com.dishcovery.project.util.Pagination" resultType="int">
@@ -280,4 +298,11 @@
 	<delete id="deleteRecipeViewLogsByRecipeId" parameterType="int">
 	    DELETE FROM RECIPE_BOARD_VIEW_LOG WHERE RECIPE_BOARD_ID = #{recipeBoardId}
 	</delete>
+	
+	<!-- 좋아요 개수 업데이트 -->
+	<update id="updateLikeCount" parameterType="map">
+    UPDATE recipe_board
+    SET like_count = #{likeCount}
+    WHERE recipe_board_id = #{recipeBoardId}
+	</update>
 </mapper>

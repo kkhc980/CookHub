@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
@@ -11,9 +12,16 @@
 <base href="${pageContext.request.contextPath}/">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <meta charset="UTF-8">
+
+
+<!-- css 파일 불러오기 -->
+<link rel="stylesheet"
+   href="${pageContext.request.contextPath }/resources/css/image.css">
+  
     <!-- CSRF 토큰 추가 -->
     <meta name="_csrf" content="${_csrf.token}" />
     <meta name="_csrf_header" content="${_csrf.headerName}" />
+
 <title>${recipeBoard.recipeBoardTitle }</title>
 
 <style>
@@ -49,17 +57,17 @@
   .hashtags {
     margin-top: 20px;
   }
-	.hashtag-button {
-	   display: inline-block;
-	   background-color: #4CAF50;
-	   color: white;
-	   border: none;
-	   padding: 7px 15px;
-	   margin: 5px;
-	   border-radius: 15px;
-	   font-size: 14px;
-	   cursor: pointer;
-	}
+   .hashtag-button {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 7px 15px;
+      margin: 5px;
+      border-radius: 15px;
+      font-size: 14px;
+      cursor: pointer;
+   }
 
 .hashtag-button:hover {
    background-color: #45a049;
@@ -86,7 +94,7 @@
    <div>
       <p>Thumbnail:</p>
       <img src="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}" 
-    	 alt="Thumbnail" class="thumbnail">
+        alt="Thumbnail" class="thumbnail">
    </div>
    <div>
       <p>작성자 : ${recipeBoard.memberId }</p>
@@ -98,7 +106,7 @@
    <div>
       <textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
    </div>
-	
+   
    <div>
       <p>타입 : ${typeName}</p>
    </div>
@@ -118,7 +126,7 @@
    </div>
 
     <!-- 해시태그 표시 -->
-	<div class="hashtags">
+   <div class="hashtags">
       <h3>Hashtags:</h3>
       <c:forEach var="hashtag" items="${hashtags}">
          <button class="hashtag-button" data-hashtag="${hashtag.hashtagName}">
@@ -137,24 +145,26 @@
       </c:forEach>
    </div>
    <button onclick="location.href='recipeboard/list'">글 목록</button>
-	
-	<!-- 글 수정/삭제 버튼 -->
-	<sec:authorize access="isAuthenticated()">
-	<sec:authentication var="customUser" property="principal" />
-	   <c:if test="${recipeBoard.memberId == customUser.memberVO.memberId}">
-	      <button onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글 수정</button>
-	      <button type="button" id="deleteBoard">글 삭제</button>
-	   </c:if>
-	</sec:authorize>
+   
+   <!-- 글 수정/삭제 버튼 -->
+   <sec:authorize access="isAuthenticated()">
+   <sec:authentication var="customUser" property="principal" />
+      <c:if test="${recipeBoard.memberId == customUser.memberVO.memberId}">
+         <button onclick="location.href='recipeboard/update/${recipeBoard.recipeBoardId}'">글 수정</button>
+         <button type="button" id="deleteBoard">글 삭제</button>
+      </c:if>
+   </sec:authorize>
 
    <div>
-   	<button id="like-button">좋아요</button>
+      <button id="like-button">좋아요</button>
     <span id="like-count">0</span>
    </div>
 
    <form id="deleteForm"
       action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
+
       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+
       <input type="hidden" name="recipeBoardId"
          value="${recipeBoard.recipeBoardId}">
    </form>
@@ -175,24 +185,42 @@
         }); // end document
     </script>
 
+
+   
    <input type="hidden" id="recipeBoardId"
       value="${recipeBoard.recipeBoardId }">
 
-   <div style="text-align: center;">
-      <input type="text" id="memberId"> <input type="text"
-         id="replyContent">
-      <button id="btnAdd">댓글 작성</button>
+   <h2>댓글</h2>
+<sec:authorize access="isAuthenticated()">   
+   <div style="text-align: left;">
+      <sec:authentication var="customUser" property="principal" />
+      <c:set var="loggedInMemberId" value="${customUser.memberVO.memberId}" />   
    </div>
+</sec:authorize>   
 
-   <hr>
-   <div style="text-align: center;">
+<div style="text-align: left;">
+      <!-- memberId를 입력하는 대신 span 태그로 표시 -->
+      <span id="loggedInMemberId">${loggedInMemberId}</span>
+      <!-- hidden 필드로 memberId 전송 -->
+      <input type="hidden" id="memberId" value="${loggedInMemberId}">
+      
+      <input type="text" id="replyContent" maxlength="150" placeholder="댓글을 입력하세요">
+<button id="btnAdd">댓글 작성</button>
+</div>
+      
+   <hr> 
       <div id="replies"></div>
-   </div>
-
    <hr>
-   <div style="text-align: center;">
-      <input type="text" id="reviewMemberId"><input type="text"
-         id="recipeReviewContent"> <span class="star-rating"> <input
+   
+      <h2>리뷰</h2>   
+   
+  
+   <div style="text-align: left;">
+         <span id="loggedInReviewMemberId">${loggedInMemberId}</span>
+        <input type="hidden" id="reviewMemberId" value="${loggedInMemberId}">
+   <input type="text" id="recipeReviewContent" placeholder="리뷰 내용을 입력하세요">     
+      
+      <span class="star-rating"> <input
          type="radio" name="reviewRating" id="star1" value="1"><label
          for="star1"></label> <input type="radio" name="reviewRating"
          id="star2" value="2"><label for="star2"></label> <input
@@ -202,25 +230,44 @@
          type="radio" name="reviewRating" id="star5" value="5"><label
          for="star5"></label>
       </span>
+      
       <button id="btnReviewAdd">리뷰 작성</button>
-   </div>
+    </div>
+      
+       <hr>
+         <div id="reviews"></div>
+      
+      <div class="image-upload">
+  
+      <div class="image-drop">drag - image</div>
+     </div>
+
+      <div class="reviewAttachDTOImg-list">
+     </div>
+ 
+      <button id="btnReviewAdd">리뷰 작성</button>
+      
+      <script src="${pageContext.request.contextPath }/resources/js/image.js"></script>
+
+   
    <hr>
-   <div style="text-align: center;">
+   <div style="text-align: left;">
       <div id="reviews"></div>
    </div>
-
+  
    <script type="text/javascript">
+   
       $(document)
             .ready(
                   function() {
-                	 var contextRoot = '/project';
+                    var contextRoot = '/project';
                      // CSRF 토큰 설정
                      var csrfToken = $('meta[name="_csrf"]').attr('content');
                      var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
                      
-                	 getAllReply(); // reply 함수 호출
+                    getAllReply(); // reply 함수 호출
                      getAllRecipeReview(); // review 함수 호출
-                  	 
+                      
                      // AJAX 전역 설정: 모든 요청에 CSRF 토큰 추가
                      $.ajaxSetup({
                          beforeSend: function (xhr) {
@@ -230,7 +277,7 @@
                      
                      var isLoggedIn = false;
                      
-                	 // 좋아요 초기 상태 가져오기
+                    // 좋아요 초기 상태 가져오기
                      function loadLikeStatus() {
                          var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
                          $.get(contextRoot + '/recipeboard/' + recipeBoardId + '/like-count', function (response) {
@@ -246,43 +293,42 @@
                                $('#like-button').text('좋아요');
                             }
                          }).fail(function(xhr) {
-                        	if (xhr.status === 403) {
-                        	    console.warn('로그인이 필요합니다.'); // 경고만 출력, 네트워크 에러 발생 안함
-                        	    isLoggedIn = false;
-                        	    $('#like-button').text('로그인 후 사용 가능');
-                        	}
+                           if (xhr.status === 403) {
+                               console.warn('로그인이 필요합니다.'); // 경고만 출력, 네트워크 에러 발생 안함
+                               isLoggedIn = false;
+                               $('#like-button').text('로그인 후 사용 가능');
+                           }
                          });
                      }
 
                      // 좋아요 버튼 클릭 이벤트
                      $('#like-button').click(function () {
-				    var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
-				    $.ajax({
-				        type: 'POST',
-				        url: contextRoot + '/recipeboard/' + recipeBoardId + '/like', // 좋아요 토글 API
-				        success: function (response) {
-				            if (response.message === "로그인이 필요한 서비스입니다.") {
-				                alert(response.message); // 로그인 필요 메시지 표시
-				            } else {
-				                if (response.liked) {
-				                    $('#like-button').text('좋아요 취소'); // 버튼 텍스트 변경
-				                    alert('좋아요가 설정되었습니다.');
-				                } else {
-				                    $('#like-button').text('좋아요'); // 버튼 텍스트 변경
-				                    alert('좋아요가 취소되었습니다.');
-				                }
-				            }
-				            $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
-				        }
-				    });
-				});
+                var recipeBoardId = $('#recipeBoardId').val(); // 게시글 ID
+                $.ajax({
+                    type: 'POST',
+                    url: contextRoot + '/recipeboard/' + recipeBoardId + '/like', // 좋아요 토글 API
+                    success: function (response) {
+                        if (response.message === "로그인이 필요한 서비스입니다.") {
+                            alert(response.message); // 로그인 필요 메시지 표시
+                        } else {
+                            if (response.liked) {
+                                $('#like-button').text('좋아요 취소'); // 버튼 텍스트 변경
+                                alert('좋아요가 설정되었습니다.');
+                            } else {
+                                $('#like-button').text('좋아요'); // 버튼 텍스트 변경
+                                alert('좋아요가 취소되었습니다.');
+                            }
+                        }
+                        $('#like-count').text(response.likeCount); // 좋아요 개수 업데이트
+                    }
+                });
+            });
                      
-                     loadLikeStatus();
-                     
-                 
+                     loadLikeStatus();                                        
+                          
                      $('#btnAdd').click(function() {
                         var recipeBoardId = $('#recipeBoardId').val(); // 게시판 번호 데이터
-                        var memberId = $('#memberId').val(); // 작성자 데이터
+                         var memberId = $('#memberId').val();
                         var replyContent = $('#replyContent').val(); // 댓글 내용
                         // JS객체 생성
                         var obj = {
@@ -290,16 +336,15 @@
                            'memberId' : memberId,
                            'replyContent' : replyContent
                         }
-                        console.log(obj);
-
+                        
                         // $.ajax로 송수신
                         $.ajax({
                            type : 'POST', // 메서드 타입
                            url : '/project/recipeboard/replies/detail', // url
                            headers : {// 헤더 정보
-                              'Content-Type' : 'application/json' // json content-type 설정   
+                             'Content-Type' : 'application/json' // json content-type 설정 
                            },
-                           data : JSON.stringify(obj), // JSON으로 변환
+                            data : JSON.stringify(obj), // JSON으로 변환 
                            success : function(result) { // 전송 성공 시 서버에서 result값 전송
                               console.log(result);
                               if (result == 1) {
@@ -309,6 +354,7 @@
                                  alert('댓글 입력 실패');
                               }
                            }
+                       
                         });
                      }); // end btn Add.click()
                      
@@ -324,15 +370,30 @@
                            if (!reviewRating) {
                                alert('0점 이외의 별점을 입력하세요');
                                return;
-                           }
-
+                           }                                           
+                           
+                           // hidden input에서 reviewAttachDTO 값 가져오기
+                           var reviewAttachDTOs = [];
+                           $("input[type='hidden'][name='reviewAttachDTO']").each(function() {
+                               var attachData = JSON.parse($(this).val()); // JSON 파싱
+                               reviewAttachDTOs.push(attachData);
+                           });
+                           
                            var obj = {
                                'recipeBoardId': recipeBoardId,
                                'memberId': memberId,
                                'recipeReviewContent': recipeReviewContent,
                                'reviewRating': reviewRating
+                            
                            };
-
+                           
+                           if (reviewAttachDTOs.length > 0) {
+                               obj.reviewAttachList = reviewAttachDTOs;
+                           } else {
+                               obj.reviewAttachList = [];
+                           }
+                           
+                           
                            console.log("전송 데이터:", obj);
 
                            $.ajax({
@@ -345,6 +406,7 @@
                                    if (result == 1) {
                                        alert('리뷰 입력 성공');
                                        getAllRecipeReview();
+                                       
                                    } else {
                                        alert('리뷰 입력 실패');
                                    }
@@ -388,28 +450,32 @@
                            var replyId = $(this).data('reply-id'); // data 속성에서 replyId 가져오기
                            var replyContentSpan = $('.replyContentDisplay[data-reply-id="' + replyId + '"]'); // 수정할 span 요소 선택
                            var currentContent = replyContentSpan.text(); // 기존 텍스트 내용 가져오기
-
-                        // span 요소를 text input으로 변경
+                                                                         
+                          // span 요소를 text input으로 변경
                            replyContentSpan.replaceWith('<input type="text" class="replyContentInput" data-reply-id="' + replyId + '" value="' + currentContent + '">');
+                                                  
+                           // 수정 완료 버튼으로 변경
+                           $(this).replaceWith('<button class="btn_update_complete" data-reply-id="' + replyId + '">수정 완료</button>');
 
-
+                           
                            // 수정 완료 버튼 클릭 이벤트
-                             $('#replies').on('click', '.btn_update_complete', function() {
+                             $('#replies').off('click', '.btn_update_complete').on('click', '.btn_update_complete', function() {
                               
                                var replyId = $(this).data('reply-id');
                                var replyContentInput = $('.replyContentInput[data-reply-id="' + replyId + '"]');
-
                                var updatedReplyContent = replyContentInput.val();
+                               
                                  console.log("replyId : " + replyId + ", 수정할 내용 : " + updatedReplyContent);
 
                                   $.ajax({
                                        url: '/project/recipeboard/replies/' + replyId,
                                          type: 'PUT',
-                                         contentType: 'application/json',
+                                         dataType: "json",
+                                         ContentType: 'application/json',
                                          data: JSON.stringify({
                                              replyId: replyId,
                                              replyContent: updatedReplyContent
-                                         }),
+                                         }),                                                                                            
                                            success: function(result) {
                                              console.log(result);
                                              if (result == 1) {
@@ -424,9 +490,7 @@
                                  
                                 });
                               
-                              // 수정 완료 버튼으로 변경
-                             $(this).replaceWith('<button class="btn_update_complete" data-reply-id="' + replyId + '">수정 완료</button>');
-
+                             
                          });
                        });
                      }   
@@ -446,12 +510,13 @@
                                     $
                                           .ajax({
                                              type : 'DELETE',
+                                             dataType: "json",
                                              url : '/project/recipeboard/replies/'
                                                    + replyId
                                                    + '/'
                                                    + recipeBoardId,
                                              headers : {
-                                                'content-Type' : 'application/json'
+                                                'Content-Type' : 'application/json'
                                              },
                                              success : function(
                                                    result) {
@@ -491,6 +556,23 @@
                                                           }
                                                       }
                                                       
+                                                      // 이미지 표시 HTML 생성
+                                                      var imageHTML = '';
+                                                      if (this.reviewAttachList && this.reviewAttachList.length > 0) {
+                                                          this.reviewAttachList.forEach(function(reviewAttach) {
+                                                              var imageUrl = "/project/image/display?attachPath=" + encodeURIComponent(reviewAttach.attachPath) + 
+                                                                             "&attachChgName=" + encodeURIComponent(reviewAttach.attachChgName) + 
+                                                                             "&attachExtension=" + encodeURIComponent(reviewAttach.attachExtension);
+                                                              
+                                                              imageHTML += '<div class="image_item" data-chgName="'+ reviewAttach.attachChgName +'">'
+                                                                        + '<a href="' + imageUrl + '" target="_blank">'
+                                                                        + '<img width="100px" height="100px" src="' + imageUrl + '" />'
+                                                                        + '</a>'                                                                       
+                                                                        + '</div>';
+                                                          });
+                                                      }
+                                                      
+                                                      
                                                       list += '<div class="review_item">'
                                                       + '<pre>'
                                                       + '<input type="hidden" id="recipeReviewId" value="' + this.recipeReviewId + '">'
@@ -503,10 +585,16 @@
                                                       + '&nbsp;&nbsp;'
                                                       + recipeReviewDateCreated
                                                       + '&nbsp;&nbsp;'
-                                                      + '<button class="btn_review_update" >수정</button>'
+                                          //          + '<button class="btn_review_update" >수정</button>'
                                                       + '<button class="btn_review_delete" >삭제</button>'
-                                                      + '</pre>'
-                                                      + '</div>';
+                                                                                                      
+                                                      // 이미지가 있는 경우만 추가
+                                                      if (imageHTML !== '') {
+                                                          list += '<div class="review_images image-list">' + imageHTML + '</div>';
+                                                      }
+
+                                                      list += '</pre>'
+                                                           + '</div>';
                                                       
                                                    });
                                                 $('#reviews').html(list);
@@ -527,7 +615,7 @@
                                                 // 선택된 리뷰의 replyId, replyContent 값을 저장
                                                 // prevAll() : 선택된 노드 이전에 있는 모든 형제 노드를 접근
                                                 var recipeReviewId = $(this).prevAll(
-                                                      '#recipeReivewId').val();
+                                                      '#recipeReviewId').val();
                                                 var recipeReviewContent = $(this)
                                                       .prevAll(
                                                             '#recipeReviewContent')
@@ -543,6 +631,7 @@
                                                 $
                                                       .ajax({
                                                          type : 'PUT',
+                                                         dataType: "json",
                                                          url : '/project/recipeboard/reviews/'
                                                                + recipeReviewId,
                                                          headers : {
@@ -577,12 +666,13 @@
                                                 $
                                                       .ajax({
                                                          type : 'DELETE',
+                                                         dataType: "json",
                                                          url : '/project/recipeboard/reviews/'
                                                                + recipeReviewId
                                                                + '/'
                                                                + recipeBoardId,
                                                          headers : {
-                                                            'content-Type' : 'application/json'
+                                                            'Content-Type' : 'application/json'
                                                          },
                                                          success : function(
                                                                result) {

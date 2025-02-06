@@ -291,13 +291,17 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         if (pagination.getSituationId() != null && pagination.getSituationId() == 1) {
             pagination.setSituationId(null);
         }
+        if (pagination.getSort() == null || pagination.getSort().isEmpty()) {
+            pagination.setSort("latest");
+        }
         
         return pagination;
     }
 
     @Override
     public Map<String, Object> getRecipeBoardListWithFilters(Pagination pagination) {
-        Map<String, Object> result = new HashMap<>();
+    	pagination = preprocessPagination(pagination);
+    	Map<String, Object> result = new HashMap<>();
         result.put("recipeList", mapper.getRecipeBoardListWithPaging(pagination));
         result.put("allIngredients", getAllIngredients());
         result.put("allTypes", getAllTypes());

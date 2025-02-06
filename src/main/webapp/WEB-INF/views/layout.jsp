@@ -138,11 +138,14 @@
     <!-- 네비게이션 바 -->
     <div class="navbar">
         <div class="left-menu">
-            <a href="${pageContext.request.contextPath}/notice">공지</a>
+            <a>공지</a>
             <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
             <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
         </div>
-        <div class="center-logo">CookHub</div>
+        <div class="center-logo">
+		    <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
+		</div>
+		
         <div>
         <sec:authorize access="isAuthenticated()">
             <div class="logged-in-menu">
@@ -181,12 +184,10 @@
         </form>
         
     <!-- 등록 버튼 -->
-    <sec:authorize access="isAuthenticated()">
-        <form action="${pageContext.request.contextPath}/recipeboard/register" method="post" style="display:inline;">
-            <sec:csrfInput />
-            <button type="submit" class="register-text-button">등록</button>
-        </form>
-    </sec:authorize>
+	<sec:authorize access="isAuthenticated()">
+	<sec:csrfInput />
+	    <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-text-button">등록</a>
+	</sec:authorize>
 
     <sec:authorize access="isAnonymous()">
         <button 

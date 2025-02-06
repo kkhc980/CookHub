@@ -51,7 +51,7 @@ public interface RecipeBoardMapper {
     String getSituationName(int situationId); // Situation 이름 조회
 
     // Pagination & Filtering
-    List<RecipeBoardVO> getRecipeBoardListWithPaging(Pagination pagination); // 필터 및 페이징 적용 Recipe 조회
+    List<RecipeBoardVO> getRecipeBoardListWithPaging(@Param("pagination") Pagination pagination); // 필터 및 페이징 적용 Recipe 조회
     int getTotalCountWithFilters(Pagination pagination); // 필터 적용된 Recipe 수 조회
     int getTotalCount(); // 전체 Recipe 수 조회
 
@@ -68,4 +68,7 @@ public interface RecipeBoardMapper {
     
     // 저장된 썸네일 조회
     List<String> getAllThumbnailPaths();
+    
+    // 좋아요 개수 업데이트
+    void updateLikeCount(@Param("recipeBoardId") int recipeBoardId, @Param("likeCount") int likeCount);
 }

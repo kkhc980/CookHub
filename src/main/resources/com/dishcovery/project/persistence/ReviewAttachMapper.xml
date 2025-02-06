@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.ReviewAttachMapper">
+
+	<resultMap type="com.dishcovery.project.domain.ReviewAttachVO"
+		id="reviewattachMap">
+		
+		<id property="attachId" column="ATTACH_ID"/>
+		<result property="recipeReviewId" column="RECIPE_REVIEW_ID"/>
+		<result property="attachPath" column="ATTACH_PATH"/>
+		<result property="attachRealName" column="ATTACH_REAL_NAME"/>
+		<result property="attachChgName" column="ATTACH_CHG_NAME"/>
+		<result property="attachExtension" column="ATTACH_EXTENSION"/>
+		<result property="attachDateCreated" column="ATTACH_DATE_CREATED"/>
+	</resultMap>
+	
+	<insert id="attachInsert">
+    	INSERT INTO REVIEW_ATTACH
+    	(ATTACH_ID, RECIPE_REVIEW_ID, ATTACH_PATH, ATTACH_REAL_NAME, ATTACH_CHG_NAME, ATTACH_EXTENSION) 
+    	VALUES (SEQ_REVIEW_ATTACH.NEXTVAL, RECIPE_REVIEW_SEQ.CURRVAL, #{attachPath}, #{attachRealName}, #{attachChgName}, #{attachExtension})
+	</insert>
+	
+	<select id="selectByRecipeReviewId" resultMap="reviewattachMap">
+		SELECT * FROM REVIEW_ATTACH
+		WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
+	</select>
+	
+	<select id="selectByAttachId" resultMap="reviewattachMap">
+		SELECT * FROM REVIEW_ATTACH
+		WHERE ATTACH_ID = #{attachId}
+	</select>
+	
+	<insert id="insertModify">
+		INSERT INTO REVIEW_ATTACH
+		(REVIEW_ATTACH_ID, RECIPE_REVIEW_ID, ATTACH_PATH, ATTACH_REAL_NAME, ATTACH_CHG_NAME, ATTACH_EXTENSION)
+		VALUES (SEQ_REVIEW_ATTACH.NEXTVAL, #{recipeReviewId}, #{attachPath}, #{attachRealName}, #{attachChgName}, #{attachExtension})
+	</insert>
+	
+	<delete id="attachDelete">
+		DELETE FROM REVIEW_ATTACH
+		WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
+	</delete>
+	
+	<select id="selectOldList" resultMap="reviewattachMap">
+		SELECT * FROM REVIEW_ATTACH
+		WHERE ATTACH_PATH = TO_CHAR(SYSDATE -1, 'yyyy\mm\dd')
+	</select>
+	
+	</mapper>

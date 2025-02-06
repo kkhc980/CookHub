@@ -15,12 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Controller
 @RequestMapping("/member")
@@ -45,6 +47,7 @@ public class MemberController {
                 new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
+    // 회원 가입 페이지 이동
     @GetMapping("/signup")
     public String moveSignupPage(Model model) {
         log.info("moveSignupPage");
@@ -57,7 +60,7 @@ public class MemberController {
     @PostMapping("/signup")
     public String registerMember(MemberDTO memberDTO) {
         // 임의의 authKey 생성
-        String authKey = mss.getKey(6);
+        String authKey = getKey(6);
         int result = signupMember(memberDTO, authKey);
         if (result == 1) {
             mss.sendAuthMail(memberDTO.getEmail(), authKey);
@@ -67,22 +70,29 @@ public class MemberController {
         return "redirect:/member/signup";
     }
 
+    // 회원 가입
     private int signupMember(MemberDTO memberDTO, String authKey) {
         memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
-        memberDTO.setAuthKey(authKey);
-
-        int result = memberService.registerMember(memberDTO);
-        log.info(result + "행 등록");
+        int result = memberService.registerMember(memberDTO, authKey);
+        log.info("member register : " + result);
 
         return result;
     }
 
     // 메일 인증
     @GetMapping("/signUpConfirm")
-    public String signUpConfirm(@RequestParam Map<String, String> map) {
-        //email, authKey 가 일치할경우 authStatus 업데이트
-        memberService.updateAuthStatus(map);
-        return "redirect:/auth/login";
+    public String signUpConfirm(@RequestParam Map<String, String> map, RedirectAttributes redirectAttributes) {
+        //email, authKey 가 일치하고, 인증 시간이 지나지 않았을 경우 expiresFlag 업데이트
+        int result = memberService.updateExpiresFlag(map);
+        if (result == 1) {
+            memberService.updateAuthStatus(map.get("email"));
+            memberService.deleteAuthKey(map.get("email"));
+            return "redirect:/auth/login";
+        } else {
+            // RedirectAttributes 에 이메일 값을 저장
+            redirectAttributes.addFlashAttribute("email", map.get("email"));
+            return "redirect:/auth/login?error=expired";
+        }
     }
 
     // 인증 번호 보내기
@@ -90,15 +100,43 @@ public class MemberController {
     @ResponseBody
     public String mailCheck(String email) {
         log.info("mailCheck");
-        String authKey = mss.getKey(6);
+        String authKey = getKey(6);
         Map<String, String> map = new HashMap<>();
         map.put("email", email);
         map.put("authKey", authKey);
-        int result = memberService.updateAuthKey(map);
-        log.info(result + " row update");
+        // int result = memberService.updateAuthKey(map);
+        // log.info(result + " row update");
         mss.sendVerificationCode(email, authKey);
         log.info("mail send");
         return authKey;
+    }
+
+    // 메일 인증 실패 후 메일 재 전송
+    @GetMapping("/reAuth")
+    public String reAuthKey(String email) {
+        log.info("reAuthKey");
+        log.info("email : " + email);
+
+        String authKey = getKey(6);
+        int result = memberService.updateAuthKey(email, authKey);
+        if (result == 1) {
+            mss.sendAuthMail(email, authKey);
+        }
+
+        return "redirect:/auth/login";
+    }
+
+    // 메일 인증 실패 후 회원 정보 삭제
+    @GetMapping("/deleteExpired")
+    public String deleteExpired(String email) {
+        log.info("deleteExpired");
+        log.info("email : " + email);
+        int result = memberService.deleteMember(email);
+        if (result == 1) {
+            return "redirect:/auth/login?error=canceled";
+        } else {
+            return "redirect:/auth/login?error=true";
+        }
     }
 
     // 임시 비밀번호 발송
@@ -127,6 +165,21 @@ public class MemberController {
         }
     }
 
+    // 인증 코드 생성
+    private String getKey(int size) {
+        Random random = new Random();
+        StringBuffer buffer = new StringBuffer();
+        int num = 0;
+
+        while (buffer.length() < size) {
+            num = random.nextInt(10);
+            buffer.append(num);
+        }
+
+        return buffer.toString();
+    }
+
+    // 임시 비밀번호 생성
     private String getRandomPassword(int size) {
         char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -150,6 +203,7 @@ public class MemberController {
         return sb.toString();
     }
 
+    // 회원 정보 페이지 이동
     @GetMapping("/detail")
     public String moveMemberDetailPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         // @AuthenticationPrincipal : 인증된 사용자의 Principal을 주입
@@ -162,6 +216,7 @@ public class MemberController {
         return "layout";
     }
 
+    // 회원 정보 수정 이동
     @GetMapping("/update")
     public String moveMemberUpdatePage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("moveUpdatePage");
@@ -182,9 +237,11 @@ public class MemberController {
         memberDTO.setPassword(encPw);
         int result = memberService.updateMember(memberDTO);
         log.info(result + "row update");
+
         return "redirect:/member/detail";
     }
 
+    // 회원 정보 삭제
     @PostMapping("/delete")
     public String deleteMember(@AuthenticationPrincipal UserDetails userDetails, HttpSession session) {
         String email = userDetails.getUsername();
@@ -192,21 +249,15 @@ public class MemberController {
         log.info(result + "row check delete");
         SecurityContextHolder.clearContext();
         session.invalidate();
+
         return "redirect:/recipeboard/list";
     }
 
+    // 비밀 번호 찾기 페이지 이동
     @GetMapping("/findpw")
     public String moveFindPassword(Model model) {
         log.info("moveFindPassword");
         model.addAttribute("pageContent", "member/findpw.jsp");
-
-        return "layout";
-    }
-
-    @GetMapping("/updatepw")
-    public String moveUpdatePassword(Model model) {
-        log.info("moveUpdatePassword");
-        model.addAttribute("pageContent", "member/updatepw.jsp");
 
         return "layout";
     }

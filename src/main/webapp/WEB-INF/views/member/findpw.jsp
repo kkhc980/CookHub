@@ -6,6 +6,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <meta name="_csrf" content="${_csrf.token}"/>
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <style>
+        .custom-email-input {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <div class="form-group email-form">
@@ -14,15 +19,15 @@
         <input type="text" class="form-control" name="userEmail1" id="userEmail1" placeholder="이메일">
         @
         <select class="form-control" name="userEmail2" id="userEmail2">
-            <option>naver.com</option>
-            <option>daum.net</option>
-            <option>gmail.com</option>
-            <option>hanmail.com</option>
-            <option>yahoo.co.kr</option>
+            <option value="naver.com">naver.com</option>
+            <option value="daum.net">daum.net</option>
+            <option value="gmail.com">gmail.com</option>
+            <option value="hanmail.com">hanmail.com</option>
+            <option value="yahoo.co.kr">yahoo.co.kr</option>
+            <option value="custom">직접 입력</option>
         </select>
-    </div>
-    <div class="input-group-append">
-        <button type="button" class="btn btn-primary" id="mail-Check-Btn">본인인증</button>
+        <input type="text" class="form-control custom-email-input" id="customEmailInput" placeholder="직접 입력">
+        <button type="button" class="btn btn-primary" id="mail-Check-Btn">발급</button>
     </div>
     <div class="mail-check-box">
         <input class="form-control mail-check-input" placeholder="인증번호 6자리를 입력해주세요!" disabled="disabled"
@@ -39,8 +44,27 @@
         xhr.setRequestHeader(header, token);
     });
 
+    $('#userEmail2').change(function () {
+        const selectedValue = $(this).val();
+        const customInput = $('.custom-email-input');
+
+        if (selectedValue === 'custom') {
+            customInput.show();
+            customInput.focus();
+        } else {
+            customInput.hide();
+        }
+    });
+
+
     $('#mail-Check-Btn').click(function () {
-        const email = $('#userEmail1').val() + "@" + $('#userEmail2').val();
+        let email;
+        if ($('#userEmail2').val() === 'custom') {
+            email = $('#userEmail1').val() + "@" + $('#customEmailInput').val();
+        } else{
+            email = $('#userEmail1').val() + "@" + $('#userEmail2').val();
+        }
+
         const checkInput = $('.mail-check-input')
         const checkSubmitBtn = $('#mail-Check-Submit-Btn');
 
@@ -70,7 +94,14 @@
         const inputCode = $('.mail-check-input').val();
         const code = $('.mail-check-input').data('code');
         const $resultMsg = $('#mail-check-warn');
-        const email = $('#userEmail1').val() + "@" + $('#userEmail2').val();
+        let email;
+
+        if ($('#userEmail2').val() === 'custom') {
+            email = $('#userEmail1').val() + "@" + $('#customEmailInput').val();
+        } else{
+            email = $('#userEmail1').val() + "@" + $('#userEmail2').val();
+        }
+
 
         if (inputCode === code) {
             $.ajax({
@@ -95,6 +126,7 @@
             $('#mail-Check-Btn').attr('disabled', true);
             $('#userEmail1').attr('readonly', true);
             $('#userEmail2').attr('disabled', true);
+            $('#customEmailInput').attr('readonly', true);
         } else {
             $resultMsg.html('인증번호가 불일치 합니다. 다시 확인해주세요!.');
             $resultMsg.css('color', 'red');

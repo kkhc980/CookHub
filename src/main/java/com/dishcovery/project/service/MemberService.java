@@ -23,4 +23,5 @@ public interface MemberService {
     int updateTempPw(Map<String, String> map);
     int deleteAuthKey(String email);
     int updateAuthKey(String email, String authKey);
+    int createAuthKey(String email, String authKey);
 }

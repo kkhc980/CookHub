@@ -20,19 +20,24 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public int registerMember(MemberDTO memberDTO, String authKey) {
-
-        Date currentDate = new Date();
-        Date expiresAt = DateUtils.addMinutes(currentDate, 60);
-
         int insertMemberResult = memberMapper.insert(toEntity(memberDTO));
         log.info(insertMemberResult + " member register");
 
         int insertMemberRoleResult = memberMapper.insertMemberRole(memberDTO.getEmail());
         log.info(insertMemberRoleResult + " member_role register");
 
-        int insertMemberAuthKey = memberMapper.insertMemberAuthKey(memberDTO.getEmail(), authKey, expiresAt);
+        int insertMemberAuthKey = createAuthKey(memberDTO.getEmail(), authKey);
         log.info(insertMemberAuthKey + " member_authKey register");
         return 1;
+    }
+
+    @Override
+    public int createAuthKey(String email, String authKey) {
+        Date currentDate = new Date();
+        Date expiresAt = DateUtils.addMinutes(currentDate, 60);
+
+        int insertMemberAuthKey = memberMapper.insertMemberAuthKey(email, authKey, expiresAt);
+        return insertMemberAuthKey;
     }
 
     @Override
@@ -49,7 +54,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public int deleteMember(String email) {
-        log.info("deleteMember");
         log.info("email : " + email);
 
         int deleteMemberRole = memberMapper.deleteMemberRole(email);
@@ -95,7 +99,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public int updateAuthKey(String email, String authKey) {
-
         Date currentDate = new Date();
         Date expiresAt = DateUtils.addMinutes(currentDate, 60);
 

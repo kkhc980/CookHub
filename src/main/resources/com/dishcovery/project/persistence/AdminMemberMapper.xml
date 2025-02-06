@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dishcovery.project.persistence.AdminMemberMapper">
+
+    <!-- MemberResultMap: 회원 정보 매핑 -->
+    <resultMap id="MemberResultMap" type="com.dishcovery.project.domain.MemberVO">
+        <id property="memberId" column="MEMBER_ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="PHONE_NUMBER"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="authKey" column="AUTH_KEY"/>
+        <result property="authStatus" column="AUTH_STATUS"/>
+    </resultMap>
+
+    <!-- RoleResultMap: 권한 정보 매핑 -->
+    <resultMap id="RoleResultMap" type="java.util.Map">
+        <result property="roleName" column="ROLE_NAME"/>
+        <result property="count" column="COUNT"/>
+    </resultMap>
+
+    <!-- 회원 가입 -->
+    <insert id="insert" parameterType="com.dishcovery.project.domain.MemberVO">
+        INSERT INTO MEMBER (MEMBER_ID, EMAIL, PASSWORD, NAME, PHONE_NUMBER)
+        VALUES (MEMBER_SEQ.nextval, #{email}, #{password}, #{name}, #{phone})
+    </insert>
+
+    <!-- 이메일 중복 체크 -->
+    <select id="selectDupCheckEmail" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE EMAIL = #{email}
+    </select>
+
+    <!-- 이메일 인증 키 발급 -->
+    <update id="updateAuthKey" parameterType="java.util.Map">
+        UPDATE MEMBER
+        SET AUTH_KEY = #{authKey}
+        WHERE EMAIL = #{email}
+    </update>
+
+    <!-- 이메일 인증 후 로그인 권한 부여 -->
+    <!-- updateAuthStatus: 파라미터 명시적으로 지정 -->
+    <update id="updateAuthStatus">
+        UPDATE MEMBER
+        SET AUTH_STATUS = #{authStatus}
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+    <!-- 유저 확인 -->
+    <select id="selectEmail" resultMap="MemberResultMap">
+        SELECT *
+        FROM MEMBER
+        WHERE EMAIL = #{email}
+    </select>
+
+    <!-- Admin Page Start -->
+
+    <!-- 전체 회원 조회 (페이징) -->
+    <select id="selectAllMembers" parameterType="com.dishcovery.project.util.Pagination" resultMap="MemberResultMap">
+        SELECT *
+        FROM (
+            SELECT ROWNUM AS RNUM, m.*
+            FROM MEMBER m
+            ORDER BY m.MEMBER_ID DESC
+        )
+        WHERE RNUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 회원 ID로 회원 조회 -->
+    <select id="selectMemberById" parameterType="int" resultMap="MemberResultMap">
+        SELECT
+            MEMBER_ID,
+            EMAIL,
+            PASSWORD,
+            NAME,
+            PHONE_NUMBER,
+            CREATED_AT,
+            UPDATED_AT,
+            AUTH_STATUS
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!-- 회원 ID로 권한 조회 -->
+    <select id="selectRolesByMemberId" parameterType="int" resultType="String">
+        SELECT ROLE_NAME
+        FROM MEMBER_ROLE
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!-- 회원 권한 추가 -->
+    <insert id="insertMemberRole" parameterType="java.util.Map">
+        INSERT INTO MEMBER_ROLE (MEMBER_ID, ROLE_NAME)
+        VALUES (#{memberId}, #{roleName})
+    </insert>
+
+    <!-- 회원 권한 삭제 (전체) -->
+    <delete id="deleteMemberRole" parameterType="int">
+        DELETE FROM MEMBER_ROLE
+        WHERE MEMBER_ID = #{memberId}
+    </delete>
+
+    <!-- 회원 권한 삭제 (특정 권한) -->
+    <delete id="deleteMemberRoleByName" parameterType="java.util.Map">
+        DELETE FROM MEMBER_ROLE
+        WHERE MEMBER_ID = #{memberId}
+          AND ROLE_NAME = #{roleName}
+    </delete>
+
+    <!-- 전체 권한 조회 -->
+    <select id="selectAllRoles" resultType="String">
+        SELECT DISTINCT ROLE_NAME
+        FROM MEMBER_ROLE
+    </select>
+
+    <!-- 검색 조건에 따른 회원 조회 (이메일) -->
+    <select id="selectMemberByEmail" parameterType="com.dishcovery.project.util.Pagination" resultMap="MemberResultMap">
+        SELECT *
+        FROM (
+            SELECT ROWNUM AS RNUM, m.*
+            FROM MEMBER m
+            WHERE EMAIL LIKE '%' || #{keyword} || '%'
+            ORDER BY m.MEMBER_ID DESC
+        )
+        WHERE RNUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 검색 조건에 따른 회원 조회 (이름) -->
+    <select id="selectMemberByName" parameterType="com.dishcovery.project.util.Pagination" resultMap="MemberResultMap">
+        SELECT *
+        FROM (
+            SELECT ROWNUM AS RNUM, m.*
+            FROM MEMBER m
+            WHERE NAME LIKE '%' || #{keyword} || '%'
+            ORDER BY m.MEMBER_ID DESC
+        )
+        WHERE RNUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 전체 회원 수 조회 -->
+    <select id="getTotalCount" parameterType="com.dishcovery.project.util.Pagination" resultType="int">
+         SELECT COUNT(*) FROM MEMBER
+    </select>
+
+    <!-- 검색 조건에 따른 회원 수 조회 -->
+    <select id="getTotalCountSearch" parameterType="java.util.Map" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        <where>
+            <choose>
+                <when test="searchType == 'email'">
+                    EMAIL LIKE '%' || #{keyword} || '%'
+                </when>
+                <when test="searchType == 'name'">
+                    NAME LIKE '%' || #{keyword} || '%'
+                </when>
+            </choose>
+        </where>
+    </select>
+
+    <!-- 전체 회원 수 -->
+    <select id="getTotalMemberCount" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+    </select>
+
+    <!-- 활성 회원 수 -->
+    <select id="getActiveMemberCount" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE AUTH_STATUS = 1
+    </select>
+
+    <!-- 비활성 회원 수 -->
+    <select id="getInactiveMemberCount" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE AUTH_STATUS = 0
+    </select>
+
+    <!-- 신규 회원 수 (최근 7일 기준) -->
+    <select id="getNewMemberCount" resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE CREATED_AT >= TRUNC(SYSDATE) - 7
+    </select>
+
+    <!-- 권한별 회원 수 -->
+    <select id="getRoleCounts" resultMap="RoleResultMap">
+        SELECT mr.ROLE_NAME, COUNT(*) AS COUNT
+        FROM MEMBER_ROLE mr
+        GROUP BY mr.ROLE_NAME
+    </select>
+
+    <!-- 비밀번호 변경 -->
+    <update id="updatePassword" parameterType="com.dishcovery.project.domain.MemberVO">
+        UPDATE MEMBER
+        SET PASSWORD = #{password}
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+        <!-- 회원 정보 업데이트 -->
+    <update id="updateMember" parameterType="com.dishcovery.project.domain.MemberVO">
+        UPDATE MEMBER
+        SET
+            EMAIL = #{email},
+            PASSWORD = #{password},
+            NAME = #{name},
+            PHONE_NUMBER = #{phone},
+            AUTH_STATUS = #{authStatus},
+            UPDATED_AT = SYSDATE
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+    <!-- 회원 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </delete>
+
+</mapper>

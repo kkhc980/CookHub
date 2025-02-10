@@ -138,11 +138,14 @@
     <!-- 네비게이션 바 -->
     <div class="navbar">
         <div class="left-menu">
-            <a href="${pageContext.request.contextPath}/notice">공지</a>
+            <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
             <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
             <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
         </div>
-        <div class="center-logo">CookHub</div>
+        <div class="center-logo">
+		    <a href="${pageContext.request.contextPath}/main" style="text-decoration: none; color: #ff9900;">CookHub</a>
+		</div>
+		
         <div>
         <sec:authorize access="isAuthenticated()">
             <div class="logged-in-menu">
@@ -174,19 +177,17 @@
                 type="text" 
                 name="hashtag" 
                 value="${param.hashtag}" 
-                placeholder="Search..." 
+                placeholder="해시태그 검색" 
                 class="search-input">
             <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
             <button type="submit" class="search-button">🔍 Search</button>
         </form>
         
     <!-- 등록 버튼 -->
-    <sec:authorize access="isAuthenticated()">
-        <form action="${pageContext.request.contextPath}/recipeboard/register" method="post" style="display:inline;">
-            <sec:csrfInput />
-            <button type="submit" class="register-text-button">등록</button>
-        </form>
-    </sec:authorize>
+	<sec:authorize access="isAuthenticated()">
+	<sec:csrfInput />
+	    <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-text-button">등록</a>
+	</sec:authorize>
 
     <sec:authorize access="isAnonymous()">
         <button 

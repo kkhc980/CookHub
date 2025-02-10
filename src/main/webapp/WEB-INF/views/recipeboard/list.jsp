@@ -153,6 +153,25 @@
         .register-button:hover {
             background-color: #45a049;
         }
+        
+        .sort-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .sort-button {
+            padding: 5px 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .sort-button.active {
+            background-color: #4caf50;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -202,6 +221,23 @@
         </div>
     </div>
 	
+<%-- 	<!-- 정렬 버튼 추가 -->
+	<div class="sort-container">
+	    <span>정렬: </span>
+	    <button type="button" class="sort-button ${empty param.sort || param.sort == 'latest' ? 'active' : ''}" 
+	            onclick="applySort('latest')">
+	        최신순
+	    </button>
+	    <button type="button" class="sort-button ${param.sort == 'view' ? 'active' : ''}" 
+	            onclick="applySort('view')">
+	        조회순
+	    </button>
+	    <button type="button" class="sort-button ${param.sort == 'rating' ? 'active' : ''}" 
+	            onclick="applySort('rating')">
+	        평점순
+	    </button>
+	</div> --%>
+        
 	<!-- Recipe List Section -->
 	<div class="recipe-list">
 	    <c:choose>
@@ -255,6 +291,13 @@
 	        alert("로그인이 필요한 서비스입니다.");
 	        window.location.href = "${pageContext.request.contextPath}/auth/login";
 	    }    
+	    
+        function applySort(value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set("sort", value);
+            urlParams.set("pageNum", "1"); // 페이지 초기화
+            window.location.search = urlParams.toString();
+        }
 	    
     	function applyFilter(key, value) {
             const urlParams = new URLSearchParams(window.location.search);

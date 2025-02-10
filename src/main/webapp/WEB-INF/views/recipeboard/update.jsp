@@ -192,12 +192,12 @@
 
         <!-- Recipe Title -->
         <label for="title">Title:</label>
-        <input type="text" id="title" name="recipeBoardTitle" value="${recipeBoard.recipeBoardTitle}" required>
+        <input type="text" id="title" name="recipeBoardTitle" value="${recipeBoard.recipeBoardTitle}" maxlength="50" required>
         <br>
 
         <!-- Recipe Content -->
         <label for="content">Content:</label>
-        <textarea id="content" name="recipeBoardContent" required>${recipeBoard.recipeBoardContent}</textarea>
+        <textarea id="content" name="recipeBoardContent" maxlength="500" required>${recipeBoard.recipeBoardContent}</textarea>
         <br>
 
         <!-- Recipe Type -->
@@ -268,7 +268,7 @@
 		<div class="selection-container">
 		    <h3>Hashtags</h3>
 		    <!-- 입력 필드 -->
-		    <input type="text" id="hashtagInput" placeholder="Enter hashtag and press Enter" />
+		    <input type="text" id="hashtagInput" placeholder="Enter hashtag and press Enter(max 20 chars) and press Enter" maxlength="20" />
 		    <!-- 해시태그 목록 -->
 		    <div id="hashtagList" class="hashtag-container">
 			    <c:forEach var="hashtag" items="${hashtags}">

@@ -68,4 +68,7 @@ public interface RecipeBoardMapper {
     
     // 저장된 썸네일 조회
     List<String> getAllThumbnailPaths();
+    
+    // 좋아요 개수 업데이트
+    void updateLikeCount(@Param("recipeBoardId") int recipeBoardId, @Param("likeCount") int likeCount);
 }

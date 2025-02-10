@@ -17,7 +17,7 @@ public class Pagination {
 	private int pageSize; // 현재 페이지 사이즈
 	private String type; // 검색 항목
 	private String keyword; // 검색 키워드 
-
+	private String sort = "latest";
     // 필터링 조건
     private List<Integer> ingredientIds; // 선택된 재료 ID 리스트
     private Integer typeId; // 타입 ID
@@ -87,6 +87,9 @@ public class Pagination {
         }
         if (this.hashtag == null || this.hashtag.trim().isEmpty()) {
             this.hashtag = null; // hashtag는 빈 문자열이면 null로 처리
+        }
+        if (this.sort == null || this.sort.trim().isEmpty()) {
+            this.sort = "latest"; // 기본 정렬: 최신순
         }
     }
 

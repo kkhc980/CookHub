@@ -50,7 +50,7 @@ public class MailSendService {
             MimeMessageHelper helper = new MimeMessageHelper(mail, true, "UTF-8");
             String mailContent = "<html><head><meta charset='UTF-8'></head><body>" +
                     "<h1>[이메일 인증]</h1><br><p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>"
-                    + "<a href='http://localhost:8080/project/member/signUpConfirm?email="
+                    + "<a href='http://192.168.0.138:8080/project/member/signUpConfirm?email="
                     + email + "&authKey=" + authKey + "' target='_blank'>이메일 인증 확인</a>" +
                     "</body></html>";
 

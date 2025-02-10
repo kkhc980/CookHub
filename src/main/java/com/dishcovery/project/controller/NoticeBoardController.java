@@ -1,20 +1,14 @@
 package com.dishcovery.project.controller;
 
-import java.util.List;
-
+import com.dishcovery.project.domain.NoticeBoardVO;
+import com.dishcovery.project.service.NoticeBoardService;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import com.dishcovery.project.domain.NoticeBoardVO;
-import com.dishcovery.project.service.NoticeBoardService;
-
-import lombok.extern.log4j.Log4j;
+import java.util.List;
 
 @Controller
 @RequestMapping("/noticeboard")
@@ -24,37 +18,40 @@ public class NoticeBoardController {
     @Autowired
     private NoticeBoardService noticeBoardService;
 
-    // ¸ğµç °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
+    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ï´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
     @GetMapping("/list")
     public String getAllNoticeBoards(Model model) {
     	log.info("getAllNoticeBoards()");
         List<NoticeBoardVO> noticeBoardList = noticeBoardService.getAllNoticeBoards();
         model.addAttribute("noticeBoardList", noticeBoardList);
-        return "noticeboard/list";  
+        model.addAttribute("pageContent", "noticeboard/list.jsp");
+
+        // ê³µí†µ ë ˆì´ì•„ì›ƒ ë°˜í™˜
+        return "layout";  
     }
 
-    // Æ¯Á¤ °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
-    @GetMapping("/view")
+    // Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ï´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
+    @GetMapping("/detail/{noticeBoardId}")
     public String getNoticeBoardById(@PathVariable("noticeBoardId") int noticeBoardId, Model model) {
         NoticeBoardVO noticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeboard/view";  
+        model.addAttribute("NoticeBoardVO", noticeBoard); 
+        return "noticeboard/detail";
     }
 
-    // °øÁö»çÇ× µî·Ï ÆûÀ» º¸¿©ÁÖ´Â ¸Ş¼­µå
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
     @GetMapping("/register")
     public String showAddNoticeForm() {
         return "noticeboard/add";  
     }
 
-    // »õ·Î¿î °øÁö»çÇ×À» µî·ÏÇÏ´Â ¸Ş¼­µå
+    // ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
     @PostMapping("/register")
     public String addNoticeBoard(@ModelAttribute NoticeBoardVO noticeBoard) {
         noticeBoardService.addNoticeBoard(noticeBoard);
         return "redirect:/noticeboard/list";  
     }
 
-    // °øÁö»çÇ× ¼öÁ¤ ÆûÀ» º¸¿©ÁÖ´Â ¸Ş¼­µå
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
     @GetMapping("/modify")
     public String showEditNoticeForm(@PathVariable("noticeBoardId") int noticeBoardId, Model model) {
         NoticeBoardVO noticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
@@ -62,18 +59,18 @@ public class NoticeBoardController {
         return "noticeboard/edit";  
     }
 
-    // °øÁö»çÇ×À» ¼öÁ¤ÇÏ´Â ¸Ş¼­µå
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
     @PostMapping("/modify")
     public String updateNoticeBoard(@ModelAttribute NoticeBoardVO noticeBoard) {
         noticeBoardService.updateNoticeBoard(noticeBoard);
         return "redirect:/noticeboard/list";  
     }
 
-    // °øÁö»çÇ×À» »èÁ¦ÇÏ´Â ¸Ş¼­µå
-    @PostMapping("/delete")
-    public String deleteNoticeBoard(@PathVariable("noticeBoardId") int noticeBoardId) {
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ş¼ï¿½ï¿½ï¿½
+    @PostMapping("/delete/{noticeBoardId}")
+    public String deleteNoticeBoard(@PathVariable int noticeBoardId) {
         noticeBoardService.deleteNoticeBoard(noticeBoardId);
-        return "redirect:/noticeboard/list";  
+        return "redirect:/noticeboard/list";
     }
 
 }

@@ -25,6 +25,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         MemberVO memberVO = null;
         try {
             memberVO = memberMapper.checkUser(email);
+
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("../auth/login?error=true"); // 데이터베이스 오류 처리
@@ -38,8 +39,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
         if (memberVO.getAuthStatus() == 0) {
             response.sendRedirect("../auth/login?error=authRequired");
-        } else if (memberVO.getAuthStatus() == 2) {
-            response.sendRedirect("../auth/login?error=withdrawed"); // 탈퇴된 회원 처리
         } else {
             response.sendRedirect("../auth/login?error=true"); // 그 외의 실패 처리
         }

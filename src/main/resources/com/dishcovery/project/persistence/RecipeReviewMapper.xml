@@ -4,37 +4,51 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.dishcovery.project.persistence.RecipeReviewMapper">
-	
-	<resultMap type="com.dishcovery.project.domain.RecipeReviewVO" id="RecipeReviewResultMap">
+   
+   <resultMap type="com.dishcovery.project.domain.RecipeReviewVO" id="RecipeReviewResultMap">
       <id property="recipeReviewId" column="RECIPE_REVIEW_ID" /> 
       <result property="recipeBoardId" column="RECIPE_BOARD_ID" /> 
       <result property="memberId" column="MEMBER_ID" />
       <result property="recipeReviewContent" column="RECIPE_REVIEW_CONTENT" />
       <result property="reviewRating" column="REVIEW_RATING" />
       <result property="recipeReviewDateCreated" column="RECIPE_REVIEW_DATE_CREATED" />
+      
+     <collection property="reviewAttachList" ofType="com.dishcovery.project.domain.ReviewAttachVO">
+        <id property="attachId" column="ATTACH_ID"/>
+        <result property="attachPath" column="ATTACH_PATH"/>
+        <result property="attachRealName" column="ATTACH_REAL_NAME"/>
+        <result property="attachChgName" column="ATTACH_CHG_NAME"/>
+        <result property="attachExtension" column="ATTACH_EXTENSION"/>
+        <result property="attachDateCreated" column="ATTACH_DATE_CREATED"/>
+    </collection>
+      
    </resultMap>
-	
-	<insert id="insertRecipeReview">
+   
+   <insert id="insertRecipeReview">
        INSERT INTO RECIPE_REVIEW (RECIPE_REVIEW_ID, RECIPE_BOARD_ID, MEMBER_ID, RECIPE_REVIEW_CONTENT, REVIEW_RATING)
        VALUES (RECIPE_REVIEW_SEQ.NEXTVAL, #{recipeBoardId}, #{memberId}, #{recipeReviewContent}, #{reviewRating})
-   	</insert>
-	
-	<select id="selectListByRecipeBoardId" resultMap="RecipeReviewResultMap">
-       SELECT * FROM RECIPE_REVIEW
-       WHERE RECIPE_BOARD_ID = #{recipeBoardId}
-       ORDER BY RECIPE_REVIEW_ID
-   	</select>
-   	
-   	<update id="updateRecipeReview">
+      </insert>
+   
+   <select id="selectListByRecipeBoardId" resultMap="RecipeReviewResultMap">
+       SELECT r.*, 
+           a.ATTACH_ID, a.ATTACH_PATH, a.ATTACH_REAL_NAME, 
+           a.ATTACH_CHG_NAME, a.ATTACH_EXTENSION, a.ATTACH_DATE_CREATED
+       FROM RECIPE_REVIEW r
+       LEFT JOIN REVIEW_ATTACH a ON r.RECIPE_REVIEW_ID = a.RECIPE_REVIEW_ID
+       WHERE r.RECIPE_BOARD_ID = #{recipeBoardId}
+       ORDER BY r.RECIPE_REVIEW_ID
+   </select>
+      
+      <update id="updateRecipeReview">
        UPDATE RECIPE_REVIEW
        SET RECIPE_REVIEW_CONTENT = #{recipeReviewContent},
-       	   REVIEW_RATING = #{reviewRating}
+             REVIEW_RATING = #{reviewRating}
        WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
-   	</update>
-   	
-   	<delete id="deleteRecipeReview">
+      </update>
+      
+      <delete id="deleteRecipeReview">     
        DELETE FROM RECIPE_REVIEW
        WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
-   	</delete>	
-   	
+      </delete>   
+      
 </mapper>

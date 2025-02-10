@@ -280,4 +280,11 @@
 	<delete id="deleteRecipeViewLogsByRecipeId" parameterType="int">
 	    DELETE FROM RECIPE_BOARD_VIEW_LOG WHERE RECIPE_BOARD_ID = #{recipeBoardId}
 	</delete>
+	
+	<!-- 좋아요 개수 업데이트 -->
+	<update id="updateLikeCount" parameterType="map">
+    UPDATE recipe_board
+    SET like_count = #{likeCount}
+    WHERE recipe_board_id = #{recipeBoardId}
+	</update>
 </mapper>

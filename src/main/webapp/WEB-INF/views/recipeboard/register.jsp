@@ -214,12 +214,13 @@
         
         <!-- Title -->
         <label for="recipeBoardTitle">Title:</label>
-        <input type="text" id="recipeBoardTitle" name="recipeBoardTitle" required>
+        <input type="text" id="recipeBoardTitle" name="recipeBoardTitle" maxlength="50" required>
         <br><br>
 
         <!-- Content -->
         <label for="recipeBoardContent">Content:</label>
-        <textarea id="recipeBoardContent" name="recipeBoardContent" rows="5" cols="50" required></textarea>
+        <textarea id="recipeBoardContent" name="recipeBoardContent" rows="5" cols="50" maxlength="500" required></textarea>
+        <span id="contentCounter"></span>
         <br><br>
 
         <!-- Thumbnail Upload -->
@@ -234,7 +235,7 @@
         <!-- Hashtags -->
         <div class="selection-container">
             <h3>Hashtags</h3>
-            <input type="text" id="hashtagInput" placeholder="Enter hashtag and press Enter" />
+            <input type="text" id="hashtagInput" placeholder="Enter hashtag (max 20 chars) and press Enter" maxlength="20" />
             <div id="hashtagList" class="hashtag-container"></div>
             <!-- Hidden input to store hashtags as comma-separated values -->
             <input type="hidden" id="hashtagsHiddenInput" name="hashtags">

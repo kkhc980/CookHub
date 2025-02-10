@@ -262,20 +262,18 @@
 		) AS rn, rb.*
 		FROM recipe_board rb
 		WHERE 1=1
-		<if
-			test="pagination.ingredientIds != null and !pagination.ingredientIds.isEmpty()">
-			<foreach item="ingredientId"
-				collection="pagination.ingredientIds" open="" separator=" " close="">
-				AND EXISTS (
-				SELECT 1
-				FROM recipe_ingredients ri
-				WHERE
-				ri.recipe_board_id = rb.recipe_board_id
-				AND ri.ingredient_id =
-				#{pagination.ingredientId}
-				)
-			</foreach>
+		<if test="pagination.ingredientIds != null and !pagination.ingredientIds.isEmpty()">
+		    <foreach item="ingredientId" collection="pagination.ingredientIds" open="" separator=" " close="">
+		        AND EXISTS (
+		        SELECT 1
+		        FROM recipe_ingredients ri
+		        WHERE
+		        ri.recipe_board_id = rb.recipe_board_id
+		        AND ri.ingredient_id = #{ingredientId}  <!-- ✅ 올바른 변수 참조 -->
+		        )
+		    </foreach>
 		</if>
+
 		<if test="pagination.typeId != null">AND rb.type_id = #{pagination.typeId}</if>
 		<if test="pagination.situationId != null">AND rb.situation_id = #{pagination.situationId}</if>
 		<if test="pagination.methodId != null">AND rb.method_id = #{pagination.methodId}</if>

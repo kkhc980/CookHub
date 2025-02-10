@@ -116,7 +116,6 @@ public class MemberServiceImpl implements MemberService {
         memberDTO.setPhone(memberVO.getPhone());
         memberDTO.setCreatedAt(memberVO.getCreatedAt());
         memberDTO.setUpdatedAt(memberVO.getUpdatedAt());
-        memberDTO.setAuthKey(memberVO.getAuthKey());
         memberDTO.setAuthStatus(memberVO.getAuthStatus());
 
         return memberDTO;
@@ -132,7 +131,6 @@ public class MemberServiceImpl implements MemberService {
         entity.setPhone(memberDTO.getPhone());
         entity.setCreatedAt(memberDTO.getCreatedAt());
         entity.setUpdatedAt(memberDTO.getUpdatedAt());
-        entity.setAuthKey(memberDTO.getAuthKey());
         entity.setAuthStatus(memberDTO.getAuthStatus());
 
         return entity;

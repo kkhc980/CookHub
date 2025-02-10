@@ -64,6 +64,7 @@ public class MemberController {
         int result = signupMember(memberDTO, authKey);
         if (result == 1) {
             mss.sendAuthMail(memberDTO.getEmail(), authKey);
+            log.info("mail send");
             return "redirect:/auth/login";
         }
 

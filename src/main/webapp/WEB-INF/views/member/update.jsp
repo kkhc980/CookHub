@@ -13,7 +13,7 @@
 </head>
 <body>
 <sec:authentication property="principal" var="user"/>
-<form id="updateForm" action="update" method="POST">
+<form id="updateForm" action="../member/update" method="POST">
     <div class="update-content">
         <div class="update-group">
             <div class="join-row">

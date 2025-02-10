@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,6 +128,40 @@ public class FileUploadUtil {
         } else {
             System.out.println(fullPath + " file not found.");
         }
+    }
+
+    /**
+     * 파일을 저장 (파일 이름 자동 생성)
+     *
+     * @param uploadPath 파일 업로드 경로
+     * @param file       업로드된 파일
+     */
+    public static String saveFile(String uploadPath, MultipartFile file) {
+        String uuid = UUID.randomUUID().toString();
+        String extension = subStrExtension(file.getOriginalFilename());
+        String savedFileName = uuid + "." + extension;
+
+        String datePath = makeDatePath().replace("\\", "/");
+        File realUploadPath = new File(uploadPath, datePath);
+
+        if (!realUploadPath.exists()) {
+            realUploadPath.mkdirs();
+            log.info(realUploadPath.getPath() + " successfully created.");
+        } else {
+            log.info(realUploadPath.getPath() + " already exists.");
+        }
+
+       File saveFile = new File(realUploadPath, savedFileName);
+        try {
+            file.transferTo(saveFile);
+            log.info("file upload success: " + saveFile.getAbsolutePath());
+         } catch (IllegalStateException e) {
+            log.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+         }
+          return datePath + "/" + savedFileName;
+
     }
     
 }

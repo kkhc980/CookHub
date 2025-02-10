@@ -26,7 +26,7 @@
     <c:forEach var="NoticeBoardVO" items="${noticeBoardList }">
         <tr>
             <td>${NoticeBoardVO.noticeBoardId }</td>
-            <td><a href="${pageContext.request.contextPath}/noticeboard/view/${NoticeBoardVO.noticeBoardId }">
+            <td><a href="${pageContext.request.contextPath}/noticeboard/detail/${NoticeBoardVO.noticeBoardId }">
                     ${NoticeBoardVO.noticeBoardTitle }</a></td>
             <td>${NoticeBoardVO.memberId }</td>
             <!-- boardDateCreated 데이터 포멧 변경 -->

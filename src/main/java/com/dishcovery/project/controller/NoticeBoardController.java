@@ -24,21 +24,24 @@ public class NoticeBoardController {
     	log.info("getAllNoticeBoards()");
         List<NoticeBoardVO> noticeBoardList = noticeBoardService.getAllNoticeBoards();
         model.addAttribute("noticeBoardList", noticeBoardList);
-        return "noticeboard/list";  
+        model.addAttribute("pageContent", "noticeboard/list.jsp");
+
+        // 공통 레이아웃 반환
+        return "layout";  
     }
 
     // Ư�� ���������� ��ȸ�ϴ� �޼���
-    @GetMapping("/view")
+    @GetMapping("/detail/{noticeBoardId}")
     public String getNoticeBoardById(@PathVariable("noticeBoardId") int noticeBoardId, Model model) {
         NoticeBoardVO noticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeboard/view";  
+        model.addAttribute("NoticeBoardVO", noticeBoard); 
+        return "noticeboard/detail";
     }
 
     // �������� ��� ���� �����ִ� �޼���
     @GetMapping("/register")
     public String showAddNoticeForm() {
-        return "noticeboard/add";  
+        return "noticeboard/register";  
     }
 
     // ���ο� ���������� ����ϴ� �޼���
@@ -64,10 +67,10 @@ public class NoticeBoardController {
     }
 
     // ���������� �����ϴ� �޼���
-    @PostMapping("/delete")
-    public String deleteNoticeBoard(@PathVariable("noticeBoardId") int noticeBoardId) {
+    @PostMapping("/delete/{noticeBoardId}")
+    public String deleteNoticeBoard(@PathVariable int noticeBoardId) {
         noticeBoardService.deleteNoticeBoard(noticeBoardId);
-        return "redirect:/noticeboard/list";  
+        return "redirect:/noticeboard/list";
     }
 
 }

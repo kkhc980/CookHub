@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ import java.util.Set;
 @Controller
 @RequestMapping("/admin")
 @Log4j
-//@PreAuthorize("hasRole('ROLE_ADMIN')") // 관리자 권한이 있는 사용자만 접근 가능
+@PreAuthorize("hasRole('ROLE_ADMIN')") // 관리자 권한이 있는 사용자만 접근 가능
 public class AdminController {
 
     private final AdminMemberService memberService;

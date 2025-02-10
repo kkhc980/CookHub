@@ -139,7 +139,7 @@
 <!-- 네비게이션 바 -->
 <div class="navbar">
     <div class="left-menu">
-        <a>공지</a>
+        <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
         <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
         <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
     </div>

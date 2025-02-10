@@ -8,41 +8,16 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Random;
 
 @Service
 public class MailSendService {
 
-    private int size;
-
     @Autowired
     private JavaMailSender mailSender;
-
-    //인증키 생성
-    public String getKey(int size) {
-        this.size = size;
-        return getAuthCode();
-    }
-
-    //인증코드 난수 발생
-    private String getAuthCode() {
-        Random random = new Random();
-        StringBuffer buffer = new StringBuffer();
-        int num = 0;
-
-        while (buffer.length() < size) {
-            num = random.nextInt(10);
-            buffer.append(num);
-        }
-
-        return buffer.toString();
-    }
 
     //인증메일 보내기
     @Async // 비동기 처리 및 스레드 풀 지정
     public void sendAuthMail(String email, String authKey) {
-        //6자리 난수 인증번호 생성
-        // String authKey = getKey(6);
 
         //인증메일 보내기
         MimeMessage mail = mailSender.createMimeMessage();

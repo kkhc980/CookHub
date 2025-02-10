@@ -41,7 +41,7 @@ public class NoticeBoardController {
     // �������� ��� ���� �����ִ� �޼���
     @GetMapping("/register")
     public String showAddNoticeForm() {
-        return "noticeboard/add";  
+        return "noticeboard/register";  
     }
 
     // ���ο� ���������� ����ϴ� �޼���

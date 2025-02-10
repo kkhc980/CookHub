@@ -221,7 +221,7 @@
         </div>
     </div>
 	
-<%-- 	<!-- 정렬 버튼 추가 -->
+	<!-- 정렬 버튼 추가 -->
 	<div class="sort-container">
 	    <span>정렬: </span>
 	    <button type="button" class="sort-button ${empty param.sort || param.sort == 'latest' ? 'active' : ''}" 
@@ -236,7 +236,11 @@
 	            onclick="applySort('rating')">
 	        평점순
 	    </button>
-	</div> --%>
+	    <button type="button" class="sort-button ${param.sort == 'like' ? 'active' : ''}" 
+	            onclick="applySort('like')">
+	        좋아요순
+	    </button>
+	</div>
         
 	<!-- Recipe List Section -->
 	<div class="recipe-list">

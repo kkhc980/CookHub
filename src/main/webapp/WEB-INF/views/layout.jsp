@@ -16,6 +16,7 @@
             padding: 10px 20px;
             color: white;
         }
+
         .navbar .left-menu {
             display: flex;
             gap: 20px;
@@ -67,23 +68,23 @@
             background-color: #e68a00;
         }
 
-	    .register-text-button {
-	        padding: 10px 15px;
-	        font-size: 14px;
-	        font-weight: bold;
-	        color: white;
-	        background-color: #ff9900;
-	        border: none;
-	        border-radius: 5px;
-	        cursor: pointer;
-	        transition: background-color 0.2s;
-	    }
-	
-	    .register-text-button:hover {
-	        background-color: #e68a00;
-	    }
-	    
-	    .dropdown {
+        .register-text-button {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            background-color: #ff9900;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .register-text-button:hover {
+            background-color: #e68a00;
+        }
+
+        .dropdown {
             position: relative;
             display: inline-block;
             /* 드롭다운 메뉴가 이름 텍스트 시작점에 맞춰지도록 추가 */
@@ -95,12 +96,12 @@
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
             z-index: 1;
             margin-top: 5px;
             left: 0;
             max-height: 300px; /* 최대 높이 설정 */
-            overflow-y: auto;   /* 세로 스크롤 추가 */
+            overflow-y: auto; /* 세로 스크롤 추가 */
             white-space: nowrap; /* 내용이 길어질 경우 한 줄로 표시 */
         }
 
@@ -128,30 +129,30 @@
             background-color: #f1f1f1;
             color: #ff9900;
         }
-        
+
         .content {
             padding: 20px;
         }
     </style>
 </head>
 <body>
-    <!-- 네비게이션 바 -->
-    <div class="navbar">
-        <div class="left-menu">
-            <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
-            <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
-            <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
-        </div>
-        <div class="center-logo">
-		    <a href="${pageContext.request.contextPath}/main" style="text-decoration: none; color: #ff9900;">CookHub</a>
-		</div>
-		
-        <div>
+<!-- 네비게이션 바 -->
+<div class="navbar">
+    <div class="left-menu">
+        <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
+        <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
+        <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
+    </div>
+    <div class="center-logo">
+        <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
+    </div>
+
+    <div>
         <sec:authorize access="isAuthenticated()">
             <div class="logged-in-menu">
                 <div class="dropdown">
                     <a href="#" onclick="toggleDropdown(event)">
-                        <sec:authentication property="principal.name" />님
+                        <sec:authentication property="principal.name"/>님
                     </a>
                     <div class="dropdown-content" id="userDropdown">
                         <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
@@ -163,49 +164,49 @@
                 </div>
             </div>
         </sec:authorize>
-            <sec:authorize access="isAnonymous()">
-                <a href="../auth/login">로그인</a>
-                <a href="../member/signup">회원가입</a>
-            </sec:authorize>
-        </div>
+        <sec:authorize access="isAnonymous()">
+            <a href="../auth/login">로그인</a>
+            <a href="../member/signup">회원가입</a>
+        </sec:authorize>
     </div>
+</div>
 
-    <!-- 해시태그 검색 -->
-    <div class="search-container">
-        <form method="GET" action="${pageContext.request.contextPath}/recipeboard/list" id="searchForm">
-            <input 
-                type="text" 
-                name="hashtag" 
-                value="${param.hashtag}" 
-                placeholder="해시태그 검색" 
+<!-- 해시태그 검색 -->
+<div class="search-container">
+    <form method="GET" action="${pageContext.request.contextPath}/recipeboard/list" id="searchForm">
+        <input
+                type="text"
+                name="hashtag"
+                value="${param.hashtag}"
+                placeholder="Search..."
                 class="search-input">
-            <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
-            <button type="submit" class="search-button">🔍 Search</button>
-        </form>
-        
+        <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
+        <button type="submit" class="search-button">🔍 Search</button>
+    </form>
+
     <!-- 등록 버튼 -->
-	<sec:authorize access="isAuthenticated()">
-	<sec:csrfInput />
-	    <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-text-button">등록</a>
-	</sec:authorize>
+    <sec:authorize access="isAuthenticated()">
+        <sec:csrfInput/>
+        <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-text-button">등록</a>
+    </sec:authorize>
 
     <sec:authorize access="isAnonymous()">
-        <button 
-            type="button" 
-            class="register-text-button" 
-            onclick="redirectToLogin()">
+        <button
+                type="button"
+                class="register-text-button"
+                onclick="redirectToLogin()">
             등록
         </button>
     </sec:authorize>
-    </div>
+</div>
 
 
-    <!-- 페이지별 콘텐츠 -->
-    <div class="content">
-        <jsp:include page="${pageContent}" />
-    </div>
+<!-- 페이지별 콘텐츠 -->
+<div class="content">
+    <jsp:include page="${pageContent}"/>
+</div>
 
- <script>
+<script>
     $(document).ready(function () {
         $(".search-input").autocomplete({
             source: function (request, response) {
@@ -226,17 +227,17 @@
             minLength: 1, // 최소 몇 글자 입력 후 동작할지 설정
             select: function (event, ui) {
                 // 선택한 데이터를 검색창에 입력
-                $(".search-input").val(ui.item.value); 
+                $(".search-input").val(ui.item.value);
                 return false; // 자동으로 폼이 제출되지 않도록 방지
             }
         });
     });
-    
+
     function redirectToLogin() {
         alert("로그인이 필요한 서비스입니다.");
         window.location.href = "${pageContext.request.contextPath}/auth/login";
     }
-    
+
     function toggleDropdown(event) {
         event.preventDefault();
         var dropdown = document.getElementById('userDropdown');
@@ -265,7 +266,7 @@
         }
     }
 
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         if (!event.target.matches('.dropdown a')) {
             var dropdowns = document.getElementsByClassName("dropdown-content");
             for (var i = 0; i < dropdowns.length; i++) {

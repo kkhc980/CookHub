@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dishcovery.project.persistence.AdminRecipeBoardMapper">
+
+    <!-- Recipe Board Result Map -->
+    <resultMap id="RecipeBoardResultMap" type="com.dishcovery.project.domain.RecipeBoardVO">
+        <id property="recipeBoardId" column="recipe_board_id"/>
+        <result property="recipeBoardTitle" column="recipe_board_title"/>
+        <result property="recipeBoardContent" column="recipe_board_content"/>
+        <result property="memberId" column="member_id"/>
+        <result property="recipeBoardCreatedDate" column="recipe_board_created_date"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="typeId" column="type_id"/>
+        <result property="methodId" column="method_id"/>
+        <result property="situationId" column="situation_id"/>
+        <result property="avgRating" column="avg_rating"/>
+        <result property="replyCount" column="reply_count"/>
+        <result property="recipeReviewCount" column="recipe_review_count"/>
+        <result property="thumbnailPath" column="thumbnail_path"/>
+        <result property="recipeTip" column="recipe_tip"/>
+        <result property="servings" column="servings"/>
+        <result property="time" column="time"/>
+        <result property="difficulty" column="difficulty"/>
+    </resultMap>
+
+    <!-- Recipe Step Result Map -->
+    <resultMap id="RecipeBoardStepResultMap" type="com.dishcovery.project.domain.RecipeBoardStepVO">
+        <id property="stepId" column="step_id"/>
+        <result property="recipeBoardId" column="recipe_board_id"/>
+        <result property="stepOrder" column="step_order"/>
+        <result property="stepDescription" column="step_description"/>
+        <result property="stepImageUrl" column="step_image_url"/>
+    </resultMap>
+
+    <!-- Recipe Ingredient Detail Result Map -->
+    <resultMap id="RecipeIngredientsDetailResultMap" type="com.dishcovery.project.domain.RecipeIngredientsDetailVO">
+        <id property="ingredientDetailId" column="ingredient_detail_id"/>
+        <result property="recipeBoardId" column="recipe_board_id"/>
+        <result property="ingredientName" column="ingredient_name"/>
+        <result property="ingredientAmount" column="ingredient_amount"/>
+        <result property="ingredientUnit" column="ingredient_unit"/>
+        <result property="ingredientNote" column="ingredient_note"/>
+    </resultMap>
+
+    <!-- Ingredients Result Map -->
+    <resultMap id="IngredientsResultMap" type="com.dishcovery.project.domain.IngredientsVO">
+        <id property="ingredientId" column="ingredient_id"/>
+        <result property="ingredientName" column="ingredient_name"/>
+    </resultMap>
+
+    <!-- Types Result Map -->
+    <resultMap id="TypesResultMap" type="com.dishcovery.project.domain.TypesVO">
+        <id property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+    </resultMap>
+
+    <!-- Methods Result Map -->
+    <resultMap id="MethodsResultMap" type="com.dishcovery.project.domain.MethodsVO">
+        <id property="methodId" column="method_id"/>
+        <result property="methodName" column="method_name"/>
+    </resultMap>
+
+    <!-- Situations Result Map -->
+    <resultMap id="SituationsResultMap" type="com.dishcovery.project.domain.SituationsVO">
+        <id property="situationId" column="situation_id"/>
+        <result property="situationName" column="situation_name"/>
+    </resultMap>
+
+    <!-- Recipe CRUD -->
+    <select id="getByRecipeBoardId" parameterType="int" resultMap="RecipeBoardResultMap">
+        SELECT *
+        FROM recipe_board
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </select>
+
+    <select id="getNextRecipeBoardId" resultType="int">
+        SELECT recipe_board_seq.NEXTVAL
+        FROM dual
+    </select>
+
+    <insert id="insertRecipeBoard" parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+        <selectKey keyProperty="recipeBoardId" resultType="int" order="BEFORE">
+            SELECT recipe_board_seq.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO recipe_board (
+            recipe_board_id,
+            recipe_board_title,
+            recipe_board_content,
+            member_id,
+            type_id,
+            method_id,
+            situation_id,
+            avg_rating,
+            thumbnail_path,
+            recipe_tip,
+            servings,
+            time,
+            difficulty
+        ) VALUES (
+            #{recipeBoardId, jdbcType=INTEGER},
+            #{recipeBoardTitle, jdbcType=VARCHAR},
+            #{recipeBoardContent, jdbcType=VARCHAR},
+            #{memberId, jdbcType=VARCHAR},
+            #{typeId, jdbcType=INTEGER},
+            #{methodId, jdbcType=INTEGER},
+            #{situationId, jdbcType=INTEGER},
+            0,
+            #{thumbnailPath, jdbcType=VARCHAR},
+            #{recipeTip, jdbcType=VARCHAR},
+            #{servings, jdbcType=VARCHAR},
+            #{time, jdbcType=VARCHAR},
+            #{difficulty, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateRecipeBoard" parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+        UPDATE recipe_board
+        <set>
+            <if test="recipeBoardTitle != null">recipe_board_title = #{recipeBoardTitle, jdbcType=VARCHAR},</if>
+            <if test="recipeBoardContent != null">recipe_board_content = #{recipeBoardContent, jdbcType=VARCHAR},</if>
+            <if test="typeId != null">type_id = #{typeId, jdbcType=INTEGER},</if>
+            <if test="methodId != null">method_id = #{methodId, jdbcType=INTEGER},</if>
+            <if test="situationId != null">situation_id = #{situationId, jdbcType=INTEGER},</if>
+            <if test="avgRating != null">avg_rating = #{avgRating, jdbcType=DECIMAL},</if>
+            <if test="thumbnailPath != null">thumbnail_path = #{thumbnailPath, jdbcType=VARCHAR},</if>
+            <if test="recipeTip != null">recipe_tip = #{recipeTip, jdbcType=VARCHAR},</if>
+            <if test="servings != null">servings = #{servings, jdbcType=VARCHAR},</if>
+            <if test="time != null">time = #{time, jdbcType=VARCHAR},</if>
+            <if test="difficulty != null">difficulty = #{difficulty, jdbcType=VARCHAR},</if>
+        </set>
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteRecipeBoard" parameterType="int">
+        DELETE FROM recipe_board
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- Recipe Ingredient Detail -->
+    <select id="getIngredientsDetailByRecipeId" parameterType="int" resultMap="RecipeIngredientsDetailResultMap">
+        SELECT
+            ingredient_detail_id,
+            recipe_board_id,
+            ingredient_name,
+            ingredient_amount,
+            ingredient_unit,
+            ingredient_note
+        FROM recipe_ingredients_detail
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </select>
+
+    <insert id="insertRecipeIngredientsDetail" parameterType="com.dishcovery.project.domain.RecipeIngredientsDetailVO">
+        <selectKey keyProperty="ingredientDetailId" resultType="int" order="BEFORE">
+            SELECT ingredient_detail_seq.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO recipe_ingredients_detail (
+            ingredient_detail_id,
+            recipe_board_id,
+            ingredient_name,
+            ingredient_amount,
+            ingredient_unit,
+            ingredient_note
+        ) VALUES (
+            #{ingredientDetailId, jdbcType=INTEGER},
+            #{recipeBoardId, jdbcType=INTEGER},
+            #{ingredientName, jdbcType=VARCHAR},
+            #{ingredientAmount, jdbcType=VARCHAR},
+            #{ingredientUnit, jdbcType=VARCHAR},
+            #{ingredientNote, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <delete id="deleteRecipeIngredientsDetailsByRecipeId" parameterType="int">
+        DELETE FROM recipe_ingredients_detail
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- Ingredients -->
+    <select id="getIngredientsByRecipeId" parameterType="int" resultMap="IngredientsResultMap">
+        SELECT
+            i.ingredient_id AS ingredientId,
+            i.ingredient_name AS ingredientName
+        FROM ingredients i
+            INNER JOIN recipe_ingredients ri ON i.ingredient_id = ri.ingredient_id
+        WHERE ri.recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </select>
+
+    <insert id="insertRecipeIngredient" parameterType="com.dishcovery.project.domain.RecipeIngredientsVO">
+        INSERT INTO recipe_ingredients (recipe_board_id, ingredient_id)
+        VALUES (#{recipeBoardId, jdbcType=INTEGER}, #{ingredientId, jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteRecipeIngredientsByRecipeId" parameterType="int">
+        DELETE FROM recipe_ingredients
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- Dropdown Data -->
+    <select id="getAllTypes" resultMap="TypesResultMap">
+        SELECT
+            type_id,
+            type_name
+        FROM types
+    </select>
+
+    <select id="getAllMethods" resultMap="MethodsResultMap">
+        SELECT
+            method_id,
+            method_name
+        FROM methods
+    </select>
+
+    <select id="getAllSituations" resultMap="SituationsResultMap">
+        SELECT
+            situation_id,
+            situation_name
+        FROM situations
+    </select>
+
+    <select id="getAllIngredients" resultMap="IngredientsResultMap">
+        SELECT
+            ingredient_id,
+            ingredient_name
+        FROM ingredients
+    </select>
+
+    <select id="getTypeName" parameterType="int" resultType="string">
+        SELECT type_name
+        FROM types
+        WHERE type_id = #{typeId, jdbcType=INTEGER}
+    </select>
+
+    <select id="getMethodName" parameterType="int" resultType="string">
+        SELECT method_name
+        FROM methods
+        WHERE method_id = #{methodId, jdbcType=INTEGER}
+    </select>
+
+    <select id="getSituationName" parameterType="int" resultType="string">
+        SELECT situation_name
+        FROM situations
+        WHERE situation_id = #{situationId, jdbcType=INTEGER}
+    </select>
+
+   <!-- Pagination and Filtering -->
+    <!-- 레시피 필터링 조건 -->
+    <sql id="recipeBoardFilterConditions">
+        <where>
+            <if test="ingredientIds != null and !ingredientIds.isEmpty()">
+                <foreach item="ingredientId" collection="ingredientIds" open="AND (" separator=" OR " close=")">
+                    EXISTS (
+                        SELECT 1
+                        FROM recipe_ingredients ri
+                        WHERE ri.recipe_board_id = rb.recipe_board_id
+                        AND ri.ingredient_id = #{ingredientId, jdbcType=INTEGER}
+                    )
+                </foreach>
+            </if>
+            <if test="typeId != null">AND rb.type_id = #{typeId, jdbcType=INTEGER}</if>
+            <if test="situationId != null">AND rb.situation_id = #{situationId, jdbcType=INTEGER}</if>
+            <if test="methodId != null">AND rb.method_id = #{methodId, jdbcType=INTEGER}</if>
+            <!-- 해시태그 검색: 필요에 따라 전체 일치 검색으로 변경 가능 -->
+            <if test="hashtag != null and hashtag != ''">
+                AND EXISTS (
+                    SELECT 1
+                    FROM recipe_hashtags rh
+                    INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+                    WHERE rh.recipe_board_id = rb.recipe_board_id
+                    AND h.hashtag_name LIKE '%' || #{hashtag, jdbcType=VARCHAR} || '%'
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllRecipes" parameterType="com.dishcovery.project.util.Pagination" resultMap="RecipeBoardResultMap">
+        SELECT *
+        FROM (
+            SELECT ROWNUM AS RNUM, rb.*
+            FROM recipe_board rb
+            <include refid="recipeBoardFilterConditions"/>
+            ORDER BY rb.recipe_board_created_date DESC
+        )
+        WHERE RNUM BETWEEN #{start, jdbcType=INTEGER} AND #{end, jdbcType=INTEGER}
+    </select>
+
+    <select id="getTotalCount" parameterType="com.dishcovery.project.util.Pagination" resultType="int">
+        SELECT COUNT(*)
+        FROM recipe_board rb
+        <include refid="recipeBoardFilterConditions"/>
+    </select>
+
+    <!-- Recipe Steps -->
+    <!-- 레시피 스텝 추가 (INSERT) -->
+    <insert id="insertRecipeBoardStep" parameterType="com.dishcovery.project.domain.RecipeBoardStepVO">
+        <selectKey keyProperty="stepId" resultType="int" order="BEFORE">
+            SELECT seq_recipe_board_step_id.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO recipe_board_step (
+            step_id,
+            recipe_board_id,
+            step_order,
+            step_description,
+            step_image_url
+        ) VALUES (
+            #{stepId, jdbcType=INTEGER},
+            #{recipeBoardId, jdbcType=INTEGER},
+            #{stepOrder, jdbcType=INTEGER},
+            #{stepDescription, jdbcType=VARCHAR},
+            #{stepImageUrl, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 레시피 스텝 목록 조회 (SELECT by recipeBoardId) -->
+    <select id="selectRecipeBoardStepsByRecipeBoardId" parameterType="int" resultMap="RecipeBoardStepResultMap">
+        SELECT
+            step_id,
+            recipe_board_id,
+            step_order,
+            step_description,
+            step_image_url
+        FROM recipe_board_step
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+        ORDER BY step_order ASC
+    </select>
+
+    <!-- 레시피 스텝 정보 조회 (SELECT by stepId) -->
+    <select id="selectRecipeBoardStepByStepId" parameterType="int" resultMap="RecipeBoardStepResultMap">
+        SELECT
+            step_id,
+            recipe_board_id,
+            step_order,
+            step_description,
+            step_image_url
+        FROM recipe_board_step
+        WHERE step_id = #{stepId, jdbcType=INTEGER}
+    </select>
+
+    <!-- 레시피 스텝 정보 수정 (UPDATE) -->
+    <update id="updateRecipeBoardStep" parameterType="com.dishcovery.project.domain.RecipeBoardStepVO">
+        UPDATE recipe_board_step
+        SET
+            step_order = #{stepOrder, jdbcType=INTEGER},
+            step_description = #{stepDescription, jdbcType=VARCHAR},
+            step_image_url = #{stepImageUrl, jdbcType=VARCHAR}
+        WHERE step_id = #{stepId, jdbcType=INTEGER}
+    </update>
+
+    <!-- 레시피 스텝 정보 삭제 (DELETE by stepId) -->
+    <delete id="deleteRecipeBoardStepByStepId" parameterType="int">
+        DELETE FROM recipe_board_step
+        WHERE step_id = #{stepId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- 레시피 스텝 정보 삭제 (DELETE by recipeBoardId) -->
+    <delete id="deleteRecipeBoardStepsByRecipeBoardId" parameterType="int">
+        DELETE FROM recipe_board_step
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- Hashtags -->
+    <select id="getHashtagsByRecipeId" parameterType="int" resultType="string">
+        SELECT
+            h.hashtag_id AS hashtagId,
+            h.hashtag_name AS hashtagName
+        FROM recipe_hashtags rh
+            INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+        WHERE rh.recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </select>
+
+    <!-- Hashtags: 해시태그 이름으로 해시태그 조회 -->
+    <select id="getHashtagByName" parameterType="string" resultType="com.dishcovery.project.domain.HashtagsVO">
+        SELECT
+            hashtag_id AS hashtagId,
+            hashtag_name AS hashtagName
+        FROM hashtags
+        WHERE hashtag_name = #{hashtagName, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getNextHashtagId" resultType="int">
+        SELECT hashtags_seq.NEXTVAL
+        FROM dual
+    </select>
+
+    <!-- Hashtags: 새로운 해시태그 추가 -->
+    <insert id="insertHashtag" parameterType="com.dishcovery.project.domain.HashtagsVO">
+        INSERT INTO hashtags (hashtag_id, hashtag_name)
+        VALUES (#{hashtagId, jdbcType=INTEGER}, #{hashtagName, jdbcType=VARCHAR})
+    </insert>
+
+    <!-- RecipeHashtags: Recipe-Hashtag 연결 추가 -->
+    <insert id="insertRecipeHashtag" parameterType="com.dishcovery.project.domain.RecipeHashtagsVO">
+        INSERT INTO recipe_hashtags (recipe_board_id, hashtag_id)
+        VALUES (#{recipeBoardId, jdbcType=INTEGER}, #{hashtagId, jdbcType=INTEGER})
+    </insert>
+
+    <!-- 게시글 ID로 해시태그와의 관계 삭제 -->
+    <delete id="deleteRecipeHashtagsByRecipeBoardId" parameterType="int">
+        DELETE FROM recipe_hashtags
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+    </delete>
+
+    <!-- 특정 해시태그가 연결된 게시글 수 확인 -->
+    <select id="getRecipeCountByHashtagId" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM recipe_hashtags
+        WHERE hashtag_id = #{hashtagId, jdbcType=INTEGER}
+    </select>
+
+    <!-- 특정 해시태그 삭제 -->
+    <delete id="deleteHashtagByHashtagId" parameterType="int">
+        DELETE FROM hashtags
+        WHERE hashtag_id = #{hashtagId, jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteRecipeHashtagsByRecipeBoardIdAndHashtagId">
+        DELETE FROM recipe_hashtags
+        WHERE recipe_board_id = #{recipeBoardId, jdbcType=INTEGER}
+          AND hashtag_id = #{hashtagId, jdbcType=INTEGER}
+    </delete>
+    
+    <!-- Types -->
+    <select id="getTypeById" parameterType="int" resultMap="TypesResultMap">
+        SELECT
+            type_id,
+            type_name
+        FROM types
+        WHERE type_id = #{typeId}
+    </select>
+
+    <!-- Methods -->
+    <select id="getMethodById" parameterType="int" resultMap="MethodsResultMap">
+        SELECT
+            method_id,
+            method_name
+        FROM methods
+        WHERE method_id = #{methodId}
+    </select>
+
+    <!-- Situations -->
+    <select id="getSituationById" parameterType="int" resultMap="SituationsResultMap">
+        SELECT
+            situation_id,
+            situation_name
+        FROM situations
+        WHERE situation_id = #{situationId}
+    </select>
+
+     <select id="getHashtagNamesByRecipeId" parameterType="int" resultType="string">
+        SELECT h.hashtag_name
+        FROM recipe_hashtags rh
+        INNER JOIN hashtags h ON rh.hashtag_id = h.hashtag_id
+        WHERE rh.recipe_board_id = #{recipeBoardId}
+    </select>
+
+</mapper>

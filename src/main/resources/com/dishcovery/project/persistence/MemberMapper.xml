@@ -10,7 +10,6 @@
         <result property="phone" column="PHONE_NUMBER"/>
         <result property="createdAt" column="CREATED_AT"/>
         <result property="updatedAt" column="UPDATED_AT"/>
-        <result property="authKey" column="AUTH_KEY"/>
         <result property="authStatus" column="AUTH_STATUS"/>
     </resultMap>
 

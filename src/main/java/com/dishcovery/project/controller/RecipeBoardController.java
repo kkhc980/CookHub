@@ -6,12 +6,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.CustomUser;
+import com.dishcovery.project.domain.ImageData;
 import com.dishcovery.project.domain.RecipeBoardStepVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
@@ -350,12 +353,24 @@ public class RecipeBoardController {
     }
 
     @GetMapping("/thumbnail/{recipeBoardId}")
-    public ResponseEntity<?> getThumbnail(@PathVariable int recipeBoardId) {
-        return recipeBoardService.getThumbnailByRecipeBoardId(recipeBoardId)
-                .map(resource -> ResponseEntity.ok(resource))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<byte[]> getThumbnail(@PathVariable int recipeBoardId) {
+        Optional<ImageData> imageDataOptional = recipeBoardService.getThumbnailByRecipeBoardId(recipeBoardId);
+
+        if (imageDataOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ImageData imageData = imageDataOptional.get();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(imageData.getContentType())); // PNG, JPEG 자동 설정
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(imageData.getData());
     }
-    
+
+
     @GetMapping("/csrf-debug")
     @ResponseBody
     public Map<String, String> debugCsrf(HttpServletRequest request) {

@@ -2,6 +2,7 @@ package com.dishcovery.project.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +13,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.ImageData;
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardStepVO;
@@ -394,25 +394,30 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 	}
 
 	@Override
-	public Optional<Resource> getThumbnailByRecipeBoardId(int recipeBoardId) {
-		try {
-			RecipeBoardVO recipeBoard = getByRecipeBoardId(recipeBoardId);
+	public Optional<ImageData> getThumbnailByRecipeBoardId(int recipeBoardId) {
+	    try {
+	        RecipeBoardVO recipeBoard = getByRecipeBoardId(recipeBoardId);
 
-			if (recipeBoard == null || recipeBoard.getThumbnailPath() == null) {
-				return Optional.empty();
-			}
+	        if (recipeBoard == null || recipeBoard.getThumbnailPath() == null) {
+	            return Optional.empty();
+	        }
 
-			File file = new File("C:/uploads/" + recipeBoard.getThumbnailPath());
-			if (!file.exists()) {
-				return Optional.empty();
-			}
+	        File file = new File("C:/uploads/" + recipeBoard.getThumbnailPath());
+	        if (!file.exists()) {
+	            return Optional.empty();
+	        }
 
-			return Optional.of(new FileSystemResource(file));
-		} catch (Exception e) {
-			log.error("Failed to fetch thumbnail", e);
-			return Optional.empty();
-		}
+	        byte[] imageData = Files.readAllBytes(file.toPath());
+	        String contentType = Files.probeContentType(file.toPath()); // 이미지 MIME 타입 감지
+
+	        return Optional.of(new ImageData(imageData, contentType));
+	    } catch (IOException e) {
+	        log.error("Failed to fetch thumbnail", e);
+	        return Optional.empty();
+	    }
 	}
+
+
 
 	private String saveThumbnail(MultipartFile thumbnail) throws IOException {
 		String uuid = UUID.randomUUID().toString();

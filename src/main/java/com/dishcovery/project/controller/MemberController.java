@@ -64,6 +64,7 @@ public class MemberController {
         int result = signupMember(memberDTO, authKey);
         if (result == 1) {
             mss.sendAuthMail(memberDTO.getEmail(), authKey);
+            log.info("mail send");
             return "redirect:/auth/login";
         }
 
@@ -101,11 +102,8 @@ public class MemberController {
     public String mailCheck(String email) {
         log.info("mailCheck");
         String authKey = getKey(6);
-        Map<String, String> map = new HashMap<>();
-        map.put("email", email);
-        map.put("authKey", authKey);
-        // int result = memberService.updateAuthKey(map);
-        // log.info(result + " row update");
+        int result = memberService.createAuthKey(email, authKey);
+        log.info(result + " row update");
         mss.sendVerificationCode(email, authKey);
         log.info("mail send");
         return authKey;

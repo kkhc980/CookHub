@@ -19,7 +19,8 @@ public class NotificationServiceImple implements NotificationService {
     @Override
     public void createFollowNotification(int senderId, int receiverId) {
         // 메시지 기본값 설정
-        String message = "사용자 " + senderId + "님이 당신을 팔로우했습니다.";
+		String senderName = notificationMapper.getMemberNameById(senderId);
+        String message = "사용자 " + senderName + "님이 당신을 팔로우했습니다.";
 
         // VO 객체 생성 후 데이터 설정
         MemberNotificationVO notification = new MemberNotificationVO();

@@ -21,7 +21,7 @@
 
 
     
-        <!-- 언팔로우 시 팔로우 알림 삭제 -->
+    <!-- 언팔로우 시 팔로우 알림 삭제 -->
     <delete id="deleteFollowNotification">
         DELETE FROM MEMBER_NOTIFICATION 
         WHERE sender_id = #{senderId} 
@@ -55,4 +55,8 @@
     <update id="markAllAsRead">
         UPDATE MEMBER_NOTIFICATION SET IS_READ = 1 WHERE RECEIVER_ID = #{receiverId}
     </update>
+    
+    <select id="getMemberNameById" resultType="string">
+    	SELECT name FROM MEMBER WHERE member_id = #{senderId}
+	</select>
 </mapper>

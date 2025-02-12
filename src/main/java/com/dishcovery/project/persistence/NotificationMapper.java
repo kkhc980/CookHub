@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface NotificationMapper {
-
+	String getMemberNameById(@Param("senderId") int senderId);
     // 팔로우 알림 저장
     void insertFollowNotification(MemberNotificationVO notification);
    

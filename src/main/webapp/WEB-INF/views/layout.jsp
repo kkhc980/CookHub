@@ -312,7 +312,7 @@
         </div>
     </sec:authorize>
         <sec:authorize access="isAnonymous()">
-            <a href="../auth/login">로그인</a>
+            <a href="../auth/login">로그인</a> &nbsp;
             <a href="../member/signup">회원가입</a>
         </sec:authorize>
     </div>
@@ -330,7 +330,7 @@
         <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
         <button type="submit" class="search-button">🔍 Search</button>
     </form>
-
+    &nbsp;
     <!-- 등록 버튼 -->
     <sec:authorize access="isAuthenticated()">
         <sec:csrfInput/>

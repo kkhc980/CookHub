@@ -1,19 +1,20 @@
 package com.dishcovery.project.persistence;
 
-import com.dishcovery.project.domain.MemberAuth;
-import com.dishcovery.project.domain.MemberRole;
-import com.dishcovery.project.domain.MemberVO;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
-import java.util.Map;
+import com.dishcovery.project.domain.MemberAuth;
+import com.dishcovery.project.domain.MemberRole;
+import com.dishcovery.project.domain.MemberVO;
 
 @Mapper
 public interface MemberMapper {
     int insert(MemberVO memberVO);
     int insertMemberRole(String email);
-    int selectDupCheckEmail(String email);
+    MemberVO selectDupCheckEmail(String email);
     int updateExpiresFlag(Map<String, String> map);
     int updateAuthStatus(String email);
     MemberVO selectEmail(String email);

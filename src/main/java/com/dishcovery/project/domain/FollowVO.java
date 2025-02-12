@@ -1,11 +1,11 @@
 package com.dishcovery.project.domain;
 
+import java.time.LocalDateTime;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

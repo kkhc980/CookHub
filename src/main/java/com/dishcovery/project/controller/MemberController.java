@@ -1,6 +1,7 @@
 package com.dishcovery.project.controller;
 
 import com.dishcovery.project.domain.MemberDTO;
+import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
 import lombok.extern.log4j.Log4j;
@@ -42,9 +43,17 @@ public class MemberController {
     // 이메일 중복 확인 처리
     @PostMapping("/emailCheck")
     public ResponseEntity<String> checkEmailDuplication(@RequestParam String email) {
-        return memberService.selectDupCheckEmail(email) ?
-                new ResponseEntity<>("fail", HttpStatus.OK) :
-                new ResponseEntity<>("ok", HttpStatus.OK);
+        MemberVO memberVO = memberService.selectDupCheckEmail(email);
+
+        if (memberVO != null) {
+            if (memberVO.getAuthStatus() == 1) {
+                return new ResponseEntity<>("registered", HttpStatus.OK); // 가입된 아이디
+            } else {
+                return new ResponseEntity<>("pending", HttpStatus.OK); // 이메일 인증 진행중
+            }
+        } else {
+            return new ResponseEntity<>("ok", HttpStatus.OK); // 사용 가능
+        }
     }
 
     // 회원 가입 페이지 이동
@@ -58,13 +67,16 @@ public class MemberController {
 
     // 회원 가입 처리
     @PostMapping("/signup")
-    public String registerMember(MemberDTO memberDTO) {
+    public String registerMember(MemberDTO memberDTO, RedirectAttributes redirectAttributes) {
         // 임의의 authKey 생성
         String authKey = getKey(6);
         int result = signupMember(memberDTO, authKey);
         if (result == 1) {
             mss.sendAuthMail(memberDTO.getEmail(), authKey);
             log.info("mail send");
+
+            // RedirectAttributes를 사용하여 메시지 전달
+            redirectAttributes.addFlashAttribute("signupSuccess", true);
             return "redirect:/auth/login";
         }
 

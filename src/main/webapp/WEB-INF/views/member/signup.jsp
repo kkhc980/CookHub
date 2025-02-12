@@ -8,7 +8,9 @@
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script type="text/javascript">
-        $(document).ajaxSend(function(e, xhr, opt){
+        let isEmailChecked = false; // 이메일 중복 확인 여부를 저장하는 변수
+
+        $(document).ajaxSend(function (e, xhr, opt) {
             var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 
@@ -27,6 +29,14 @@
                 document.getElementById("upwd1").select();
                 return false; //전송 안 함
             }
+
+            // 이메일 중복 확인을 했는지 체크
+            if (!isEmailChecked) {
+                alert("이메일 중복 확인을 해주세요.");
+                $('#email').focus();
+                return false; //전송 안 함
+            }
+
             return true; //전송함
         }
 
@@ -45,19 +55,33 @@
                 success: function (data) {
                     console.log("success : " + data);
                     if (data == 'ok') {
-                        alert("사용 가능한 아이디입니다.");
+                        alert("사용 가능한 이메일입니다.");
                         $('#upwd1').focus();
-                    } else {
-                        alert("이미 사용중인 아이디입니다.\n다시 입력하세요.");
+                        isEmailChecked = true; // 중복 확인 완료
+                    } else if (data == 'registered') {
+                        alert("이미 가입된 이메일입니다.");
                         $('#email').select();
+                        isEmailChecked = false; // 중복 확인 실패
+                    } else if (data == 'pending') {
+                        alert("이메일 인증 진행 중인 아이디입니다.");
+                        $('#email').select();
+                        isEmailChecked = false; // 중복 확인 실패
+                    } else {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        isEmailChecked = false;
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("error : " + jqXHR.responseText + ", " + textStatus + ", " + errorThrown);
+                    isEmailChecked = false; // 에러 발생 시 중복 확인 실패 처리
                 }
             });
-
         }
+
+        // 이메일 필드에 이벤트 리스너 추가 (이메일 변경 시 중복 확인 초기화)
+        $('#email').on('input', function () {
+            isEmailChecked = false; // 이메일 변경 시 중복 확인 초기화
+        });
     </script>
 </head>
 <body>

@@ -1,15 +1,17 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.MemberDTO;
-import com.dishcovery.project.domain.MemberVO;
-import com.dishcovery.project.persistence.MemberMapper;
-import lombok.extern.log4j.Log4j;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Map;
+import com.dishcovery.project.domain.MemberDTO;
+import com.dishcovery.project.domain.MemberVO;
+import com.dishcovery.project.persistence.MemberMapper;
+
+import lombok.extern.log4j.Log4j;
 
 @Service
 @Log4j
@@ -66,11 +68,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean selectDupCheckEmail(String email) {
-        int result = memberMapper.selectDupCheckEmail(email);
-        if (result == 1) return true;
-
-        return false;
+    public MemberVO selectDupCheckEmail(String email) {
+        return memberMapper.selectDupCheckEmail(email);
     }
 
     @Override

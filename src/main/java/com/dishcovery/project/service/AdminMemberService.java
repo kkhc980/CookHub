@@ -1,10 +1,10 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.MemberVO;
-import com.dishcovery.project.util.Pagination;
-
 import java.util.List;
 import java.util.Map;
+
+import com.dishcovery.project.domain.MemberVO;
+import com.dishcovery.project.util.Pagination;
 
 public interface AdminMemberService {
 

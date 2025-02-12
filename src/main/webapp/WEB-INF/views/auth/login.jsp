@@ -28,6 +28,18 @@
         const expired = urlParams.get('error') === 'expired';
         const canceled = urlParams.get('error') === 'canceled';
 
+        // 회원가입 성공 시 알림
+        const signupSuccess = '${signupSuccess}'; // RedirectAttributes에서 전달된 속성값 받기
+        if (signupSuccess === 'true') {
+            alert("인증 메일이 발송되었습니다. 이메일을 확인해주세요.");
+        }
+
+        // 인증 성공 시 알림 추가
+        const authSuccess = '${authSuccess}';
+        if (authSuccess === 'true') {
+            alert("이메일 인증이 완료되었습니다.");
+        }
+
         if (authRequired) {
             alert("인증이 필요합니다. 이메일 인증을 진행해주세요.");
         } else if (loginError) {

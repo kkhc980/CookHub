@@ -1,14 +1,24 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.*;
-import com.dishcovery.project.util.Pagination;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.MethodsVO;
+import com.dishcovery.project.domain.RecipeBoardStepVO;
+import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeDetailVO;
+import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
+import com.dishcovery.project.domain.SituationsVO;
+import com.dishcovery.project.domain.TypesVO;
+import com.dishcovery.project.util.Pagination;
 
 public interface AdminRecipeBoardService {
 

@@ -73,17 +73,16 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 			recipeBoard.setThumbnailPath(thumbnailPath);
 
 			// 게시글 ID 생성 및 저장
-			
+
 			log.info("Inserting recipe with memberId: {}" + recipeBoard.getMemberId());
 			log.info(recipeBoard.getRecipeBoardId());
 			mapper.insertRecipeBoard(recipeBoard);
 			log.info("Inserted recipe board with ID: " + recipeBoard.getRecipeBoardId());
-			
+
 			// RecipeViewStats 초기화 (insertInitialViewStats 호출)
 			log.info("Inserting initial view stats for recipeBoardId: " + recipeBoard.getRecipeBoardId());
 			viewStatsMapper.insertInitialViewStats(recipeBoard.getRecipeBoardId());
-		
-			
+
 			// 재료 정보 추가
 			log.info("Adding ingredients to recipe with ID: " + recipeBoard.getRecipeBoardId());
 			addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
@@ -111,71 +110,71 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 	public void updateRecipe(int id, RecipeBoardVO recipe, List<Integer> ingredientIds, String hashtags,
 			MultipartFile thumbnail, List<RecipeBoardStepVO> steps, List<Integer> deleteStepIds,
 			List<RecipeIngredientsDetailVO> ingredientDetails) {
-		if (thumbnail == null || thumbnail.isEmpty()) {
-			throw new IllegalArgumentException("Thumbnail is required for updating a recipe.");
-		}
+
 		try {
-			// 기존 레시피 정보 가져오기
 			RecipeBoardVO existingRecipe = getByRecipeBoardId(id);
-			if (existingRecipe != null && existingRecipe.getThumbnailPath() != null) {
-				FileUploadUtil.deleteFile("C:/uploads", existingRecipe.getThumbnailPath());
+			if (existingRecipe == null) {
+				throw new IllegalArgumentException("Recipe not found with id: " + id);
 			}
 
-			// 썸네일 처리
-			if (thumbnail == null || thumbnail.isEmpty()) {
-				// 파일이 선택되지 않았을 경우 기존 썸네일 유지
-				recipe.setThumbnailPath(existingRecipe.getThumbnailPath());
+			if (existingRecipe.getRecipeBoardId() == 0) {
+				throw new IllegalArgumentException("RecipeBoardId is not set properly after getByRecipeBoardId.");
+			}
+
+			String thumbnailPath = null;
+			if (thumbnail != null && !thumbnail.isEmpty()) {
+
+				thumbnailPath = saveThumbnail(thumbnail);
 			} else {
-				// 기존 썸네일 삭제
-				/*
-				 * if (existingRecipe.getThumbnailPath() != null) {
-				 * FileUploadUtil.deleteFile("C:/uploads", existingRecipe.getThumbnailPath()); }
-				 */
-				// 새 썸네일 저장
-				String thumbnailPath = saveThumbnail(thumbnail);
-				recipe.setThumbnailPath(thumbnailPath);
-				recipe.setRecipeBoardId(id);
-			}
 
-			// 레시피 업데이트
+				thumbnailPath = existingRecipe.getThumbnailPath();
+			}
+			recipe.setThumbnailPath(thumbnailPath);
+			recipe.setRecipeBoardId(id);
 			mapper.updateRecipeBoard(recipe);
 
-			// 기존 재료 정보 삭제 및 추가
-			mapper.deleteRecipeIngredientsByRecipeId(recipe.getRecipeBoardId());
-			addIngredientsToRecipe(recipe.getRecipeBoardId(), ingredientIds);
-
+			mapper.deleteRecipeIngredientsByRecipeId(id);
+			addIngredientsToRecipe(id, ingredientIds);
 			mapper.deleteRecipeIngredientsDetailsByRecipeId(id);
 			if (ingredientDetails != null && !ingredientDetails.isEmpty()) {
 				addIngredientDetailsToRecipe(id, ingredientDetails);
 			}
-			// 기존 해시태그 가져오기
-			List<String> existingHashtags = mapper.getHashtagNamesByRecipeId(recipe.getRecipeBoardId());
 
-			// 새롭게 전달된 해시태그 리스트 생성
-			List<String> newHashtags = hashtags != null ? Arrays.asList(hashtags.split(",")) : List.of();
+			updateHashtags(id, hashtags);
 
-			List<String> hashtagsToRemove = existingHashtags.stream().filter(tag -> !newHashtags.contains(tag))
-					.collect(Collectors.toList());
-
-			List<String> hashtagsToAdd = newHashtags.stream().filter(tag -> !existingHashtags.contains(tag))
-					.collect(Collectors.toList());
-
-			// 해시태그 추가 및 삭제
-			addHashtagsToRecipe(recipe.getRecipeBoardId(), hashtagsToAdd);
-			removeHashtagsFromRecipe(recipe.getRecipeBoardId(), hashtagsToRemove);
-			// 스텝 삭제
 			if (deleteStepIds != null && !deleteStepIds.isEmpty()) {
 				for (int stepId : deleteStepIds) {
 					mapper.deleteRecipeBoardStepByStepId(stepId);
 				}
 			}
-			// 스텝 정보 추가
 			if (steps != null && !steps.isEmpty()) {
 				saveRecipeSteps(id, steps);
 			}
+
+		} catch (IllegalArgumentException e) {
+			throw e;
 		} catch (Exception e) {
+			// 그 외 예외 발생 시
 			throw new RuntimeException("Failed to update recipe with hashtags", e);
 		}
+	}
+
+	private void updateHashtags(int recipeBoardId, String hashtags) {
+		// 기존 해시태그 가져오기
+		List<String> existingHashtags = mapper.getHashtagNamesByRecipeId(recipeBoardId);
+
+		// 새롭게 전달된 해시태그 리스트 생성
+		List<String> newHashtags = hashtags != null ? Arrays.asList(hashtags.split(",")) : List.of();
+
+		List<String> hashtagsToRemove = existingHashtags.stream().filter(tag -> !newHashtags.contains(tag))
+				.collect(Collectors.toList());
+
+		List<String> hashtagsToAdd = newHashtags.stream().filter(tag -> !existingHashtags.contains(tag))
+				.collect(Collectors.toList());
+
+		// 해시태그 추가 및 삭제
+		addHashtagsToRecipe(recipeBoardId, hashtagsToAdd);
+		removeHashtagsFromRecipe(recipeBoardId, hashtagsToRemove);
 	}
 
 	@Override
@@ -395,29 +394,27 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 
 	@Override
 	public Optional<ImageData> getThumbnailByRecipeBoardId(int recipeBoardId) {
-	    try {
-	        RecipeBoardVO recipeBoard = getByRecipeBoardId(recipeBoardId);
+		try {
+			RecipeBoardVO recipeBoard = getByRecipeBoardId(recipeBoardId);
 
-	        if (recipeBoard == null || recipeBoard.getThumbnailPath() == null) {
-	            return Optional.empty();
-	        }
+			if (recipeBoard == null || recipeBoard.getThumbnailPath() == null) {
+				return Optional.empty();
+			}
 
-	        File file = new File("C:/uploads/" + recipeBoard.getThumbnailPath());
-	        if (!file.exists()) {
-	            return Optional.empty();
-	        }
+			File file = new File("C:/uploads/" + recipeBoard.getThumbnailPath());
+			if (!file.exists()) {
+				return Optional.empty();
+			}
 
-	        byte[] imageData = Files.readAllBytes(file.toPath());
-	        String contentType = Files.probeContentType(file.toPath()); // 이미지 MIME 타입 감지
+			byte[] imageData = Files.readAllBytes(file.toPath());
+			String contentType = Files.probeContentType(file.toPath()); // 이미지 MIME 타입 감지
 
-	        return Optional.of(new ImageData(imageData, contentType));
-	    } catch (IOException e) {
-	        log.error("Failed to fetch thumbnail", e);
-	        return Optional.empty();
-	    }
+			return Optional.of(new ImageData(imageData, contentType));
+		} catch (IOException e) {
+			log.error("Failed to fetch thumbnail", e);
+			return Optional.empty();
+		}
 	}
-
-
 
 	private String saveThumbnail(MultipartFile thumbnail) throws IOException {
 		String uuid = UUID.randomUUID().toString();
@@ -437,6 +434,15 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 	}
 
 	private void addIngredientsToRecipe(int recipeBoardId, List<Integer> ingredientIds) {
+		if (recipeBoardId == 0) {
+			throw new IllegalArgumentException("Invalid recipeBoardId: 0");
+		}
+		// recipeBoardId 유효성 검사
+		RecipeBoardVO recipeBoard = mapper.getByRecipeBoardId(recipeBoardId); // 예시: mapper를 사용하여 조회
+		if (recipeBoard == null) {
+			throw new IllegalArgumentException("Invalid recipeBoardId: " + recipeBoardId);
+		}
+
 		if (ingredientIds != null && !ingredientIds.isEmpty()) {
 			ingredientIds.forEach(ingredientId -> {
 				RecipeIngredientsVO recipeIngredient = new RecipeIngredientsVO();

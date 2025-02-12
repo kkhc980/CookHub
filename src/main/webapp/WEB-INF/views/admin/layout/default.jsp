@@ -38,9 +38,7 @@
             <a href="${pageContext.request.contextPath}/admin/dashboard">대시보드</a>
             <a href="${pageContext.request.contextPath}/admin/members/list">회원 관리</a>
             <a href="${pageContext.request.contextPath}/admin/recipeboard">레시피 관리</a>
-            <a href="${pageContext.request.contextPath}/admin/recipeboard/register">레시피 등록</a>
-            <a href="${pageContext.request.contextPath}/admin/statistics">통계</a>
-            <!-- 필요한 다른 관리 메뉴 추가 -->
+        
         </div>
         <div>
             <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>

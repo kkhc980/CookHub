@@ -1,8 +1,18 @@
 package com.dishcovery.project.persistence;
 
-import com.dishcovery.project.domain.*;
-import com.dishcovery.project.util.Pagination;
 import java.util.List;
+
+import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.MethodsVO;
+import com.dishcovery.project.domain.RecipeBoardStepVO;
+import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeHashtagsVO;
+import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
+import com.dishcovery.project.domain.RecipeIngredientsVO;
+import com.dishcovery.project.domain.SituationsVO;
+import com.dishcovery.project.domain.TypesVO;
+import com.dishcovery.project.util.Pagination;
 
 public interface AdminRecipeBoardMapper {
 

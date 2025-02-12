@@ -1,51 +1,89 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.NoticeBoardVO;
-import com.dishcovery.project.persistence.NoticeBoardMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import com.dishcovery.project.domain.NoticeBoardVO;
+import com.dishcovery.project.persistence.NoticeBoardMapper;
+
+import lombok.extern.log4j.Log4j;
+
 @Service
+@Log4j
 public class NoticeBoardServiceImple implements NoticeBoardService {
 
-    // NoticeBoardMapper를 자동으로 주입
     @Autowired
     private NoticeBoardMapper noticeBoardMapper;
 
-    // 모든 공지사항을 조회하는 메서드
     @Override
     public List<NoticeBoardVO> getAllNoticeBoards() {
-        // Mapper의 selectAllNoticeBoards 메서드 호출
-        return noticeBoardMapper.selectAllNoticeBoards();
+        log.info("getAllNoticeBoards() 호출");
+        try {
+            List<NoticeBoardVO> noticeBoardList = noticeBoardMapper.selectAllNoticeBoards();
+            log.info("getAllNoticeBoards() 종료");
+            return noticeBoardList;
+        } catch (Exception e) {
+            log.error("공지사항 조회 중 오류 발생", e);
+            throw new RuntimeException("공지사항 조회 중 오류 발생", e);
+        }
     }
 
-    // 특정 공지사항을 조회하는 메서드
     @Override
     public NoticeBoardVO getNoticeBoardById(int noticeBoardId) {
-        // Mapper의 selectNoticeBoardById 메서드 호출
-        return noticeBoardMapper.selectNoticeBoardById(noticeBoardId);
+        log.info("getNoticeBoardById() 호출, noticeBoardId: " + noticeBoardId);
+        try {
+            NoticeBoardVO noticeBoard = noticeBoardMapper.selectNoticeBoardById(noticeBoardId);
+            log.info("getNoticeBoardById() 종료, noticeBoard: " + noticeBoard);
+            return noticeBoard;
+        } catch (Exception e) {
+            log.error("공지사항 조회 중 오류 발생, noticeBoardId: " + noticeBoardId, e);
+            throw new RuntimeException("공지사항 조회 중 오류 발생, noticeBoardId: " + noticeBoardId, e);
+        }
     }
 
-    // 공지사항을 등록하는 메서드
     @Override
+    @Transactional
     public void addNoticeBoard(NoticeBoardVO noticeBoard) {
-        // Mapper의 insertNoticeBoard 메서드 호출
-        noticeBoardMapper.insertNoticeBoard(noticeBoard);
+        log.info("addNoticeBoard() 호출, noticeBoard: " + noticeBoard);
+        try {
+            noticeBoard.setNoticeBoardCreatedDate(new Date());
+            noticeBoardMapper.insertNoticeBoard(noticeBoard);
+            log.info("addNoticeBoard() 종료, noticeBoardId: " + noticeBoard.getNoticeBoardId());
+        } catch (Exception e) {
+            log.error("공지사항 등록 중 오류 발생, noticeBoard: " + noticeBoard, e);
+            throw new RuntimeException("공지사항 등록 중 오류 발생", e);
+        }
     }
 
-    // 공지사항을 수정하는 메서드
     @Override
+    @Transactional
     public void updateNoticeBoard(NoticeBoardVO noticeBoard) {
-        // Mapper의 updateNoticeBoard 메서드 호출
-        noticeBoardMapper.updateNoticeBoard(noticeBoard);
+        log.info("updateNoticeBoard() 호출, noticeBoard: " + noticeBoard);
+        try {
+            noticeBoardMapper.updateNoticeBoard(noticeBoard);
+            log.info("updateNoticeBoard() 종료, noticeBoardId: " + noticeBoard.getNoticeBoardId());
+        } catch (Exception e) {
+            log.error("공지사항 수정 중 오류 발생, noticeBoard: " + noticeBoard, e);
+             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw new RuntimeException("공지사항 수정 중 오류 발생: " + e.getMessage(), e);
+        }
     }
 
-    // 공지사항을 삭제하는 메서드
     @Override
+    @Transactional
     public void deleteNoticeBoard(int noticeBoardId) {
-        // Mapper의 deleteNoticeBoard 메서드 호출
-        noticeBoardMapper.deleteNoticeBoard(noticeBoardId);
+        log.info("deleteNoticeBoard() 호출, noticeBoardId: " + noticeBoardId);
+        try {
+            noticeBoardMapper.deleteNoticeBoard(noticeBoardId);
+            log.info("deleteNoticeBoard() 종료, noticeBoardId: " + noticeBoardId);
+        } catch (Exception e) {
+            log.error("공지사항 삭제 중 오류 발생, noticeBoardId: " + noticeBoardId, e);
+            throw new RuntimeException("공지사항 삭제 중 오류 발생", e);
+        }
     }
 }

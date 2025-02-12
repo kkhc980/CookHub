@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.extern.log4j.Log4j;
@@ -77,5 +78,11 @@ public class AuthController {
         model.addAttribute("pageContent", "auth/login.jsp");
 
         return "layout";
+    }
+
+    @PostMapping("/loginSuccess")
+    public String loginSuccess(Model model) {
+        model.addAttribute("successMessage", "로그인 성공!"); // 성공 메시지 추가
+        return "redirect:/recipeboard/list?success=true";  // 성공 메시지를 리다이렉트 URL에 포함
     }
 }

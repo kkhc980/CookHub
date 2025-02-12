@@ -68,11 +68,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean selectDupCheckEmail(String email) {
-        int result = memberMapper.selectDupCheckEmail(email);
-        if (result == 1) return true;
-
-        return false;
+    public MemberVO selectDupCheckEmail(String email) {
+        return memberMapper.selectDupCheckEmail(email);
     }
 
     @Override

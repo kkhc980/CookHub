@@ -14,7 +14,7 @@ import com.dishcovery.project.domain.MemberVO;
 public interface MemberMapper {
     int insert(MemberVO memberVO);
     int insertMemberRole(String email);
-    int selectDupCheckEmail(String email);
+    MemberVO selectDupCheckEmail(String email);
     int updateExpiresFlag(Map<String, String> map);
     int updateAuthStatus(String email);
     MemberVO selectEmail(String email);

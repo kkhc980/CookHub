@@ -317,6 +317,18 @@
             const ingredientIdsInput = document.getElementById("ingredientIdsInput");
             const selectedIngredients = new Set(ingredientIdsInput.value ? ingredientIdsInput.value.split(",") : ["1"]); // 기본 값 "1" (전체)
 
+			// URL에서 success 파라미터 확인
+			const urlParams = new URLSearchParams(window.location.search);
+			const success = urlParams.get('success');
+
+			if (success === 'true') {
+				alert('로그인 성공!');
+				// URL에서 success 파라미터 제거 (새로고침 시 중복 알림 방지)
+				urlParams.delete('success');
+				const newUrl = window.location.pathname + '?' + urlParams.toString();
+				window.history.replaceState({}, document.title, newUrl); // URL 업데이트
+			}
+
             // 버튼 상태 업데이트 함수
             function updateButtonState(button, activate) {
                 if (activate) {

@@ -57,7 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("email") // 이메일 파라미터 설정
                 .passwordParameter("password") // 비밀번호 파라미터 설정
                 .failureHandler(customAuthenticationFailureHandler) // 사용자 정의 AuthenticationFailureHandler 적용
-                .defaultSuccessUrl("/recipeboard/list"); // 로그인 성공 시 이동할 URL 설정
+                .successForwardUrl("/auth/loginSuccess");  // 로그인 성공시 컨트롤러를 거치도록 변경
+                //.defaultSuccessUrl("/recipeboard/list"); // 로그인 성공 시 이동할 URL 설정
 
         httpSecurity.logout().logoutUrl("/auth/logout") // 로그아웃 URL 설정
                 .logoutSuccessUrl("/recipeboard/list") // 로그아웃 성공 시 이동할 URL 설정

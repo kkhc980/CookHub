@@ -1,8 +1,8 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.NoticeBoardVO;
-
 import java.util.List;
+
+import com.dishcovery.project.domain.NoticeBoardVO;
 
 public interface NoticeBoardService {
 

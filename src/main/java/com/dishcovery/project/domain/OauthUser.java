@@ -1,12 +1,12 @@
 package com.dishcovery.project.domain;
 
+import java.security.Provider;
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.security.Provider;
-import java.util.Date;
 
 @NoArgsConstructor
 @Getter

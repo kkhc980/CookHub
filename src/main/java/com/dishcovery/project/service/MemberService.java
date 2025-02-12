@@ -1,8 +1,8 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.MemberDTO;
-
 import java.util.Map;
+
+import com.dishcovery.project.domain.MemberDTO;
 
 public interface MemberService {
 

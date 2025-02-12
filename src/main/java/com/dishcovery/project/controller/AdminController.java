@@ -1,25 +1,39 @@
 package com.dishcovery.project.controller;
 
-import com.dishcovery.project.domain.*;
-import com.dishcovery.project.service.AdminMemberService;
-import com.dishcovery.project.service.AdminRecipeBoardService;
-import com.dishcovery.project.util.PageMaker;
-import com.dishcovery.project.util.Pagination;
-import lombok.extern.log4j.Log4j;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.MemberVO;
+import com.dishcovery.project.domain.MethodsVO;
+import com.dishcovery.project.domain.RecipeBoardStepVO;
+import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
+import com.dishcovery.project.domain.SituationsVO;
+import com.dishcovery.project.domain.TypesVO;
+import com.dishcovery.project.service.AdminMemberService;
+import com.dishcovery.project.service.AdminRecipeBoardService;
+import com.dishcovery.project.util.PageMaker;
+import com.dishcovery.project.util.Pagination;
+
+import lombok.extern.log4j.Log4j;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,7 +46,7 @@ public class AdminController {
 
     @Autowired
     public AdminController(AdminMemberService memberService,
-        AdminRecipeBoardService recipeService) {
+                           AdminRecipeBoardService recipeService) {
         this.memberService = memberService;
         this.recipeService = recipeService;
     }
@@ -40,32 +54,35 @@ public class AdminController {
     // 회원 목록 조회 (페이징 처리)
     @GetMapping("/members/list")
     public String getAllMembers(Model model,
-        @RequestParam(value = "page", defaultValue = "1") int page,
-        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+                                @RequestParam(value = "page", defaultValue = "1") int page,
+                                @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         log.info("getAllMembers() 호출");
 
         Pagination pagination = new Pagination(page, pageSize);
         List<MemberVO> memberList = memberService.getAllMembers(pagination);
-        int totalCount = memberService.getTotalMemberCount(pagination); // 수정
-        PageMaker pageMaker = new PageMaker(); // 수정
+        int totalCount = memberService.getTotalMemberCount(pagination);
+        PageMaker pageMaker = new PageMaker();
 
         model.addAttribute("memberList", memberList);
         model.addAttribute("pageMaker", pageMaker);
-        return "admin/members/list"; // 회원 목록 페이지
+
+        // 레이아웃 설정을 위해 pageContent 속성 추가
+        model.addAttribute("pageContent", "/WEB-INF/views/admin/members/list.jsp");
+        return "admin/layout/default"; // 관리자 레이아웃 페이지
     }
 
     // 회원 검색 및 필터링
     @GetMapping("/members/search")
     public String searchMembers(Model model,
-        @RequestParam(value = "page", defaultValue = "1") int page,
-        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-        @RequestParam(value = "searchType", required = false) String searchType,
-        @RequestParam(value = "keyword", required = false) String keyword) {
+                                @RequestParam(value = "page", defaultValue = "1") int page,
+                                @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                @RequestParam(value = "searchType", required = false) String searchType,
+                                @RequestParam(value = "keyword", required = false) String keyword) {
         log.info("searchMembers() 호출");
 
         Pagination pagination = new Pagination(page, pageSize);
         List<MemberVO> memberList = null;
-        int totalCount = 0;
+        int totalCount;
 
         if (searchType != null && keyword != null) {
             if ("email".equals(searchType)) {
@@ -73,19 +90,22 @@ public class AdminController {
             } else if ("name".equals(searchType)) {
                 memberList = memberService.searchMembersByName(pagination, keyword);
             }
-            totalCount = memberService.getSearchMemberCount(searchType, keyword); // 수정
+            totalCount = memberService.getSearchMemberCount(searchType, keyword);
         } else {
             memberList = memberService.getAllMembers(pagination);
-            totalCount = memberService.getTotalMemberCount(pagination); // 수정
+            totalCount = memberService.getTotalMemberCount(pagination);
         }
 
-        PageMaker pageMaker = new PageMaker(); // 수정
+        PageMaker pageMaker = new PageMaker();
 
         model.addAttribute("memberList", memberList);
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("searchType", searchType);
         model.addAttribute("keyword", keyword);
-        return "admin/members/list"; // 회원 목록 페이지
+
+        // 레이아웃 설정을 위해 pageContent 속성 추가
+        model.addAttribute("pageContent", "/WEB-INF/views/admin/members/list.jsp");
+        return "admin/layout/default"; // 관리자 레이아웃 페이지
     }
 
     // 회원 상태 변경 (활성/비활성 토글)
@@ -106,11 +126,12 @@ public class AdminController {
             return new ResponseEntity<>("회원 상태 업데이트에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     // 회원 삭제 (탈퇴 처리)
     @PostMapping("/members/delete/{memberId}")
     public String deleteMember(@PathVariable int memberId,
-        @RequestParam(value = "permanent", defaultValue = "false") boolean permanent,
-        RedirectAttributes redirectAttributes) {
+                             @RequestParam(value = "permanent", defaultValue = "false") boolean permanent,
+                             RedirectAttributes redirectAttributes) {
         log.info("deleteMember() 호출 memberId: " + memberId + ", permanent: " + permanent);
         try {
             boolean success = memberService.deleteMember(memberId);
@@ -127,18 +148,17 @@ public class AdminController {
     }
 
 
-
     // 레시피 관련 기능 (AdminRecipeBoardService 사용)
     @GetMapping("/recipeboard")
     public String recipeList(
-        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-        @RequestParam(value = "typeId", required = false) Integer typeId,
-        @RequestParam(value = "situationId", required = false) Integer situationId,
-        @RequestParam(value = "methodId", required = false) Integer methodId,
-        @RequestParam(value = "ingredientIds", required = false) String ingredientIds,
-        @RequestParam(value = "hashtag", required = false) String hashtag,
-        Model model,
-        RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "typeId", required = false) Integer typeId,
+            @RequestParam(value = "situationId", required = false) Integer situationId,
+            @RequestParam(value = "methodId", required = false) Integer methodId,
+            @RequestParam(value = "ingredientIds", required = false) String ingredientIds,
+            @RequestParam(value = "hashtag", required = false) String hashtag,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         log.info("recipeList() 호출");
 
         Pagination pagination = new Pagination(pageNum, 10); // 페이지 크기 10으로 고정
@@ -149,7 +169,6 @@ public class AdminController {
             pagination.setIngredientIdsFromString(ingredientIds);
         }
         pagination.setHashtag(hashtag);
-        //pagination.setDefaultValues(); // 이 메서드의 역할이 명확하지 않음
 
         Map<String, Object> result = recipeService.findAllRecipesWithFilters(pagination, typeId, situationId, methodId, ingredientIds, hashtag); // 필터 적용
 
@@ -166,48 +185,45 @@ public class AdminController {
         model.addAttribute("ingredientIdsStr", ingredientIds);
         model.addAttribute("hashtag", hashtag);
 
-        return "admin/recipeboard/list";
+        // 레이아웃 설정을 위해 pageContent 속성 추가
+        model.addAttribute("pageContent", "/WEB-INF/views/admin/recipeboard/list.jsp");
+        return "admin/layout/default";
     }
- // 게시글 상세 조회
+
+    // 게시글 상세 조회
     @GetMapping("/recipeboard/{id}")
     public String recipeDetail(@PathVariable int id, Model model) {
         log.info("recipeDetail() 호출 id: " + id);
 
-        // 레시피 기본 정보
         RecipeBoardVO recipe = recipeService.findRecipeById(id);
         model.addAttribute("recipe", recipe);
 
-        // 타입, 방법, 상황 이름 가져오기
-        TypesVO type = recipeService.getTypeById(recipe.getTypeId()); 
+        TypesVO type = recipeService.getTypeById(recipe.getTypeId());
         MethodsVO method = recipeService.getMethodById(recipe.getMethodId());
-        SituationsVO situation = recipeService.getSituationById(recipe.getSituationId()); 
-       
-       
+        SituationsVO situation = recipeService.getSituationById(recipe.getSituationId());
+
         model.addAttribute("typeName", type.getTypeName());
         model.addAttribute("methodName", method.getMethodName());
         model.addAttribute("situationName", situation.getSituationName());
 
-        // 재료 상세 정보
         List<RecipeIngredientsDetailVO> ingredientDetails = recipeService.getRecipeIngredientsDetailsByRecipeId(id);
         model.addAttribute("ingredientDetails", ingredientDetails);
 
-        // 레시피 단계별 정보
         List<RecipeBoardStepVO> steps = recipeService.getRecipeBoardStepsByRecipeBoardId(id);
         model.addAttribute("steps", steps);
 
-    
         Set<Integer> selectedIngredientIds = recipeService.getSelectedIngredientIdsByRecipeBoardId(id);
         model.addAttribute("selectedIngredientIds", selectedIngredientIds);
 
-        // 해쉬태그 이름 목록
         List<String> hashtagNames = recipeService.getHashtagNamesByRecipeBoardId(id);
         model.addAttribute("hashtagNames", hashtagNames);
-        
-        // 재료 목록
+
         List<IngredientsVO> ingredients = recipeService.getIngredientsByRecipeId(id);
         model.addAttribute("ingredients", ingredients);
 
-        return "admin/recipeboard/detail";
+        // 레이아웃 설정을 위해 pageContent 속성 추가
+        model.addAttribute("pageContent", "/WEB-INF/views/admin/recipeboard/detail.jsp");
+        return "admin/layout/default";
     }
 
     // 게시글 수정 폼
@@ -220,21 +236,22 @@ public class AdminController {
         model.addAttribute("allSituations", recipeService.getAllSituations());
         model.addAttribute("allIngredients", recipeService.getAllIngredients());
         model.addAttribute("allMethods", recipeService.getAllMethods());
-        // 재료 상세 정보
-        List<RecipeIngredientsDetailVO> ingredientDetails = recipeService.getRecipeIngredientsDetailsByRecipeId(
-                id);
+
+        List<RecipeIngredientsDetailVO> ingredientDetails = recipeService.getRecipeIngredientsDetailsByRecipeId(id);
         model.addAttribute("ingredientDetails", ingredientDetails);
-        // 레시피 단계별 정보
+
         List<RecipeBoardStepVO> steps = recipeService.getRecipeBoardStepsByRecipeBoardId(id);
         model.addAttribute("steps", steps);
-        //선택된 재료 ID
-        Set<Integer> selectedIngredientIds = recipeService.getSelectedIngredientIdsByRecipeBoardId(
-                id);
+
+        Set<Integer> selectedIngredientIds = recipeService.getSelectedIngredientIdsByRecipeBoardId(id);
         model.addAttribute("selectedIngredientIds", selectedIngredientIds);
-        // 해쉬태그
+
         List<String> hashtagNames = recipeService.getHashtagNamesByRecipeBoardId(id);
         model.addAttribute("hashtagNames", hashtagNames);
-        return "admin/recipeboard/edit";
+
+        // 레이아웃 설정을 위해 pageContent 속성 추가
+        model.addAttribute("pageContent", "/WEB-INF/views/admin/recipeboard/edit.jsp");
+        return "admin/layout/default";
     }
 
     // 게시글 수정 처리
@@ -260,6 +277,7 @@ public class AdminController {
             log.error("레시피 업데이트 실패: " + e.getMessage(), e);
             redirectAttributes.addFlashAttribute("message", "레시피 업데이트에 실패했습니다.");
         }
+
         return "redirect:/admin/recipeboard";
     }
 
@@ -285,7 +303,10 @@ public class AdminController {
         model.addAttribute("allSituations", recipeService.getAllSituations());
         model.addAttribute("allIngredients", recipeService.getAllIngredients());
         model.addAttribute("allMethods", recipeService.getAllMethods());
-        return "admin/recipeboard/register";
+
+        // 레이아웃 설정을 위해 pageContent 속성 추가
+        model.addAttribute("pageContent", "/WEB-INF/views/admin/recipeboard/register.jsp");
+        return "admin/layout/default";
     }
 
     // 게시글 등록 처리

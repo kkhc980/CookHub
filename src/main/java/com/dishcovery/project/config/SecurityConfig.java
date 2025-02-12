@@ -1,7 +1,7 @@
 package com.dishcovery.project.config;
 
-import com.dishcovery.project.service.CustomUserDetailsService;
-import com.dishcovery.project.service.CustomAuthenticationFailureHandler;
+import java.util.concurrent.Executor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,8 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
 
-import java.util.concurrent.Executor;
+import com.dishcovery.project.service.CustomAuthenticationFailureHandler;
+import com.dishcovery.project.service.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity

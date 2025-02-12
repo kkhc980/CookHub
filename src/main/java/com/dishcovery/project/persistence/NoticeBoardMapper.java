@@ -1,9 +1,10 @@
 package com.dishcovery.project.persistence;
 
-import com.dishcovery.project.domain.NoticeBoardVO;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
+import com.dishcovery.project.domain.NoticeBoardVO;
 
 @Mapper
 public interface NoticeBoardMapper {

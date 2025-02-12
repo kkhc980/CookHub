@@ -7,6 +7,13 @@
     <title>CookHub</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    
+    <!-- 로그인한 사용자 ID를 안전하게 전달 -->
+    <sec:authorize access="isAuthenticated()">
+        <sec:authentication var="customUser" property="principal" />
+        <meta name="logged-in-user-id" content="${customUser.memberVO.memberId}">
+    </sec:authorize>
+    
     <style>
         .navbar {
             display: flex;
@@ -133,6 +140,129 @@
         .content {
             padding: 20px;
         }
+        
+             .notification-container {
+        position: relative;
+        display: inline-block;
+        margin-right: 20px;
+    }
+
+    #notificationButton {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        position: relative;
+        color: white;
+    }
+
+    .badge {
+        background: red;
+        color: white;
+        border-radius: 50%;
+        padding: 3px 8px;
+        font-size: 12px;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        display: none;
+    }
+
+    .notification-popup {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 30px;
+        width: 280px;
+        background: white;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        z-index: 1000;
+        max-height: 350px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px;
+        background: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+        font-size: 16px;
+        color: #000; /* 글씨 검은색 */
+    }
+
+    .notification-footer {
+        text-align: center;
+        padding: 12px;
+        background: #f5f5f5;
+        border-top: 1px solid #ddd;
+        color: #000; /* 글씨 검은색 */
+    }
+
+    #notificationList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #notificationList li {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        color: #000; /* 글씨 검은색 */
+        background: #ffffff; /* 기본 배경 흰색 */
+    }
+
+    /* 읽지 않은 알림 */
+    #notificationList li.unread {
+        background: #ffffff !important; /* 배경 흰색 */
+        font-weight: bold;
+        color: #000000 !important; /* 글씨 검은색 */
+    }
+
+    #notificationList li:hover {
+        background: #f0f0f0;
+    }
+
+    /* '모두 읽음' 버튼 스타일 */
+    .notification-footer button {
+        background: #000;
+        border: 1px solid #000;
+        color: #fff;
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .notification-footer button:hover {
+        background: #444;
+    }
+
+    /* 닫기 버튼 (✖) */
+    .notification-header button {
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        color: #000; /* 글씨 검은색 */
+    }
+
+    .notification-header button:hover {
+        background: #ddd;
+    }
+    
+    .user-notification-container {
+	    display: flex;
+	    align-items: center;
+	    gap: 10px; /* 아이콘과 텍스트 사이 간격 조절 */
+	}
+
     </style>
 </head>
 <body>
@@ -147,23 +277,40 @@
         <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
     </div>
 
-    <div>
-        <sec:authorize access="isAuthenticated()">
-            <div class="logged-in-menu">
-                <div class="dropdown">
-                    <a href="#" onclick="toggleDropdown(event)">
-                        <sec:authentication property="principal.name"/>님
-                    </a>
-                    <div class="dropdown-content" id="userDropdown">
-                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
-                        <form action="../auth/logout" method="post">
-                            <input type="submit" value="로그아웃">
-                            <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
-                        </form>
-                    </div>
+    
+<div class="user-notification-container">
+    <sec:authorize access="isAuthenticated()">
+        <div class="notification-container">
+            <button id="notificationButton">
+                🔔 <span id="unreadCount" class="badge"></span>
+            </button>
+            <div id="notificationPopup" class="notification-popup">
+                <div class="notification-header">
+                    <span>📢 알림</span>
+                    <button onclick="closeNotificationPopup()">✖</button>
+                </div>
+                <ul id="notificationList"></ul>
+                <div class="notification-footer">
+                    <button onclick="markAllAsRead()">✅ 모두 읽음</button>
                 </div>
             </div>
-        </sec:authorize>
+        </div>
+
+        <div class="logged-in-menu">
+            <div class="dropdown">
+                <a href="#" onclick="toggleDropdown(event)">
+                    <sec:authentication property="principal.name"/>님
+                </a>
+                <div class="dropdown-content" id="userDropdown">
+                    <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
+                    <form action="../auth/logout" method="post">
+                        <input type="submit" value="로그아웃">
+                        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </sec:authorize>
         <sec:authorize access="isAnonymous()">
             <a href="../auth/login">로그인</a>
             <a href="../member/signup">회원가입</a>
@@ -277,6 +424,98 @@
             }
         }
     };
+    
+    $(document).ready(function () {
+        var memberId = $("meta[name='logged-in-user-id']").attr("content");
+        var contextPath = "${pageContext.request.contextPath}";
+
+        if (!memberId) {
+            console.log("🚨 로그인되지 않음. 알림 기능 비활성화.");
+            return;
+        }
+
+        // 🔔 최신 알림 로드
+        function loadNotifications() {
+            $.ajax({
+                url: contextPath + "/notifications/unread/" + memberId,
+                type: "GET",
+                success: function (notifications) {
+                    var notificationList = $("#notificationList");
+                    notificationList.empty();
+                    var unreadCount = 0;
+
+                    notifications.forEach(function (notification) {
+                        var listItem = $("<li>").text(notification.message);
+                        listItem.attr("data-id", notification.notificationId);
+                        if (!notification.isRead) {
+                            listItem.addClass("unread");
+                            unreadCount++;
+                        }
+                        notificationList.append(listItem);
+                    });
+
+                    // 🔴 안 읽은 알림 개수 업데이트
+                    if (unreadCount > 0) {
+                        $("#unreadCount").text(unreadCount).show();
+                    } else {
+                        $("#unreadCount").hide();
+                    }
+                },
+                error: function (xhr) {
+                    console.error("🔴 알림 가져오기 실패:", xhr);
+                }
+            });
+        }
+
+        // ✅ "모두 읽음" 기능
+        function markAllAsRead() {
+            var csrfToken = $('meta[name="_csrf"]').attr('content');
+            var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+            $.ajax({
+                url: contextPath + "/notifications/readAll/" + memberId,
+                type: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                },
+                success: function () {
+                    console.log("✅ 모든 알림을 읽음으로 변경");
+                    $("#notificationList li").removeClass("unread");
+                    $("#unreadCount").hide();
+                    loadNotifications(); // 새로고침하여 최신 데이터 가져오기
+                },
+                error: function (xhr) {
+                    console.error("🔴 알림 읽음 처리 실패:", xhr);
+                }
+            });
+        }
+
+        // 🔔 알림 버튼 클릭 이벤트
+        $("#notificationButton").click(function (event) {
+            event.stopPropagation();
+            $("#notificationPopup").toggle();
+            loadNotifications();
+        });
+
+        // 📌 팝업 닫기 이벤트
+        window.onclick = function (event) {
+            if (!event.target.matches("#notificationButton")) {
+                $("#notificationPopup").hide();
+            }
+        };
+
+        // ✅ 알림 클릭 시 읽음 처리
+        $("#notificationList").on("click", "li", function () {
+            var notificationId = $(this).data("id");
+            $.post(contextPath + "/notifications/read/" + notificationId, function () {
+                $(this).removeClass("unread");
+                loadNotifications();
+            });
+        });
+
+        // 초기 알림 데이터 로드
+        loadNotifications();
+    });
 </script>
 </body>
 </html>

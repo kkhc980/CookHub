@@ -5,12 +5,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.ImageData;
 import com.dishcovery.project.domain.IngredientsVO;
-import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.domain.MethodsVO;
 import com.dishcovery.project.domain.RecipeBoardStepVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
@@ -77,7 +76,7 @@ public interface RecipeBoardService {
 	}
 
 	// Thumbnail Management
-	Optional<Resource> getThumbnailByRecipeBoardId(int recipeBoardId); // Optional로 리소스 반환
+	Optional<ImageData> getThumbnailByRecipeBoardId(int recipeBoardId); // Optional로 리소스 반환
 
 	/**
 	 * 게시글 조회수를 증가시킵니다. 동일한 IP는 하루에 한 번만 조회수를 증가시킵니다.

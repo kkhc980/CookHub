@@ -30,7 +30,7 @@ public class RecipeBoardVO {
     private int recipeReviewCount;
     private String thumbnailPath;
     private List<Integer> ingredientIds;
-    private List<HashtagsVO> hashtags;
+    private String hashtags;
     private MultipartFile thumbnail;
     String servings;
 	String time;

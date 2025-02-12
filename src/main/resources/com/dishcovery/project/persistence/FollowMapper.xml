@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.FollowMapper">
+
+	<insert id="insertFollow">
+	    INSERT INTO MEMBER_FOLLOW (FOLLOW_ID, FOLLOWER_ID, FOLLOWING_ID, CREATED_AT)
+	    VALUES (MEMBER_FOLLOW_SEQ.NEXTVAL, #{followerId}, #{followingId}, SYSDATE)
+	</insert>
+	
+    <delete id="deleteFollow">
+        DELETE FROM MEMBER_FOLLOW WHERE FOLLOWER_ID = #{followerId} AND FOLLOWING_ID = #{followingId}
+    </delete>
+
+    <select id="getFollowers" resultType="com.dishcovery.project.domain.FollowVO">
+        SELECT FOLLOW_ID, FOLLOWER_ID, FOLLOWING_ID, CREATED_AT 
+        FROM MEMBER_FOLLOW WHERE FOLLOWING_ID = #{memberId}
+    </select>
+
+    <select id="getFollowing" resultType="com.dishcovery.project.domain.FollowVO">
+        SELECT FOLLOW_ID, FOLLOWER_ID, FOLLOWING_ID, CREATED_AT 
+        FROM MEMBER_FOLLOW WHERE FOLLOWER_ID = #{memberId}
+    </select>
+
+    <select id="isFollowing" resultType="int">
+        SELECT COUNT(*) FROM MEMBER_FOLLOW WHERE FOLLOWER_ID = #{followerId} AND FOLLOWING_ID = #{followingId}
+    </select>
+
+</mapper>

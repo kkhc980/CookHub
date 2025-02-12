@@ -10,20 +10,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- jquery 라이브러리 import -->
-<base href="${pageContext.request.contextPath}/">
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<meta charset="UTF-8">
+	<!-- jquery 라이브러리 import -->
+	<base href="${pageContext.request.contextPath}/">
+	<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+	<meta charset="UTF-8">
+	
+	
+	<!-- css 파일 불러오기 -->
+	<link rel="stylesheet"
+		href="${pageContext.request.contextPath }/resources/css/image.css">
+	
+	<!-- CSRF 토큰 추가 -->
+	<meta name="_csrf" content="${_csrf.token}" />
+	<meta name="_csrf_header" content="${_csrf.headerName}" />
 
-
-<!-- css 파일 불러오기 -->
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath }/resources/css/image.css">
-
-<!-- CSRF 토큰 추가 -->
-<meta name="_csrf" content="${_csrf.token}" />
-<meta name="_csrf_header" content="${_csrf.headerName}" />
-
+    <!-- 현재 로그인한 사용자 ID를 JavaScript에서 사용 가능하도록 전달 -->
+    <sec:authorize access="isAuthenticated()">
+        <sec:authentication var="customUser" property="principal"/>
+        <meta name="member-id" content="${customUser.memberVO.memberId}">
+    </sec:authorize>
+    
+    
 <title>${recipeBoard.recipeBoardTitle }</title>
 
 <style>
@@ -100,9 +107,161 @@
 			src="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}"
 			alt="Thumbnail" class="thumbnail">
 	</div>
-	<div>
-		<p>작성자 : ${recipeBoard.memberId }</p>
+
+<!-- 작성자 버튼 -->
+<div>
+    <p>작성자 :</p>
+    <button class="btn btn-link p-0 follow-btn" data-member-id="${recipeBoard.memberId}">
+        ${recipeBoard.memberId}
+    </button>
+</div>
+
+<!-- 팔로우 모달 창 -->
+<div id="followPopup" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title">팔로우 정보</h5>
+            </div>
+            <div class="modal-body">
+                <p><strong>작성자 ID:</strong> <span id="popupMemberId"></span></p>
+                <button id="followActionBtn" class="btn btn-primary">팔로우</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery 및 Bootstrap JS 로드 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    console.log("📌 페이지 로드됨");
+
+    var contextPath = "${pageContext.request.contextPath}";
+
+    // ✅ 현재 로그인한 사용자 ID 가져오기
+    var currentUserId = $("meta[name='member-id']").attr("content");
+
+    if (!currentUserId || currentUserId === "null" || currentUserId === "") {
+        console.log("⚠️ 로그인되지 않은 사용자. 팔로우 기능 비활성화.");
+        return;
+    }
+    console.log("📌 현재 로그인된 사용자 ID:", currentUserId);
+
+    let followingId = null;
+
+    // CSRF 토큰 설정
+    var csrfToken = $('meta[name="_csrf"]').attr('content');
+    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        }
+    });
+
+    // 팔로우 버튼 클릭 시 팝업 띄우기
+    $(document).on("click", ".follow-btn", function() {
+        followingId = $(this).data("member-id");
+        $("#popupMemberId").text(followingId);
+        checkFollowingStatus(currentUserId, followingId);
+        $("#followPopup").modal("show");
+    });
+
+    // 팔로우/언팔로우 버튼 클릭 이벤트
+    $(document).on("click", "#followActionBtn", function() {
+        if ($(this).text() === "팔로우") {
+            followUser(currentUserId, followingId);
+        } else {
+            unfollowUser(currentUserId, followingId);
+        }
+    });
+
+    // ✅ 팔로우 여부 확인 (GET 요청)
+    function checkFollowingStatus(followerId, followingId) {
+        $.ajax({
+            url: contextPath + "/follow/is-following/" + followingId,
+            type: "GET",
+            success: function(response) {
+                if (response) {
+                    $("#followActionBtn").text("언팔로우").removeClass("btn-primary").addClass("btn-danger");
+                } else {
+                    $("#followActionBtn").text("팔로우").removeClass("btn-danger").addClass("btn-primary");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("❌ 팔로우 상태 확인 실패:", error);
+            }
+        });
+    }
+
+ // ✅ 팔로우 요청 (POST 요청) + 알림 추가
+    function followUser(followerId, followingId) {
+        $.ajax({
+            url: contextPath + "/follow/" + followingId,
+            type: "POST",
+            success: function() {
+                $("#followActionBtn").text("언팔로우").removeClass("btn-primary").addClass("btn-danger");
+                console.log("✅ 팔로우 성공");
+
+                // 팔로우 성공 시 알림 생성 요청
+                sendFollowNotification(followerId, followingId);
+            },
+            error: function(xhr, status, error) {
+                console.error("❌ 팔로우 요청 실패:", error);
+            }
+        });
+    }
+
+    // ✅ 언팔로우 요청 (DELETE 요청) - URL 파라미터로 followerId 전달
+    function unfollowUser(followerId, followingId) {
+        $.ajax({
+            url: contextPath + "/follow/" + followingId + "?followerId=" + followerId, // 🔹 followerId를 URL 파라미터로 전달
+            type: "DELETE",
+            success: function() {
+                $("#followActionBtn").text("팔로우").removeClass("btn-danger").addClass("btn-primary");
+                console.log("✅ 언팔로우 성공");
+
+                // 언팔로우 시 팔로우 알림 삭제
+                deleteFollowNotification(followerId, followingId);
+            },
+            error: function(xhr, status, error) {
+                console.error("❌ 언팔로우 요청 실패:", error);
+            }
+        });
+    }
+
+
+    // ✅ 팔로우 알림 보내기 (POST 요청)
+    function sendFollowNotification(senderId, receiverId) {
+        $.ajax({
+            url: contextPath + "/notifications/follow",
+            type: "POST",
+            data: { senderId: senderId, receiverId: receiverId }
+        });
+    }
+
+    // ✅ 팔로우 알림 삭제 (DELETE 요청) - URL 파라미터로 senderId 전달
+    function deleteFollowNotification(senderId, receiverId) {
+        $.ajax({
+            url: contextPath + "/notifications/follow?senderId=" + senderId + "&receiverId=" + receiverId, // 🔹 URL 파라미터로 전달
+            type: "DELETE"
+        });
+    }
+
+});
+</script>
+
+
+
+
 		<!-- boardDateCreated 데이터 포멧 변경 -->
+	<div>
 		<fmt:formatDate value="${recipeBoard.recipeBoardCreatedDate }"
 			pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardCreatedDate" />
 		<p>작성일 : ${recipeBoardCreatedDate }</p>

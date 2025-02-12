@@ -11,11 +11,7 @@
 <body>
 <h1>공지 게시판</h1>
 <!-- 글 작성 페이지 이동 버튼 -->
-<<<<<<< HEAD
 <%-- <a href="${pageContext.request.contextPath}/noticeboard/register"><input type="button" value="글 작성"></a> --%>
-=======
-<a href="${pageContext.request.contextPath}/noticeboard/register"><input type="button" value="글 작성"></a>
->>>>>>> 31774e0bd2c7270eef93c7070ef6973c92228566
 <hr>
 <table>
     <thead>
@@ -56,9 +52,5 @@
         <li><a href="${pageContext.request.contextPath}/noticeboard/list?pageNum=${pageMaker.endNum + 1}">다음</a></li>
     </c:if>
 </ul>
-<<<<<<< HEAD
-
-=======
->>>>>>> 31774e0bd2c7270eef93c7070ef6973c92228566
 </body>
 </html>

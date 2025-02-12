@@ -41,7 +41,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/recipeboard/register").authenticated()
         		.antMatchers("/recipeboard/update/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
         		.antMatchers("/recipeboard/delete/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
-        		.antMatchers("/recipeboard/detail").permitAll();
+        		.antMatchers("/recipeboard/detail").permitAll()
+        		.antMatchers("/notifications/**").permitAll()
+                .antMatchers("/follow/**").permitAll()
+                .and()
+                .csrf()
+                .ignoringAntMatchers("/notifications/**", "/follow/**");
         		//.antMatchers("/noticeboard/register").access("hasRole('ROLE_ADMIN)");
         
         // 접근 제한 경로 설정

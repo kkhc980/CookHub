@@ -278,62 +278,41 @@
         <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
     </div>
 
-<<<<<<< Updated upstream
-    
-<div class="user-notification-container">
-    <sec:authorize access="isAuthenticated()">
-        <div class="notification-container">
-            <button id="notificationButton">
-                🔔 <span id="unreadCount" class="badge"></span>
-            </button>
-            <div id="notificationPopup" class="notification-popup">
-                <div class="notification-header">
-                    <span>📢 알림</span>
-                    <button onclick="closeNotificationPopup()">✖</button>
-                </div>
-                <ul id="notificationList"></ul>
-                <div class="notification-footer">
-                    <button onclick="markAllAsRead()">✅ 모두 읽음</button>
-=======
-    <div>
+  <div>
         <sec:authorize access="isAuthenticated()">
+			<!-- 알림 버튼 -->
+	        <div class="notification-container">
+	            <button id="notificationButton">
+	                🔔 <span id="unreadCount" class="badge"></span>
+	            </button>
+	            <div id="notificationPopup" class="notification-popup">
+	                <div class="notification-header">
+	                    <span>📢 알림</span>
+	                    <button onclick="closeNotificationPopup()">✖</button>
+	                </div>
+	                <ul id="notificationList"></ul>
+	                <div class="notification-footer">
+	                    <button onclick="markAllAsRead()">✅ 모두 읽음</button>
+	                </div>
+	            </div>
+	        </div>
+		    
             <div class="logged-in-menu">
                 <div class="dropdown">
                     <a href="#" onclick="toggleDropdown(event)">
                         <sec:authentication property="principal.name"/>님
                     </a>
                     <div class="dropdown-content" id="userDropdown">
-                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>                    
-                        <!-- 어드민 페이지로 가는 링크 내정보 아래 뜨도록 함
-                        	 ROLE_ADMIN에게만 보이도록 -->
-                           <sec:authorize access="hasRole('ROLE_ADMIN')">
-                            <a href="${pageContext.request.contextPath}/admin/recipeboard">관리자 페이지</a>
-                        </sec:authorize>
+                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
                         <form action="../auth/logout" method="post">
                             <input type="submit" value="로그아웃">
                             <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
                         </form>
                     </div>
->>>>>>> Stashed changes
                 </div>
             </div>
-        </div>
-
-        <div class="logged-in-menu">
-            <div class="dropdown">
-                <a href="#" onclick="toggleDropdown(event)">
-                    <sec:authentication property="principal.name"/>님
-                </a>
-                <div class="dropdown-content" id="userDropdown">
-                    <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
-                    <form action="../auth/logout" method="post">
-                        <input type="submit" value="로그아웃">
-                        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
-                    </form>
-                </div>
-            </div>
-        </div>
-    </sec:authorize>
+        </sec:authorize>
+        
         <sec:authorize access="isAnonymous()">
             <a href="../auth/login">로그인</a> &nbsp;
             <a href="../member/signup">회원가입</a>

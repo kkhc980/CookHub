@@ -141,7 +141,7 @@
             padding: 20px;
         }
         
-             .notification-container {
+    .notification-container {
         position: relative;
         display: inline-block;
         margin-right: 20px;
@@ -244,7 +244,7 @@
         background: #444;
     }
 
-    /* 닫기 버튼 (✖) */
+    /* 닫기 버튼 */
     .notification-header button {
         background: none;
         border: none;
@@ -258,10 +258,11 @@
     }
     
     .user-notification-container {
-	    display: flex;
-	    align-items: center;
-	    gap: 10px; /* 아이콘과 텍스트 사이 간격 조절 */
-	}
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 아이콘과 텍스트 사이 간격 조절 */
+}
+    
 
     </style>
 </head>
@@ -278,24 +279,23 @@
         <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
     </div>
 
-  <div>
-        <sec:authorize access="isAuthenticated()">
-			<!-- 알림 버튼 -->
-	        <div class="notification-container">
-	            <button id="notificationButton">
-	                🔔 <span id="unreadCount" class="badge"></span>
-	            </button>
-	            <div id="notificationPopup" class="notification-popup">
-	                <div class="notification-header">
-	                    <span>📢 알림</span>
-	                    <button onclick="closeNotificationPopup()">✖</button>
-	                </div>
-	                <ul id="notificationList"></ul>
-	                <div class="notification-footer">
-	                    <button onclick="markAllAsRead()">✅ 모두 읽음</button>
-	                </div>
-	            </div>
-	        </div>
+<div class="user-notification-container">
+    <sec:authorize access="isAuthenticated()">
+        <div class="notification-container">
+            <button id="notificationButton">
+                🔔 <span id="unreadCount" class="badge"></span>
+            </button>
+            <div id="notificationPopup" class="notification-popup">
+                <div class="notification-header">
+                    <span>📢 알림</span>
+                    <button onclick="closeNotificationPopup()">✖</button>
+                </div>
+                <ul id="notificationList"></ul>
+                <div class="notification-footer">
+                    <button onclick="markAllAsRead()">✅ 모두 읽음</button>
+                </div>
+            </div>
+        </div>
 		    
             <div class="logged-in-menu">
                 <div class="dropdown">

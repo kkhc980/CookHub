@@ -7,13 +7,13 @@
     <title>CookHub</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    
+
     <!-- 로그인한 사용자 ID를 안전하게 전달 -->
     <sec:authorize access="isAuthenticated()">
         <sec:authentication var="customUser" property="principal" />
         <meta name="logged-in-user-id" content="${customUser.memberVO.memberId}">
     </sec:authorize>
-    
+
     <style>
         .navbar {
             display: flex;
@@ -140,128 +140,129 @@
         .content {
             padding: 20px;
         }
-        
-             .notification-container {
-        position: relative;
-        display: inline-block;
-        margin-right: 20px;
-    }
 
-    #notificationButton {
-        background: none;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-        position: relative;
-        color: white;
-    }
+        .notification-container {
+            position: relative;
+            display: inline-block;
+            margin-right: 20px;
+        }
 
-    .badge {
-        background: red;
-        color: white;
-        border-radius: 50%;
-        padding: 3px 8px;
-        font-size: 12px;
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        display: none;
-    }
+        #notificationButton {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+            color: white;
+        }
 
-    .notification-popup {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 30px;
-        width: 280px;
-        background: white;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-        border-radius: 5px;
-        z-index: 1000;
-        max-height: 350px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-    }
+        .badge {
+            background: red;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 8px;
+            font-size: 12px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            display: none;
+        }
 
-    .notification-header {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #ddd;
-        font-weight: bold;
-        font-size: 16px;
-        color: #000; /* 글씨 검은색 */
-    }
+        .notification-popup {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            width: 280px;
+            background: white;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            z-index: 1000;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+        }
 
-    .notification-footer {
-        text-align: center;
-        padding: 12px;
-        background: #f5f5f5;
-        border-top: 1px solid #ddd;
-        color: #000; /* 글씨 검은색 */
-    }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            font-size: 16px;
+            color: #000; /* 글씨 검은색 */
+        }
 
-    #notificationList {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+        .notification-footer {
+            text-align: center;
+            padding: 12px;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            color: #000; /* 글씨 검은색 */
+        }
 
-    #notificationList li {
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        color: #000; /* 글씨 검은색 */
-        background: #ffffff; /* 기본 배경 흰색 */
-    }
+        #notificationList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    /* 읽지 않은 알림 */
-    #notificationList li.unread {
-        background: #ffffff !important; /* 배경 흰색 */
-        font-weight: bold;
-        color: #000000 !important; /* 글씨 검은색 */
-    }
+        #notificationList li {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: #000; /* 글씨 검은색 */
+            background: #ffffff; /* 기본 배경 흰색 */
+        }
 
-    #notificationList li:hover {
-        background: #f0f0f0;
-    }
+        /* 읽지 않은 알림 */
+        #notificationList li.unread {
+            background: #ffffff !important; /* 배경 흰색 */
+            font-weight: bold;
+            color: #000000 !important; /* 글씨 검은색 */
+        }
 
-    /* '모두 읽음' 버튼 스타일 */
-    .notification-footer button {
-        background: #000;
-        border: 1px solid #000;
-        color: #fff;
-        padding: 8px 12px;
-        font-size: 14px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
+        #notificationList li:hover {
+            background: #f0f0f0;
+        }
 
-    .notification-footer button:hover {
-        background: #444;
-    }
+        /* '모두 읽음' 버튼 스타일 */
+        .notification-footer button {
+            background: #000;
+            border: 1px solid #000;
+            color: #fff;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
 
-    /* 닫기 버튼 (✖) */
-    .notification-header button {
-        background: none;
-        border: none;
-        font-size: 16px;
-        cursor: pointer;
-        color: #000; /* 글씨 검은색 */
-    }
+        .notification-footer button:hover {
+            background: #444;
+        }
 
-    .notification-header button:hover {
-        background: #ddd;
-    }
-    
-    .user-notification-container {
-	    display: flex;
-	    align-items: center;
-	    gap: 10px; /* 아이콘과 텍스트 사이 간격 조절 */
-	}
+        /* 닫기 버튼 */
+        .notification-header button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #000; /* 글씨 검은색 */
+        }
+
+        .notification-header button:hover {
+            background: #ddd;
+        }
+
+        .user-notification-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* 아이콘과 텍스트 사이 간격 조절 */
+        }
+
 
     </style>
 </head>
@@ -272,68 +273,52 @@
         <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
         <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
         <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
-         
+
     </div>
     <div class="center-logo">
         <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
     </div>
 
-<<<<<<< Updated upstream
-    
-<div class="user-notification-container">
-    <sec:authorize access="isAuthenticated()">
-        <div class="notification-container">
-            <button id="notificationButton">
-                🔔 <span id="unreadCount" class="badge"></span>
-            </button>
-            <div id="notificationPopup" class="notification-popup">
-                <div class="notification-header">
-                    <span>📢 알림</span>
-                    <button onclick="closeNotificationPopup()">✖</button>
-                </div>
-                <ul id="notificationList"></ul>
-                <div class="notification-footer">
-                    <button onclick="markAllAsRead()">✅ 모두 읽음</button>
-=======
-    <div>
+    <div class="user-notification-container">
         <sec:authorize access="isAuthenticated()">
+            <div class="notification-container">
+                <button id="notificationButton">
+                    🔔 <span id="unreadCount" class="badge"></span>
+                </button>
+                <div id="notificationPopup" class="notification-popup">
+                    <div class="notification-header">
+                        <span>📢 알림</span>
+                        <button onclick="closeNotificationPopup()">✖</button>
+                    </div>
+                    <ul id="notificationList"></ul>
+                    <div class="notification-footer">
+                        <button onclick="markAllAsRead()">✅ 모두 읽음</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="logged-in-menu">
                 <div class="dropdown">
                     <a href="#" onclick="toggleDropdown(event)">
                         <sec:authentication property="principal.name"/>님
                     </a>
                     <div class="dropdown-content" id="userDropdown">
-                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>                    
+                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
                         <!-- 어드민 페이지로 가는 링크 내정보 아래 뜨도록 함
                         	 ROLE_ADMIN에게만 보이도록 -->
-                           <sec:authorize access="hasRole('ROLE_ADMIN')">
+                        <sec:authorize access="hasRole('ROLE_ADMIN')">
                             <a href="${pageContext.request.contextPath}/admin/recipeboard">관리자 페이지</a>
                         </sec:authorize>
+                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
                         <form action="../auth/logout" method="post">
                             <input type="submit" value="로그아웃">
                             <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
                         </form>
                     </div>
->>>>>>> Stashed changes
                 </div>
             </div>
-        </div>
+        </sec:authorize>
 
-        <div class="logged-in-menu">
-            <div class="dropdown">
-                <a href="#" onclick="toggleDropdown(event)">
-                    <sec:authentication property="principal.name"/>님
-                </a>
-                <div class="dropdown-content" id="userDropdown">
-                    <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
-                    <form action="../auth/logout" method="post">
-                        <input type="submit" value="로그아웃">
-                        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
-                    </form>
-                </div>
-            </div>
-        </div>
-    </sec:authorize>
         <sec:authorize access="isAnonymous()">
             <a href="../auth/login">로그인</a> &nbsp;
             <a href="../member/signup">회원가입</a>
@@ -447,7 +432,7 @@
             }
         }
     };
-    
+
     $(document).ready(function () {
         var memberId = $("meta[name='logged-in-user-id']").attr("content");
         var contextPath = "${pageContext.request.contextPath}";

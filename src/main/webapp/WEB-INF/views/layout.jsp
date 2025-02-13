@@ -303,6 +303,12 @@
                         <sec:authentication property="principal.name"/>님
                     </a>
                     <div class="dropdown-content" id="userDropdown">
+                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>                    
+                        <!-- 어드민 페이지로 가는 링크 내정보 아래 뜨도록 함
+                        	 ROLE_ADMIN에게만 보이도록 -->
+                        <sec:authorize access="hasRole('ROLE_ADMIN')">
+                            <a href="${pageContext.request.contextPath}/admin/recipeboard">관리자 페이지</a>
+                        </sec:authorize>
                         <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
                         <form action="../auth/logout" method="post">
                             <input type="submit" value="로그아웃">

@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-				.antMatchers("/member/detail").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+				.antMatchers("/member/detail","/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
 				.antMatchers("/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/recipeboard/register").authenticated()
         		.antMatchers("/recipeboard/update/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
@@ -47,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/follow/**").permitAll()
                 .and()
                 .csrf()
-                .ignoringAntMatchers("/notifications/**", "/follow/**");
+                .ignoringAntMatchers("/store/**");
+        
         		//.antMatchers("/noticeboard/register").access("hasRole('ROLE_ADMIN)");
         
         // 접근 제한 경로 설정

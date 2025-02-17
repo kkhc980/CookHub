@@ -8,6 +8,9 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
+   <meta name="_csrf" content="${_csrf.token}" />
+   <meta name="_csrf_header" content="${_csrf.headerName}" />
+
     <!-- 로그인한 사용자 ID를 안전하게 전달 -->
     <sec:authorize access="isAuthenticated()">
         <sec:authentication var="customUser" property="principal" />
@@ -512,14 +515,25 @@
             }
         };
 
-        // ✅ 알림 클릭 시 읽음 처리
+     // ✅ 알림 클릭 시 읽음 처리 (CSRF 토큰 추가)
         $("#notificationList").on("click", "li", function () {
             var notificationId = $(this).data("id");
-            $.post(contextPath + "/notifications/read/" + notificationId, function () {
-                $(this).removeClass("unread");
-                loadNotifications();
+            var csrfToken = $("meta[name='_csrf']").attr("content"); // 메타 태그에서 CSRF 토큰 가져오기
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content"); // CSRF 헤더 이름 가져오기
+
+            $.ajax({
+                url: contextPath + "/notifications/read/" + notificationId,
+                type: "POST",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken); // CSRF 헤더 추가
+                },
+                success: function () {
+                    $(this).removeClass("unread");
+                    loadNotifications();
+                }
             });
         });
+
 
         // 초기 알림 데이터 로드
         loadNotifications();

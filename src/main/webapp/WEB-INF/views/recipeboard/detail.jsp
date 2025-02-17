@@ -217,7 +217,7 @@ $(document).ready(function() {
         });
     }
 
-    // ✅ 언팔로우 요청 (DELETE 요청) - URL 파라미터로 followerId 전달
+    // 언팔로우 요청 (DELETE 요청) - URL 파라미터로 followerId 전달
     function unfollowUser(followerId, followingId) {
         $.ajax({
             url: contextPath + "/follow/" + followingId + "?followerId=" + followerId, // 🔹 followerId를 URL 파라미터로 전달
@@ -236,7 +236,7 @@ $(document).ready(function() {
     }
 
 
-    // ✅ 팔로우 알림 보내기 (POST 요청)
+    // 팔로우 알림 보내기 (POST 요청)
     function sendFollowNotification(senderId, receiverId) {
         $.ajax({
             url: contextPath + "/notifications/follow",
@@ -245,7 +245,7 @@ $(document).ready(function() {
         });
     }
 
-    // ✅ 팔로우 알림 삭제 (DELETE 요청) - URL 파라미터로 senderId 전달
+    // 팔로우 알림 삭제 (DELETE 요청) - URL 파라미터로 senderId 전달
     function deleteFollowNotification(senderId, receiverId) {
         $.ajax({
             url: contextPath + "/notifications/follow?senderId=" + senderId + "&receiverId=" + receiverId, // 🔹 URL 파라미터로 전달
@@ -672,7 +672,7 @@ $(document).ready(function() {
                          var list = '';
 
                          $(data).each(function() {
-                   var replyDateCreated = new Date(this.replyDateCreated);
+                          var replyDateCreated = new Date(this.replyDateCreated);
 
                            list += '<div class="reply_item" data-reply-id="' + this.replyId + '">' +
                                    '<pre>' +
@@ -792,12 +792,18 @@ $(document).ready(function() {
                                                 console.log("리뷰 데이터:", data);
                                                 var list = '';
                                                 
+                                                var self = this; // this를 다른 변수에 저장
+
+                                                
                                            $(data).each(function() {
-                                                      console.log("별점 값:", this.reviewRating);
+                                                     var reviewAttachList = this.reviewAttachList || []; // 기본값으로 빈 배열 설정
+                                              
+                                                 console.log("별점 값:", this.reviewRating);
                                                       var recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
                                                       var starRatingHTML = '';
                                                       
-                                                      for (let i = 1; i <= 5; i++) {
+                                                      for (let i = 1; i <= 5; i++) {                                                                                                            
+                                                         
                                                           if (i <= this.reviewRating) {
                                                               starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
                                                           } else {
@@ -816,8 +822,7 @@ $(document).ready(function() {
                                                               imageHTML += '<div class="image_item" data-chgName="'+ reviewAttach.attachChgName +'">'
                                                                         + '<a href="' + imageUrl + '" target="_blank">'
                                                                         + '<img width="100px" height="100px" src="' + imageUrl + '" />'
-                                                                        + '</a>' 
-                                                                        + '<button class="btn_delete_image" data-attachName="'+ reviewAttach.attachChgName +'">삭제</button>'
+                                                                        + '</a>'                                                                         
                                                                         + '</div>';
                                                           });
                                                       }
@@ -859,9 +864,7 @@ $(document).ready(function() {
                                                             
                                                             // ✅ 이미지 Drag & Drop 업로드 영역 추가
                                                             + '<div class="image-drop" id="dropZone_' + this.recipeReviewId + '">drag - image</div>'
-                                                            + '<div class="reviewAttachDTOImg-list" id="reviewAttachDTOImg-list_' + this.recipeReviewId + '">' + imageHTML + '</div>'
-
-                                                            + '<button class="btnEditComplete" data-recipeReview-id="' + this.recipeReviewId + '">수정 완료</button>'
+                                                      + '<button class="btnEditComplete" data-recipeReview-id="' + this.recipeReviewId + '">수정 완료</button>'
                                                             + '</div></div>';
                                                       
 
@@ -882,10 +885,7 @@ $(document).ready(function() {
                                                                
                                  // 수정 버튼을 클릭하면 선택된 리뷰 수정
                                  $('#reviews').on('click', '.btn_review_update', function() {
-                                                console.log("수정 버튼 클릭됨!");
-                                                
-                                                console.log("🔹 버튼의 HTML:", $(this).prop('outerHTML')); // ✅ 버튼의 전체 HTML 확인
-                                                console.log("버튼의 data 속성:", $(this).data());
+                                               
                                                                                   
                                                 var selectedReviewId = $(this).data('review-id'); // ✅ 속성을 확실하게 가져오기
                                                
@@ -901,7 +901,6 @@ $(document).ready(function() {
                                                 var currentContent = reviewItem.find('.recipeReviewContentDisplay').text();
                                                 var currentRating = reviewItem.find('.starRatingDisplay span[style="color:gold;"]').length;
                                                  
-                                                
                                                 
                                                 // 기존 값 모달에 채우기
                                                  $('#editReviewContent').val(currentContent);

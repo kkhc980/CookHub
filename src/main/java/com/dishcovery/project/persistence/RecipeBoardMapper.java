@@ -27,11 +27,12 @@ public interface RecipeBoardMapper {
     void insertRecipeBoard(RecipeBoardVO recipeBoard); // Recipe 등록
     void updateRecipeBoard(RecipeBoardVO recipeBoard); // Recipe 업데이트
     void deleteRecipeBoard(int recipeBoardId); // Recipe 삭제
- // Recipe Ingredient Detail
+    
+    // Recipe Ingredient Detail
     List<RecipeIngredientsDetailVO> getIngredientsDetailByRecipeId(int recipeBoardId); // 특정 레시피의 재료 상세 정보 조회
     void insertRecipeIngredientsDetail(RecipeIngredientsDetailVO recipeIngredientDetail); // 레시피 재료 상세 정보 추가
-    void deleteRecipeIngredientsDetailsByRecipeId(int id);
     // 특정 레시피의 모든 재료 상세 정보 삭제
+    void deleteRecipeIngredientsDetailsByRecipeId(int id);
 
     // Recipe Ingredients
     List<IngredientsVO> getAllIngredients(); // 모든 재료 조회

@@ -10,6 +10,21 @@
 	    VALUES (PRODUCT_SEQ.NEXTVAL, #{productName}, #{productPrice}, #{productDescription}, #{ingredientId}, #{productImagePath, jdbcType=VARCHAR}, #{stock}, SYSDATE, SYSDATE)
 	</insert>
 
+	<select id="getAllProducts" parameterType="com.dishcovery.project.util.Pagination"
+            resultType="com.dishcovery.project.domain.ProductVO">
+        SELECT * FROM (
+            SELECT p.*, i.ingredient_name, 
+                   ROW_NUMBER() OVER (ORDER BY p.created_at DESC) AS row_num
+            FROM products p  <!-- ✅ 테이블명 수정 -->
+            LEFT JOIN ingredients i ON p.ingredient_id = i.ingredient_id
+        ) WHERE row_num BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 전체 상품 개수 조회 -->
+    <select id="getTotalProductCount" resultType="int">
+        SELECT COUNT(*) FROM products
+    </select>
+    
     <!-- Ingredients 목록 조회 -->
     <select id="getAllProductIngredients" resultType="com.dishcovery.project.domain.IngredientsVO">
         SELECT ingredient_id, ingredient_name FROM Ingredients

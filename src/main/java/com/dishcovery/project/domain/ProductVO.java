@@ -21,4 +21,5 @@ public class ProductVO {
     private int stock;
     private Date createdAt;
     private Date updatedAt;
+    private String ingredientName;
 }

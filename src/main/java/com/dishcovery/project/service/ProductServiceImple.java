@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.persistence.ProductMapper;
+import com.dishcovery.project.util.Pagination;
 
 import lombok.extern.log4j.Log4j;
 
@@ -63,6 +64,16 @@ public class ProductServiceImple implements ProductService {
         productMapper.insertProduct(productVO);
     }
 
+    @Override
+    public List<ProductVO> getAllProducts(Pagination pagination) {
+        return productMapper.getAllProducts(pagination);
+    }
+
+    @Override
+    public int getTotalProductCount() {
+        return productMapper.getTotalProductCount(); // 총 상품 개수 조회
+    }
+    
     @Override
     public List<IngredientsVO> getAllProductIngredients() {
         return productMapper.getAllProductIngredients();

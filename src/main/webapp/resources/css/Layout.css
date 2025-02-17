@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+/* 네비게이션 바 스타일 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+    color: white;
+}
+
+.navbar .left-menu {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar .center-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff9900;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: #ff9900;
+}
+
+/* 해시태그 검색 스타일 */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-container input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.search-container button {
+    padding: 10px 20px;
+    background-color: #ff9900;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.search-container button:hover {
+    background-color: #e68a00;
+}
+
+/* 등록 버튼 스타일 */
+.register-text-button {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background-color: #ff9900;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.register-text-button:hover {
+    background-color: #e68a00;
+}

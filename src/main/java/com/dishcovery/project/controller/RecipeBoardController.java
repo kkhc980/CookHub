@@ -103,7 +103,11 @@ public class RecipeBoardController {
         model.addAttribute("methodsList", recipeBoardService.getAllMethods());
         model.addAttribute("situationsList", recipeBoardService.getAllSituations());
         model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-        return "recipeboard/register";
+        // 공통 레이아웃에 포함될 페이지 설정
+        model.addAttribute("pageContent", "recipeboard/register.jsp");
+
+        // 공통 레이아웃 반환
+        return "layout";
     }
 
     @PostMapping("/register")
@@ -212,7 +216,11 @@ public class RecipeBoardController {
         model.addAttribute("hashtags", detail.getHashtags());
         model.addAttribute("steps", detail.getRecipeSteps()); 
         model.addAttribute("ingredientDetails", recipeBoardService.getRecipeIngredientsDetailsByRecipeId(recipeBoardId));
-        return "recipeboard/detail";
+        // 공통 레이아웃에 포함될 페이지 설정
+        model.addAttribute("pageContent", "recipeboard/detail.jsp");
+
+        // 공통 레이아웃 반환
+        return "layout";
     }
 
     private String getClientIp(HttpServletRequest request) {

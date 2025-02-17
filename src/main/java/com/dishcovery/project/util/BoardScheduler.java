@@ -81,13 +81,17 @@ public class BoardScheduler {
 
         for (File file : files) {
             if (file.isDirectory()) {
-                // 하위 디렉터리 탐색
+                // 🔹 "productImages" 폴더는 건너뛰기
+                if (file.getName().equalsIgnoreCase("product_images")) {
+                    log.info("Skipping directory: " + file.getPath());
+                    continue;
+                }
                 cleanDirectory(file, dbThumbnailsSet);
             } else {
                 // 절대 경로에서 상대 경로 추출
                 String relativePath = file.getPath().substring("C:\\uploads\\".length()).replace(File.separator, "/");
 
-                // 데이터베이스 경로와 비교하여 삭제
+                // 🔹 데이터베이스 경로와 비교하여 삭제 (productImages는 제외됨)
                 if (!dbThumbnailsSet.contains(relativePath)) {
                     if (file.delete()) {
                         log.info("Deleted unused file: " + file.getPath());

@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.service.ProductService;
+import com.dishcovery.project.util.PageMaker;
+import com.dishcovery.project.util.Pagination;
 
 @Controller
 @RequestMapping("/store")
@@ -22,6 +24,26 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    
+    @GetMapping("/list")
+    public String showProductList(@RequestParam(defaultValue = "1") int pageNum,
+                                  @RequestParam(defaultValue = "4") int pageSize,
+                                  Model model) {
+        Pagination pagination = new Pagination(pageNum, pageSize);
+        int totalCount = productService.getTotalProductCount();
+
+        PageMaker pageMaker = new PageMaker();
+        pageMaker.setPagination(pagination);
+        pageMaker.setTotalCount(totalCount);
+
+        List<ProductVO> productList = productService.getAllProducts(pagination);
+
+        model.addAttribute("productList", productList);
+        model.addAttribute("pagination", pagination);
+        model.addAttribute("pageMaker", pageMaker);
+
+        return "store/list"; // 기존 방식 유지
+    }
     
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
@@ -43,6 +65,6 @@ public class ProductController {
 
         // 상품 등록 실행
         productService.insertProduct(productVO, file);
-        return "redirect:/store/register";
+        return "redirect:/store/list";
     }
 }

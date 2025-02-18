@@ -90,25 +90,9 @@ public class RecipeBoardController {
 
 		// 공통 레이아웃에 포함될 페이지 설정
 		model.addAttribute("pageContent", "recipeboard/list.jsp");
-
-<<<<<<< Updated upstream
-    @GetMapping("/register")
-    public String register(Model model) {
-        model.addAttribute("typesList", recipeBoardService.getAllTypes());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-        // 공통 레이아웃에 포함될 페이지 설정
-        model.addAttribute("pageContent", "recipeboard/register.jsp");
-
-        // 공통 레이아웃 반환
-        return "layout";
-    }
-=======
 		// 공통 레이아웃 반환
 		return "layout";
 	}
->>>>>>> Stashed changes
 
 	@GetMapping("/register")
 	public String register(Model model) {
@@ -116,8 +100,12 @@ public class RecipeBoardController {
 		model.addAttribute("methodsList", recipeBoardService.getAllMethods());
 		model.addAttribute("situationsList", recipeBoardService.getAllSituations());
 		model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-		return "recipeboard/register";
-	}
+        model.addAttribute("pageContent", "recipeboard/register.jsp");
+
+        // 공통 레이아웃 반환
+        return "layout";
+    }
+
 
 	@PostMapping("/register")
 	public String registerRecipe(RecipeBoardVO recipeBoard,
@@ -203,26 +191,9 @@ public class RecipeBoardController {
 	public String getRecipeDetail(@PathVariable int recipeBoardId, Model model, HttpServletRequest request) {
 		RecipeDetailVO detail = recipeBoardService.getRecipeDetailById(recipeBoardId);
 
-<<<<<<< Updated upstream
-        model.addAttribute("recipeBoard", detail.getRecipeBoard());
-        model.addAttribute("typeName", detail.getTypeName());
-        model.addAttribute("methodName", detail.getMethodName());
-        model.addAttribute("situationName", detail.getSituationName());
-        model.addAttribute("ingredients", detail.getIngredients());
-        model.addAttribute("hashtags", detail.getHashtags());
-        model.addAttribute("steps", detail.getRecipeSteps()); 
-        model.addAttribute("ingredientDetails", recipeBoardService.getRecipeIngredientsDetailsByRecipeId(recipeBoardId));
-        // 공통 레이아웃에 포함될 페이지 설정
-        model.addAttribute("pageContent", "recipeboard/detail.jsp");
-
-        // 공통 레이아웃 반환
-        return "layout";
-    }
-=======
 		if (detail == null) {
 			return "redirect:/recipeboard/list";
 		}
->>>>>>> Stashed changes
 
 		// 클라이언트 IP 주소 가져오기
 		String ipAddress = getClientIp(request);
@@ -239,8 +210,11 @@ public class RecipeBoardController {
 		model.addAttribute("steps", detail.getRecipeSteps());
 		model.addAttribute("ingredientDetails",
 				recipeBoardService.getRecipeIngredientsDetailsByRecipeId(recipeBoardId));
-		return "recipeboard/detail";
-	}
+        model.addAttribute("pageContent", "recipeboard/detail.jsp");
+
+        // 공통 레이아웃 반환
+        return "layout";
+    }
 
 	private String getClientIp(HttpServletRequest request) {
 		// 1. 프록시나 로드 밸런서에서 전달된 헤더 확인

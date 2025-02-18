@@ -1,20 +1,18 @@
 package com.dishcovery.project.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.persistence.ProductMapper;
 import com.dishcovery.project.util.Pagination;
-
 import lombok.extern.log4j.Log4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Log4j
@@ -77,5 +75,10 @@ public class ProductServiceImple implements ProductService {
     @Override
     public List<IngredientsVO> getAllProductIngredients() {
         return productMapper.getAllProductIngredients();
+    }
+
+    @Override
+    public ProductVO getProduct(int productId) {
+        return productMapper.getProduct(productId);
     }
 }

@@ -1,25 +1,22 @@
 package com.dishcovery.project.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.service.ProductService;
 import com.dishcovery.project.util.PageMaker;
 import com.dishcovery.project.util.Pagination;
+import lombok.extern.log4j.Log4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/store")
+@Log4j
 public class ProductController {
 
     @Autowired
@@ -67,4 +64,18 @@ public class ProductController {
         productService.insertProduct(productVO, file);
         return "redirect:/store/list";
     }
+
+    @GetMapping("/detail/{productId}")
+    public String moveDetailProduct(@PathVariable int productId, Model model) {
+        log.info("moveDetailProduct");
+
+        ProductVO productVO = productService.getProduct(productId);
+
+        model.addAttribute("product", productVO);
+        model.addAttribute("pageContent", "store/detail.jsp");
+
+        return "layout";
+    }
+
+
 }

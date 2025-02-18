@@ -1,10 +1,10 @@
 package com.dishcovery.project.persistence;
 
-import java.util.List;
-
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.util.Pagination;
+
+import java.util.List;
 
 public interface ProductMapper {
 
@@ -17,4 +17,5 @@ public interface ProductMapper {
     
     // Ingredients 목록 조회
     List<IngredientsVO> getAllProductIngredients();
+    ProductVO getProduct(int productId);
 }

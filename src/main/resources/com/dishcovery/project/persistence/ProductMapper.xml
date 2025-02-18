@@ -1,33 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.dishcovery.project.persistence.ProductMapper">
+    <resultMap id="ProductResultMap" type="com.dishcovery.project.domain.ProductVO">
+        <id property="productId" column="PRODUCT_ID"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="productPrice" column="PRODUCT_PRICE"/>
+        <result property="productDescription" column="PRODUCT_DESCRIPTION"/>
+        <result property="ingredientId" column="INGREDIENT_ID"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="stock" column="STOCK"/>
+        <result property="productImagePath" column="PRODUCT_IMAGE_PATH"/>
+    </resultMap>
 
     <!-- 상품 등록 -->
-	<insert id="insertProduct">
-	    INSERT INTO Products (product_id, product_name, product_price, product_description, ingredient_id, product_image_path, stock, created_at, updated_at)
-	    VALUES (PRODUCT_SEQ.NEXTVAL, #{productName}, #{productPrice}, #{productDescription}, #{ingredientId}, #{productImagePath, jdbcType=VARCHAR}, #{stock}, SYSDATE, SYSDATE)
-	</insert>
+    <insert id="insertProduct">
+        INSERT INTO Products (product_id, product_name, product_price, product_description, ingredient_id,
+                              product_image_path, stock, created_at, updated_at)
+        VALUES (PRODUCT_SEQ.NEXTVAL, #{productName}, #{productPrice}, #{productDescription}, #{ingredientId},
+                #{productImagePath, jdbcType=VARCHAR}, #{stock}, SYSDATE, SYSDATE)
+    </insert>
 
-	<select id="getAllProducts" parameterType="com.dishcovery.project.util.Pagination"
+    <select id="getAllProducts" parameterType="com.dishcovery.project.util.Pagination"
             resultType="com.dishcovery.project.domain.ProductVO">
         SELECT * FROM (
-            SELECT p.*, i.ingredient_name, 
-                   ROW_NUMBER() OVER (ORDER BY p.created_at DESC) AS row_num
-            FROM products p  <!-- ✅ 테이블명 수정 -->
-            LEFT JOIN ingredients i ON p.ingredient_id = i.ingredient_id
+        SELECT p.*, i.ingredient_name,
+        ROW_NUMBER() OVER (ORDER BY p.created_at DESC) AS row_num
+        FROM products p  <!-- ✅ 테이블명 수정 -->
+        LEFT JOIN ingredients i ON p.ingredient_id = i.ingredient_id
         ) WHERE row_num BETWEEN #{start} AND #{end}
     </select>
 
     <!-- 전체 상품 개수 조회 -->
     <select id="getTotalProductCount" resultType="int">
-        SELECT COUNT(*) FROM products
-    </select>
-    
-    <!-- Ingredients 목록 조회 -->
-    <select id="getAllProductIngredients" resultType="com.dishcovery.project.domain.IngredientsVO">
-        SELECT ingredient_id, ingredient_name FROM Ingredients
+        SELECT COUNT(*)
+        FROM products
     </select>
 
+    <!-- Ingredients 목록 조회 -->
+    <select id="getAllProductIngredients" resultType="com.dishcovery.project.domain.IngredientsVO">
+        SELECT ingredient_id, ingredient_name
+        FROM Ingredients
+    </select>
+
+    <select id="getProduct" resultMap="ProductResultMap">
+        SELECT *
+        FROM PRODUCTS
+        WHERE PRODUCT_ID = #{productId}
+    </select>
 </mapper>

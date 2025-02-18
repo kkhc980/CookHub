@@ -1,12 +1,11 @@
 package com.dishcovery.project.service;
 
-import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.dishcovery.project.domain.IngredientsVO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.util.Pagination;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface ProductService {
 
@@ -16,4 +15,5 @@ public interface ProductService {
 	int getTotalProductCount();
     // Ingredients 목록 조회
     List<IngredientsVO> getAllProductIngredients();
+	ProductVO getProduct(int productId);
 }

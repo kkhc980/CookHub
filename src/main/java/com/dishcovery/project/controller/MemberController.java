@@ -4,6 +4,7 @@ import com.dishcovery.project.domain.MemberDTO;
 import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
+import com.dishcovery.project.util.Pagination;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -269,6 +270,29 @@ public class MemberController {
     public String moveFindPassword(Model model) {
         log.info("moveFindPassword");
         model.addAttribute("pageContent", "member/findpw.jsp");
+
+        return "layout";
+    }
+
+    // 내가 작성한 글 페이지 이동
+    @GetMapping("/mywritten")
+    public String moveMyWritten(
+            @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "8") int pageSize,
+            Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("moveMyWritten");
+
+        String email = userDetails.getUsername();
+        MemberDTO memberDTO = memberService.getMemberByEmail(email);
+        model.addAttribute("memberDTO", memberDTO);
+
+        // Pagination 설정
+        Pagination pagination = new Pagination(pageNum, pageSize);
+
+
+
+        model.addAttribute("pageContent", "member/mywritten.jsp");
 
         return "layout";
     }

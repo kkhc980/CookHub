@@ -79,10 +79,8 @@ input[type="submit"]:hover {
          <input type="text" name="noticeBoardTitle" 
          placeholder="제목 입력" maxlength="20" required>
       </div>
-      <div>
-         <p>작성자 : </p>
-         <input type="text" name="memberId" maxlength="10" required>
-      </div>
+      <sec:authentication property="principal.memberVO.memberId" var="memberId"/>
+       <input type="hidden" name="memberId" value="${memberId}" />
       <div>
          <p>내용 : </p>
          <textarea rows="20" cols="120" name="noticeBoardContent" 

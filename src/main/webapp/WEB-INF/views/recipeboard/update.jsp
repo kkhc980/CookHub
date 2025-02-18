@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="sec"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -441,57 +443,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-         // 해시태그 관련 JavaScript
-        const hashtagInput = document.getElementById("hashtagInput");
-        const hashtagInputsContainer = document.getElementById("hashtagInputs");
-        const initialHashtags = ${JSON.stringify(recipeBoard.hashtags)}; // 초기 해시태그 목록
-
-        // 초기 해시태그 표시
-        initialHashtags.forEach((hashtag, index) => {
-            addHashtagInput(hashtag.hashtagName, index);
-        });
-
-        // 해시태그 추가 함수
-        function addHashtagInput(hashtagName = "", index = null) {
-            const hashtagIndex = index !== null ? index : $("#hashtagInputs .input-group").length;
-            const newHashtagInput = `
-                <div class="input-group mb-1">
-                    <input type="text" class="form-control" name="hashtags[${hashtagIndex}].hashtagName" value="${hashtagName}" />
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-danger remove-hashtag" type="button">삭제</button>
-                    </div>
-                </div>
-            `;
-            $("#hashtagInputs").append(newHashtagInput);
-        }
-
-        // 해시태그 추가 버튼 클릭 이벤트
-        $("#addHashtag").click(function () {
-            addHashtagInput();
-        });
-
-        // 해시태그 삭제 버튼 클릭 이벤트 (동적 생성 요소에 대한 이벤트 위임)
-        $("#hashtagInputs").on('click', '.remove-hashtag', function () {
-            $(this).closest('.input-group').remove();
-        });
-                // 해시태그 입력 필드에서 엔터 키 입력 시 해시태그 추가
-        hashtagInput.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-                e.preventDefault(); // 폼 제출 방지
-                const value = hashtagInput.value.trim(); // 입력 값에서 공백 제거
-
-                if (value) {
-                    // 새 해시태그 입력 필드 추가
-                    addHashtagInput(value);
-
-                    // 입력 필드 초기화
-                    hashtagInput.value = "";
-                }
-            }
-        });
-    });
-
+$(document).ready(function () {
+    // 썸네일 미리보기
     function validateAndPreviewThumbnail(input) {
         const previewImage = document.getElementById('thumbnailPreview');
         const noThumbnailMessage = document.getElementById('noThumbnailMessage');
@@ -509,6 +462,7 @@
                 noThumbnailMessage.style.display = 'block';
                 return;
             }
+
             const reader = new FileReader();
             reader.onload = function (e) {
                 previewImage.src = e.target.result;
@@ -522,7 +476,6 @@
                 previewImage.src = "${pageContext.request.contextPath}/upload/" + existingThumbnail;
                 previewImage.style.display = 'block';
                 noThumbnailMessage.style.display = 'none';
-
             } else {
                 previewImage.style.display = 'none';
                 noThumbnailMessage.style.display = 'block';
@@ -530,43 +483,104 @@
         }
     }
 
-    // 재료 관련 JavaScript
-    const ingredientInputs = document.getElementById("ingredientInputs");
-    const addIngredientButton = document.getElementById("addIngredient");
-    const initialIngredientDetails = ${JSON.stringify(ingredientDetails)};
+    // 초기 썸네일 미리보기 설정
+    const thumbnailInput = document.getElementById('thumbnail');
+    validateAndPreviewThumbnail(thumbnailInput);
 
-    function addIngredientRow(ingredient = {}, index = null) {
-        const newRow = document.createElement("div");
-        newRow.className = "ingredient-row";
-        let ingredientIndex = index !== null ? index : ingredientInputs.querySelectorAll('.ingredient-row').length;
+    // 해시태그 관련 JavaScript (수정된 부분)
+    const hashtagInput = document.getElementById("hashtagInput");
+    const hashtagInputsContainer = document.getElementById("hashtagInputs");
 
-        newRow.innerHTML = `
-            <input type="text" name="ingredientName[${ingredientIndex}]" value="${ingredient.ingredientName || ''}" required>
-            <input type="text" name="ingredientAmount[${ingredientIndex}]" value="${ingredient.ingredientAmount || ''}" required>
-            <input type="text" name="ingredientUnit[${ingredientIndex}]" value="${ingredient.ingredientUnit || ''}" required>
-            <input type="text" name="ingredientNote[${ingredientIndex}]" value="${ingredient.ingredientNote || ''}">
-            <button type="button" class="remove-ingredient">삭제</button>
-        `;
-        ingredientInputs.appendChild(newRow);
+    // 초기 해시태그 표시
+    const initialHashtags = ${JSON.stringify(recipeBoard.hashtags)};
+    if (initialHashtags && initialHashtags.length > 0) {
+        initialHashtags.forEach((hashtag, index) => {
+            addHashtagInput(hashtag.hashtagName, index);
+        });
     }
 
-    initialIngredientDetails.forEach((ingredient, index) => {
-        addIngredientRow(ingredient, index);
+    function addHashtagInput(hashtagName = "", index = null) {
+        const hashtagIndex = index !== null ? index : $("#hashtagInputs .input-group").length;
+        const newHashtagInput = `
+            <div class="input-group mb-1">
+                <input type="text" class="form-control" name="hashtags[${hashtagIndex}].hashtagName" value="${hashtagName}" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-danger remove-hashtag" type="button">삭제</button>
+                </div>
+            </div>
+        `;
+        $("#hashtagInputs").append(newHashtagInput);
+    }
+
+    // 해시태그 추가 버튼 클릭 이벤트
+    $("#addHashtag").click(function () {
+        addHashtagInput();
     });
 
-    // 이벤트 위임을 사용하여 동적으로 생성된 삭제 버튼 처리
-    ingredientInputs.addEventListener('click', function (event) {
-        if (event.target.classList.contains('remove-ingredient')) {
-            event.target.closest('.ingredient-row').remove();
+    // 해시태그 삭제 버튼 클릭 이벤트 (동적 생성 요소에 대한 이벤트 위임)
+    $(document).on('click', '#hashtagInputs .remove-hashtag', function (event) {
+        event.preventDefault();
+        $(this).closest('.input-group').remove();
+    });
+            // 해시태그 입력 필드에서 엔터 키 입력 시 해시태그 추가
+    hashtagInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault(); // 폼 제출 방지
+            const value = hashtagInput.value.trim(); // 입력 값에서 공백 제거
+
+            if (value) {
+                // 새 해시태그 입력 필드 추가
+                addHashtagInput(value);
+
+                // 입력 필드 초기화
+                hashtagInput.value = "";
+            }
         }
     });
 
-    addIngredientButton.addEventListener("click", addIngredientRow);
+  // 재료 관련 JavaScript (수정된 부분)
+    const ingredientInputs = document.getElementById("ingredientInputs");
+    const addIngredientButton = $("#addIngredient");
+
+    function addIngredientRow(ingredient = {}, index = null) {
+        const ingredientIndex = index !== null ? index : (ingredientInputs ? ingredientInputs.querySelectorAll('.ingredient-row').length : 0);
+        const newRow = document.createElement("div");
+        newRow.className = "ingredient-row";
+
+        newRow.innerHTML = `
+            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientName" value="${ingredient.ingredientName || ''}" required>
+            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientAmount" value="${ingredient.ingredientAmount || ''}" required>
+            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientUnit" value="${ingredient.ingredientUnit || ''}" required>
+            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientNote" value="${ingredient.ingredientNote || ''}">
+            <button type="button" class="remove-ingredient">삭제</button>
+        `;
+        $(ingredientInputs).append(newRow);
+    }
+
+    // 초기 재료 정보 표시
+    const initialIngredientDetails = ${JSON.stringify(ingredientDetails)};
+    if (initialIngredientDetails && initialIngredientDetails.length > 0) {
+        initialIngredientDetails.forEach((ingredient, index) => {
+            addIngredientRow(ingredient, index);
+        });
+    } else {
+        addIngredientRow(); // 초기 데이터가 없으면 빈 행 추가
+    }
+
+    // 동적으로 생성된 삭제 버튼 처리 (이벤트 위임)
+    $(document).on('click', '#ingredientInputs .remove-ingredient', function (event) {
+        event.preventDefault();
+        $(this).closest('.ingredient-row').remove();
+    });
+
+    // 재료 추가 버튼 클릭 이벤트
+    addIngredientButton.on("click", function() {
+        addIngredientRow();
+    });
 
     // 조리 순서 관련 JavaScript
     const stepInputs = document.getElementById("stepInputs");
-    const addStepButton = document.getElementById("addStep");
-    const initialSteps = ${JSON.stringify(steps)};
+    const addStepButton = $("#addStep");
 
     function addStepRow(step = {}, index = null) {
         const stepIndex = index !== null ? index : stepInputs.querySelectorAll('.step-row').length;
@@ -577,17 +591,18 @@
             <label>Step ${stepIndex + 1}</label>
             <textarea name="stepDescription[${stepIndex}]" required>${step.stepDescription || ''}</textarea>
             <input type="file" name="stepImage[${stepIndex}]" accept="image/*">
-            <input type="number" name="stepOrder[${stepIndex}]" value="${step.stepOrder}" style="width: 80px;">
+            <input type="number" name="stepOrder[${stepIndex}]" value="${step.stepOrder || (stepIndex + 1)}" style="width: 80px;">
             <button type="button" class="remove-step">삭제</button>
             <div class="step-preview">
                 <img src="${step.stepImageUrl ? step.stepImageUrl : '#'}" alt="Step Preview" style="display: ${step.stepImageUrl ? 'block' : 'none'};">
             </div>
         `;
-        stepInputs.appendChild(newRow);
+           $(stepInputs).append(newRow);
 
         const fileInput = newRow.querySelector('input[type="file"]');
         const previewImage = newRow.querySelector('.step-preview img');
-        fileInput.addEventListener('change', function () {
+
+        function previewImage(fileInput, previewImage) {
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
@@ -596,58 +611,121 @@
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
+                previewImage.src = "";
                 previewImage.style.display = 'none';
             }
+        }
+
+        fileInput.addEventListener('change', function () {
+            previewImage(this, previewImage);
         });
+
+        previewImage(fileInput, previewImage); // 초기 로드 시 미리보기 설정
     }
 
+    const initialSteps = ${JSON.stringify(steps)};
     initialSteps.forEach((step, index) => {
         addStepRow(step, index);
     });
 
     function updateStepNumbers() {
-        const stepRows = stepInputs.querySelectorAll('.step-row');
+        const stepRows = $(stepInputs).find('.step-row');
         stepRows.forEach((row, index) => {
             row.querySelector('label').textContent = `Step ${index + 1}`;
             row.querySelector('input[name^="stepOrder"]').value = index + 1;
         });
     }
 
-    // 이벤트 위임을 사용하여 동적으로 생성된 삭제 버튼 처리
-    stepInputs.addEventListener('click', function (event) {
-        if (event.target.classList.contains('remove-step')) {
-            event.target.closest('.step-row').remove();
-            updateStepNumbers();
-        }
+    // 동적으로 생성된 삭제 버튼 처리 (이벤트 위임)
+    $(document).on('click', '#stepInputs .remove-step', function (event) {
+        event.preventDefault();
+        $(this).closest('.step-row').remove();
+        updateStepNumbers();
     });
 
-    addStepButton.addEventListener("click", addStepRow);
+    // 추가 버튼에 이벤트 리스너 추가
+    addStepButton.on("click", function() {
+        addStepRow();
+        updateStepNumbers();
+    });
 
     // 폼 제출 처리
-   document.querySelector("form").addEventListener("submit", function (e) {
-        e.preventDefault(); // 기본 폼 제출 방지
+    document.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
 
         const form = this;
-        const formData = new FormData(form); // 폼 데이터 객체 생성
+        const formData = new FormData(form);
+
+        // 폼 데이터 추가
+        formData.append('recipeBoardId', document.querySelector("input[name='recipeBoardId']").value);
+        formData.append('recipeBoardTitle', document.querySelector("input[name='recipeBoardTitle']").value);
+        formData.append('recipeBoardContent', document.querySelector("textarea[name='recipeBoardContent']").value);
+        formData.append('recipeTip', document.querySelector("textarea[name='recipeTip']").value);
+        formData.append('typeId', document.querySelector("select[name='typeId']").value);
+        formData.append('situationId', document.querySelector("select[name='situationId']").value);
+        formData.append('methodId', document.querySelector("select[name='methodId']").value);
+        formData.append('servings', document.querySelector("select[name='servings']").value);
+        formData.append('time', document.querySelector("select[name='time']").value);
+        formData.append('difficulty', document.querySelector("select[name='difficulty']").value);
+
+        // 선택된 재료 ID를 FormData에 추가
+        const ingredientCheckboxes = document.querySelectorAll('input[name="ingredientIds"]:checked');
+        ingredientCheckboxes.forEach(checkbox => {
+            formData.append('ingredientIds', checkbox.value);
+        });
 
         // 해시태그 필드 값 설정
         const hashtagRows = document.querySelectorAll("#hashtagInputs .input-group");
         hashtagRows.forEach((row, index) => {
             const hashtagName = row.querySelector("input[type='text']").value;
-            formData.append(`hashtags[${index}].hashtagName`, hashtagName);
+            formData.append('hashtags', hashtagName);
         });
 
-        // AJAX 요청을 위한 설정
+        // 조리 순서 설명 추가
+        const stepTextareas = document.querySelectorAll("#stepInputs .step-row textarea[name^='stepDescription']");
+        stepTextareas.forEach((textarea, index) => {
+            formData.append('stepDescription', textarea.value);
+        });
+
+        // 재료 상세 정보
+        const ingredientDetails = [];
+        const ingredientRows = document.querySelectorAll("#ingredientInputs .ingredient-row");
+        ingredientRows.forEach((row, index) => {
+            const ingredientName = row.querySelector("input[name^='ingredientDetails[${index}].ingredientName']").value;
+            const ingredientAmount = row.querySelector("input[name^='ingredientDetails[${index}].ingredientAmount']").value;
+            const ingredientUnit = row.querySelector("input[name^='ingredientDetails[${index}].ingredientUnit']").value;
+            const ingredientNote = row.querySelector("input[name^='ingredientDetails[${index}].ingredientNote']").value;
+
+            ingredientDetails.push({
+                ingredientName: ingredientName,
+                ingredientAmount: ingredientAmount,
+                ingredientUnit: ingredientUnit,
+                ingredientNote: ingredientNote
+            });
+        });
+
+        formData.append('recipeIngredientsJson', JSON.stringify(ingredientDetails));
+
+        // 썸네일 이미지 추가
+        const thumbnailInput = document.querySelector('input[type="file"][name="thumbnail"]');
+        if (thumbnailInput.files.length > 0) {
+            formData.append('thumbnail', thumbnailInput.files[0]);
+        }
+
+        // FormData 내용 확인 (디버깅용)
+        for (let key of formData.keys()) {
+            console.log(key, formData.get(key));
+        }
+
         const xhr = new XMLHttpRequest();
         xhr.open("POST", form.action, true);
 
-        // CSRF 토큰 설정 (필요한 경우)
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
         xhr.setRequestHeader(csrfHeader, csrfToken);
 
         xhr.onload = function () {
-            if (xhr.status >= 200 && xhr.status < 300) { // 성공적인 응답
+            if (xhr.status >= 200 && xhr.status < 300) {
                 console.log('Form successfully submitted');
                 window.location.href = "${pageContext.request.contextPath}/recipeboard/detail/${recipeBoard.recipeBoardId}";
             } else {
@@ -662,6 +740,7 @@
         // 폼 데이터 전송
         xhr.send(formData);
     });
+});
 </script>
 </body>
 </html>

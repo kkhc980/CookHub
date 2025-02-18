@@ -65,11 +65,34 @@ public class NoticeBoardController {
     }
 
     @PostMapping("/modify/{noticeBoardId}")
-    public String updateNoticeBoard(@PathVariable("noticeBoardId") int noticeBoardId, @ModelAttribute NoticeBoardVO noticeBoard) {
-        noticeBoardService.updateNoticeBoard(noticeBoard);
-        return "redirect:/noticeboard/list";
-    }
+    public String updateNoticeBoard(@PathVariable("noticeBoardId") int noticeBoardId, 
+                                      @ModelAttribute NoticeBoardVO noticeBoard,
+                                      Model model) {
+        log.info("updateNoticeBoard() 호출, noticeBoardId: " + noticeBoardId);
+        log.info("updateNoticeBoard() 호출, noticeBoard: " + noticeBoard);
 
+        // 1. 기존 공지사항 정보 가져오기
+        NoticeBoardVO existingNoticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
+        if (existingNoticeBoard == null) {
+            log.warn("기존 공지사항이 존재하지 않습니다. noticeBoardId: " + noticeBoardId);
+            model.addAttribute("errorMessage", "존재하지 않는 공지사항입니다.");
+            return "noticeboard/modify";
+        }
+
+      
+        noticeBoard.setMemberId(existingNoticeBoard.getMemberId());
+        log.info("기존 memberId 유지: " + existingNoticeBoard.getMemberId());
+
+     
+        try {
+            noticeBoardService.updateNoticeBoard(noticeBoard);
+            return "redirect:/noticeboard/detail/" + noticeBoard.getNoticeBoardId();
+        } catch (Exception e) {
+            log.error("공지사항 수정 중 오류 발생: " + e.getMessage());
+            model.addAttribute("errorMessage", "공지사항 수정 중 오류가 발생했습니다.");
+            return "noticeboard/modify";
+        }
+    }
     @PostMapping("/delete/{noticeBoardId}")
     public String deleteNoticeBoard(@PathVariable int noticeBoardId) {
         noticeBoardService.deleteNoticeBoard(noticeBoardId);

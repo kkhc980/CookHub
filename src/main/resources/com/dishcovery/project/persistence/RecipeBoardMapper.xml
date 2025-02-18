@@ -94,27 +94,27 @@
 		)
 	</insert>
 
-	<update id="updateRecipeBoard"
-		parameterType="com.dishcovery.project.domain.RecipeBoardVO">
-		UPDATE recipe_board
-		SET
-		recipe_board_title =
-		#{recipeBoardTitle},
-		recipe_board_content = #{recipeBoardContent},
-		type_id = #{typeId},
-		method_id = #{methodId},
-		situation_id =
-		#{situationId},
-		avg_rating = #{avgRating},
-		thumbnail_path =
-		#{thumbnailPath},
-		recipe_tip = #{recipeTip},
-		servings = #{servings},
-		time = #{time},
-		difficulty = #{difficulty}
-		WHERE recipe_board_id =
-		#{recipeBoardId}
-	</update>
+<update id="updateRecipeBoard"
+    parameterType="com.dishcovery.project.domain.RecipeBoardVO">
+    UPDATE recipe_board
+    SET
+    recipe_board_title =
+    #{recipeBoardTitle},
+    recipe_board_content = #{recipeBoardContent},
+    type_id = #{typeId},
+    method_id = #{methodId},
+    situation_id =
+    #{situationId},
+    avg_rating = #{avgRating},
+    thumbnail_path =
+    #{thumbnailPath},
+    recipe_tip = #{recipeTip},
+    servings = #{servings},
+    time = #{time},
+    difficulty = #{difficulty}
+    WHERE recipe_board_id =
+    #{recipeBoardId}
+</update>
 
 	<delete id="deleteRecipeBoard" parameterType="int">
 		DELETE FROM

@@ -149,9 +149,7 @@ public class AdminMemberServiceImple implements AdminMemberService {
     }
 
     @Override
-    @Transactional
-    public boolean updateMemberAuthStatus(int memberId, int authStatus) {
-        int result = memberMapper.updateAuthStatus(memberId, authStatus);
-        return result > 0;
+    public void updateMemberAuthStatus(int memberId, int authStatus) {
+        memberMapper.updateMemberAuthStatus(memberId, authStatus);
     }
 }

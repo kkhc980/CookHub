@@ -93,7 +93,7 @@
     </div>
 
     <button onclick="location.href='${pageContext.request.contextPath}/noticeboard/list'">글 목록</button>
-    <%-- <button onclick="location.href='${pageContext.request.contextPath}/noticeboard/modify/${NoticeBoardVO.noticeBoardId}'">글 수정</button> --%>
+     <button onclick="location.href='${pageContext.request.contextPath}/noticeboard/modify/${NoticeBoardVO.noticeBoardId}'">글 수정</button>
     <form id="deleteForm" action="${pageContext.request.contextPath}/noticeboard/delete/${NoticeBoardVO.noticeBoardId}" method="POST">
     <sec:csrfInput/>
         <input type="hidden" name="noticeBoardId" value="${NoticeBoardVO.noticeBoardId }">

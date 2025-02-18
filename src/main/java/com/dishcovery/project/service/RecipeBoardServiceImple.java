@@ -132,12 +132,14 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 			recipe.setThumbnailPath(thumbnailPath);
 			recipe.setRecipeBoardId(id);
 			mapper.updateRecipeBoard(recipe);
-
+			   mapper.deleteRecipeIngredientsByRecipeId(id);
+		        addIngredientsToRecipe(id, ingredientIds);
 			mapper.deleteRecipeIngredientsByRecipeId(id);
 			addIngredientsToRecipe(id, ingredientIds);
 			mapper.deleteRecipeIngredientsDetailsByRecipeId(id);
 			if (ingredientDetails != null && !ingredientDetails.isEmpty()) {
 				addIngredientDetailsToRecipe(id, ingredientDetails);
+				  log.info("Updated ingredientDetails: " + ingredientDetails);
 			}
 
 			updateHashtags(id, hashtags);

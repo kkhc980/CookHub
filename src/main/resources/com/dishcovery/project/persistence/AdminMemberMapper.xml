@@ -221,5 +221,9 @@
         DELETE FROM MEMBER
         WHERE MEMBER_ID = #{memberId}
     </delete>
-
+   <update id="updateMemberAuthStatus">
+    UPDATE MEMBER
+    SET AUTH_STATUS = #{authStatus}
+    WHERE MEMBER_ID = #{memberId} <!-- 컬럼 이름 수정 -->
+</update>
 </mapper>

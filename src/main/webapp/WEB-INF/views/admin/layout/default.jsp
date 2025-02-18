@@ -35,7 +35,7 @@
     <!-- 관리자 전용 네비게이션 바 -->
     <div class="navbar">
         <div>
-            <a href="${pageContext.request.contextPath}/admin/dashboard">대시보드</a>
+           
             <a href="${pageContext.request.contextPath}/admin/members/list">회원 관리</a>
             <a href="${pageContext.request.contextPath}/admin/recipeboard">레시피 관리</a>
         
@@ -43,7 +43,11 @@
         <div>
             <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
             <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
+<<<<<<< Updated upstream
             <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
+=======
+             <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
+>>>>>>> Stashed changes
         </div>
     </div>
 

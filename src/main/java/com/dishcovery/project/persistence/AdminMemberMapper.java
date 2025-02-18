@@ -170,5 +170,6 @@ public interface AdminMemberMapper {
      * @param authStatus 인증 상태
      * @return 업데이트된 행 수
      */
-    int updateAuthStatus(@Param("memberId") int memberId, @Param("authStatus") int authStatus);
+  
+    void updateMemberAuthStatus(@Param("memberId") int memberId, @Param("authStatus") int authStatus);
 }

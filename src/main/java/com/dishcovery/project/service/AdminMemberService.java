@@ -3,6 +3,8 @@ package com.dishcovery.project.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.util.Pagination;
 
@@ -174,5 +176,6 @@ public interface AdminMemberService {
      * @param authStatus 변경할 인증 상태 (0: 비활성화, 1: 활성화)
      * @return 성공 여부 (true: 성공, false: 실패)
      */
-    boolean updateMemberAuthStatus(int memberId, int authStatus);
+   
+    void updateMemberAuthStatus(@Param("memberId") int memberId, @Param("authStatus") int authStatus);
 }

@@ -276,6 +276,7 @@
         <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
         <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
         <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
+        <a href="${pageContext.request.contextPath}/store/list">스토어</a>
 
     </div>
     <div class="center-logo">

@@ -37,8 +37,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeRequests()
-				.antMatchers("/member/detail","/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
-				.antMatchers("/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+		
+        		// ✅ store 관련 권한 설정
+		        .antMatchers("/store/register").hasRole("ADMIN") // 관리자만 가능
+		        .antMatchers("/store/update/**").hasRole("ADMIN") // 관리자만 가능
+		        .antMatchers("/store/delete/**").hasRole("ADMIN") // 관리자만 가능
+		        .antMatchers("/store/list").permitAll() // 모두 접근 가능
+		        .antMatchers("/store/purchase/**").authenticated() // 로그인한 사용자만 결제 가능
+		        .antMatchers("/store/approve").authenticated() // 로그인한 사용자만 승인 가능
+		        .antMatchers("/store/cancel").authenticated() // 로그인한 사용자만 취소 가능
+		        .antMatchers("/store/fail").authenticated() // 로그인한 사용자만 실패 페이지 접근 가능
+
+        		.antMatchers("/member/detail","/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/recipeboard/register").authenticated()
         		.antMatchers("/recipeboard/update/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
         		.antMatchers("/recipeboard/delete/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")

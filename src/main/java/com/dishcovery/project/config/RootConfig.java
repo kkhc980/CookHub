@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -93,4 +94,19 @@ public class RootConfig {
 	    resolver.setMaxUploadSize(10485760); // 10MB
 	    return resolver;
 	}
+	
+	@Bean
+	public RestTemplate restTemplate() {
+	    return new RestTemplate();
+	}
+	
+	@Bean
+    public String adminKey() {
+        String key = System.getenv("KAKAO_ADMIN_KEY"); // ✅ 환경 변수에서 가져오기
+        if (key == null || key.isEmpty()) {
+            key = "DEFAULT_ADMIN_KEY"; // ✅ 환경 변수 미설정 시 기본값 사용
+        }
+        return key;
+    }
+
 }

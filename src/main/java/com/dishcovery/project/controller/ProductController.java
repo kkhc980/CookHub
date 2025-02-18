@@ -41,8 +41,8 @@ public class ProductController {
         model.addAttribute("productList", productList);
         model.addAttribute("pagination", pagination);
         model.addAttribute("pageMaker", pageMaker);
-
-        return "store/list"; // 기존 방식 유지
+        model.addAttribute("pageContent", "store/list.jsp");
+        return "layout"; // 기존 방식 유지
     }
     
     @GetMapping("/register")

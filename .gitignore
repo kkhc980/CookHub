@@ -1,0 +1,4 @@
+*.class
+*.classpath
+/target/
+pom.properties

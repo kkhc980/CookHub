@@ -2,12 +2,16 @@ package com.dishcovery.project.service;
 
 import java.util.List;
 
-import com.dishcovery.project.domain.RecipeReviewVO;
+import com.dishcovery.project.domain.RecipeReviewDTO;
 
 public interface RecipeReviewService {
-	int createRecipeReview(RecipeReviewVO recipeReviewVO);
-	List<RecipeReviewVO> getAllRecipeReview(int recipeBoardId);
-	int updateRecipeReview(RecipeReviewVO recipeReviewVO);
-	int deleteRecipeReview(int recipeReviewId, int recipeBoardId);
 	
+	int createRecipeReview(RecipeReviewDTO recipeReviewDTO);
+	List<RecipeReviewDTO> getAllRecipeReview(int recipeBoardId);
+	int updateRecipeReview(RecipeReviewDTO recipeReviewDTO);
+	int deleteRecipeReview(int recipeReviewId, int recipeBoardId);    
+    
 }
+	
+	
+

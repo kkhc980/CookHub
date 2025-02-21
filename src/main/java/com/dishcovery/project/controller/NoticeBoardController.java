@@ -24,56 +24,78 @@ public class NoticeBoardController {
     @Autowired
     private NoticeBoardService noticeBoardService;
 
-    // ¸ğµç °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
     @GetMapping("/list")
     public String getAllNoticeBoards(Model model) {
-    	log.info("getAllNoticeBoards()");
+        log.info("getAllNoticeBoards()");
         List<NoticeBoardVO> noticeBoardList = noticeBoardService.getAllNoticeBoards();
         model.addAttribute("noticeBoardList", noticeBoardList);
-        return "noticeboard/list";  
+        model.addAttribute("pageContent", "noticeboard/list.jsp");
+        return "layout";
     }
 
-    // Æ¯Á¤ °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
-    @GetMapping("/view")
+    @GetMapping("/detail/{noticeBoardId}")
     public String getNoticeBoardById(@PathVariable("noticeBoardId") int noticeBoardId, Model model) {
         NoticeBoardVO noticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeboard/view";  
+        model.addAttribute("NoticeBoardVO", noticeBoard);
+        return "noticeboard/detail";
     }
 
-    // °øÁö»çÇ× µî·Ï ÆûÀ» º¸¿©ÁÖ´Â ¸Ş¼­µå
     @GetMapping("/register")
     public String showAddNoticeForm() {
-        return "noticeboard/add";  
+        return "noticeboard/register";
     }
 
-    // »õ·Î¿î °øÁö»çÇ×À» µî·ÏÇÏ´Â ¸Ş¼­µå
     @PostMapping("/register")
     public String addNoticeBoard(@ModelAttribute NoticeBoardVO noticeBoard) {
         noticeBoardService.addNoticeBoard(noticeBoard);
-        return "redirect:/noticeboard/list";  
+        return "redirect:/noticeboard/list";
     }
 
-    // °øÁö»çÇ× ¼öÁ¤ ÆûÀ» º¸¿©ÁÖ´Â ¸Ş¼­µå
-    @GetMapping("/modify")
+    @GetMapping("/modify/{noticeBoardId}")
     public String showEditNoticeForm(@PathVariable("noticeBoardId") int noticeBoardId, Model model) {
-        NoticeBoardVO noticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
-        model.addAttribute("noticeBoard", noticeBoard);
-        return "noticeboard/edit";  
+        log.info("showEditNoticeForm() í˜¸ì¶œ, noticeBoardId: " + noticeBoardId);
+        NoticeBoardVO noticeBoardVO = noticeBoardService.getNoticeBoardById(noticeBoardId);
+        if (noticeBoardVO == null) {
+            log.warn("noticeBoardVOê°€ nullì…ë‹ˆë‹¤. noticeBoardId: " + noticeBoardId);
+            return "error";
+        }
+        log.info("showEditNoticeForm() í˜¸ì¶œ, noticeBoardVO: " + noticeBoardVO);
+        model.addAttribute("noticeBoardVO", noticeBoardVO);
+        return "noticeboard/modify";
     }
 
-    // °øÁö»çÇ×À» ¼öÁ¤ÇÏ´Â ¸Ş¼­µå
-    @PostMapping("/modify")
-    public String updateNoticeBoard(@ModelAttribute NoticeBoardVO noticeBoard) {
-        noticeBoardService.updateNoticeBoard(noticeBoard);
-        return "redirect:/noticeboard/list";  
-    }
+    @PostMapping("/modify/{noticeBoardId}")
+    public String updateNoticeBoard(@PathVariable("noticeBoardId") int noticeBoardId, 
+                                      @ModelAttribute NoticeBoardVO noticeBoard,
+                                      Model model) {
+        log.info("updateNoticeBoard() í˜¸ì¶œ, noticeBoardId: " + noticeBoardId);
+        log.info("updateNoticeBoard() í˜¸ì¶œ, noticeBoard: " + noticeBoard);
 
-    // °øÁö»çÇ×À» »èÁ¦ÇÏ´Â ¸Ş¼­µå
-    @PostMapping("/delete")
-    public String deleteNoticeBoard(@PathVariable("noticeBoardId") int noticeBoardId) {
+        // 1. ê¸°ì¡´ ê³µì§€ì‚¬í•­ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
+        NoticeBoardVO existingNoticeBoard = noticeBoardService.getNoticeBoardById(noticeBoardId);
+        if (existingNoticeBoard == null) {
+            log.warn("ê¸°ì¡´ ê³µì§€ì‚¬í•­ì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤. noticeBoardId: " + noticeBoardId);
+            model.addAttribute("errorMessage", "ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ê³µì§€ì‚¬í•­ì…ë‹ˆë‹¤.");
+            return "noticeboard/modify";
+        }
+
+      
+        noticeBoard.setMemberId(existingNoticeBoard.getMemberId());
+        log.info("ê¸°ì¡´ memberId ìœ ì§€: " + existingNoticeBoard.getMemberId());
+
+     
+        try {
+            noticeBoardService.updateNoticeBoard(noticeBoard);
+            return "redirect:/noticeboard/detail/" + noticeBoard.getNoticeBoardId();
+        } catch (Exception e) {
+            log.error("ê³µì§€ì‚¬í•­ ìˆ˜ì • ì¤‘ ì˜¤ë¥˜ ë°œìƒ: " + e.getMessage());
+            model.addAttribute("errorMessage", "ê³µì§€ì‚¬í•­ ìˆ˜ì • ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.");
+            return "noticeboard/modify";
+        }
+    }
+    @PostMapping("/delete/{noticeBoardId}")
+    public String deleteNoticeBoard(@PathVariable int noticeBoardId) {
         noticeBoardService.deleteNoticeBoard(noticeBoardId);
-        return "redirect:/noticeboard/list";  
+        return "redirect:/noticeboard/list";
     }
-
 }

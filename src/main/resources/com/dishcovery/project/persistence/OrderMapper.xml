@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dishcovery.project.persistence.OrderMapper">
+
+    <!-- 주문 정보 저장 -->
+    <insert id="insertOrder">
+        INSERT INTO orders (id, member_id, order_id, total_amount, created_at)
+        VALUES (orders_seq.NEXTVAL, #{memberId}, #{orderId}, #{totalAmount}, SYSTIMESTAMP)
+    </insert>
+    
+	<select id="existsOrder" resultType="int">
+	    SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END 
+	    FROM orders 
+	    WHERE order_id = #{orderId}
+	</select>
+
+</mapper>

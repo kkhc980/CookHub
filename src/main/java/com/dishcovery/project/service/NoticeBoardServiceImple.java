@@ -1,52 +1,89 @@
 package com.dishcovery.project.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.dishcovery.project.domain.NoticeBoardVO;
 import com.dishcovery.project.persistence.NoticeBoardMapper;
 
-	@Service
-	public class NoticeBoardServiceImple implements NoticeBoardService {
+import lombok.extern.log4j.Log4j;
 
-	    // NoticeBoardMapper¸¦ ÀÚµ¿À¸·Î ÁÖÀÔ
-	    @Autowired
-	    private NoticeBoardMapper noticeBoardMapper;
+@Service
+@Log4j
+public class NoticeBoardServiceImple implements NoticeBoardService {
 
-	    // ¸ğµç °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public List<NoticeBoardVO> getAllNoticeBoards() {
-	        // MapperÀÇ selectAllNoticeBoards ¸Ş¼­µå È£Ãâ
-	        return noticeBoardMapper.selectAllNoticeBoards();
-	    }
+    @Autowired
+    private NoticeBoardMapper noticeBoardMapper;
 
-	    // Æ¯Á¤ °øÁö»çÇ×À» Á¶È¸ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public NoticeBoardVO getNoticeBoardById(int noticeBoardId) {
-	        // MapperÀÇ selectNoticeBoardById ¸Ş¼­µå È£Ãâ
-	        return noticeBoardMapper.selectNoticeBoardById(noticeBoardId);
-	    }
+    @Override
+    public List<NoticeBoardVO> getAllNoticeBoards() {
+        log.info("getAllNoticeBoards() í˜¸ì¶œ");
+        try {
+            List<NoticeBoardVO> noticeBoardList = noticeBoardMapper.selectAllNoticeBoards();
+            log.info("getAllNoticeBoards() ì¢…ë£Œ");
+            return noticeBoardList;
+        } catch (Exception e) {
+            log.error("ê³µì§€ì‚¬í•­ ì¡°íšŒ ì¤‘ ì˜¤ë¥˜ ë°œìƒ", e);
+            throw new RuntimeException("ê³µì§€ì‚¬í•­ ì¡°íšŒ ì¤‘ ì˜¤ë¥˜ ë°œìƒ", e);
+        }
+    }
 
-	    // °øÁö»çÇ×À» µî·ÏÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public void addNoticeBoard(NoticeBoardVO noticeBoard) {
-	        // MapperÀÇ insertNoticeBoard ¸Ş¼­µå È£Ãâ
-	        noticeBoardMapper.insertNoticeBoard(noticeBoard);
-	    }
+    @Override
+    public NoticeBoardVO getNoticeBoardById(int noticeBoardId) {
+        log.info("getNoticeBoardById() í˜¸ì¶œ, noticeBoardId: " + noticeBoardId);
+        try {
+            NoticeBoardVO noticeBoard = noticeBoardMapper.selectNoticeBoardById(noticeBoardId);
+            log.info("getNoticeBoardById() ì¢…ë£Œ, noticeBoard: " + noticeBoard);
+            return noticeBoard;
+        } catch (Exception e) {
+            log.error("ê³µì§€ì‚¬í•­ ì¡°íšŒ ì¤‘ ì˜¤ë¥˜ ë°œìƒ, noticeBoardId: " + noticeBoardId, e);
+            throw new RuntimeException("ê³µì§€ì‚¬í•­ ì¡°íšŒ ì¤‘ ì˜¤ë¥˜ ë°œìƒ, noticeBoardId: " + noticeBoardId, e);
+        }
+    }
 
-	    // °øÁö»çÇ×À» ¼öÁ¤ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public void updateNoticeBoard(NoticeBoardVO noticeBoard) {
-	        // MapperÀÇ updateNoticeBoard ¸Ş¼­µå È£Ãâ
-	        noticeBoardMapper.updateNoticeBoard(noticeBoard);
-	    }
+    @Override
+    @Transactional
+    public void addNoticeBoard(NoticeBoardVO noticeBoard) {
+        log.info("addNoticeBoard() í˜¸ì¶œ, noticeBoard: " + noticeBoard);
+        try {
+            noticeBoard.setNoticeBoardCreatedDate(new Date());
+            noticeBoardMapper.insertNoticeBoard(noticeBoard);
+            log.info("addNoticeBoard() ì¢…ë£Œ, noticeBoardId: " + noticeBoard.getNoticeBoardId());
+        } catch (Exception e) {
+            log.error("ê³µì§€ì‚¬í•­ ë“±ë¡ ì¤‘ ì˜¤ë¥˜ ë°œìƒ, noticeBoard: " + noticeBoard, e);
+            throw new RuntimeException("ê³µì§€ì‚¬í•­ ë“±ë¡ ì¤‘ ì˜¤ë¥˜ ë°œìƒ", e);
+        }
+    }
 
-	    // °øÁö»çÇ×À» »èÁ¦ÇÏ´Â ¸Ş¼­µå
-	    @Override
-	    public void deleteNoticeBoard(int noticeBoardId) {
-	        // MapperÀÇ deleteNoticeBoard ¸Ş¼­µå È£Ãâ
-	        noticeBoardMapper.deleteNoticeBoard(noticeBoardId);
-	    }
-	}
+    @Override
+    @Transactional
+    public void updateNoticeBoard(NoticeBoardVO noticeBoard) {
+        log.info("updateNoticeBoard() í˜¸ì¶œ, noticeBoard: " + noticeBoard);
+        try {
+            noticeBoardMapper.updateNoticeBoard(noticeBoard);
+            log.info("updateNoticeBoard() ì¢…ë£Œ, noticeBoardId: " + noticeBoard.getNoticeBoardId());
+        } catch (Exception e) {
+            log.error("ê³µì§€ì‚¬í•­ ìˆ˜ì • ì¤‘ ì˜¤ë¥˜ ë°œìƒ, noticeBoard: " + noticeBoard, e);
+             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw new RuntimeException("ê³µì§€ì‚¬í•­ ìˆ˜ì • ì¤‘ ì˜¤ë¥˜ ë°œìƒ: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteNoticeBoard(int noticeBoardId) {
+        log.info("deleteNoticeBoard() í˜¸ì¶œ, noticeBoardId: " + noticeBoardId);
+        try {
+            noticeBoardMapper.deleteNoticeBoard(noticeBoardId);
+            log.info("deleteNoticeBoard() ì¢…ë£Œ, noticeBoardId: " + noticeBoardId);
+        } catch (Exception e) {
+            log.error("ê³µì§€ì‚¬í•­ ì‚­ì œ ì¤‘ ì˜¤ë¥˜ ë°œìƒ, noticeBoardId: " + noticeBoardId, e);
+            throw new RuntimeException("ê³µì§€ì‚¬í•­ ì‚­ì œ ì¤‘ ì˜¤ë¥˜ ë°œìƒ", e);
+        }
+    }
+}

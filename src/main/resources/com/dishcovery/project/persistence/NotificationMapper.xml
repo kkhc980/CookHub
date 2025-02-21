@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.NotificationMapper">
+
+    <!-- 팔로우 알림 저장 -->
+	<insert id="insertFollowNotification" parameterType="com.dishcovery.project.domain.MemberNotificationVO">
+	    INSERT INTO MEMBER_NOTIFICATION (
+	        NOTIFICATION_ID, RECEIVER_ID, SENDER_ID, TYPE, MESSAGE, IS_READ, CREATED_AT
+	    ) VALUES (
+	        MEMBER_NOTIFICATION_SEQ.NEXTVAL,
+	        #{receiverId}, 
+	        #{senderId}, 
+	        'FOLLOW',
+	        #{message},  <!-- 여기서 CAST 제거 -->
+	        0,  <!-- false 대신 0 (Oracle에서 boolean은 숫자로 처리됨) -->
+	        SYSTIMESTAMP  <!-- CURRENT_TIMESTAMP 대신 SYSTIMESTAMP 사용 -->
+	    )
+	</insert>
+
+
+    
+    <!-- 언팔로우 시 팔로우 알림 삭제 -->
+    <delete id="deleteFollowNotification">
+        DELETE FROM MEMBER_NOTIFICATION 
+        WHERE sender_id = #{senderId} 
+        AND receiver_id = #{receiverId} 
+        AND type = 'FOLLOW'
+    </delete>
+
+	<!-- 특정 유저의 최신 5개 읽지 않은 알림 조회 -->
+	<select id="getUnreadNotifications" resultType="com.dishcovery.project.domain.MemberNotificationVO">
+	    <![CDATA[
+	    SELECT * FROM (
+	        SELECT * FROM MEMBER_NOTIFICATION 
+	        WHERE RECEIVER_ID = #{receiverId} 
+	        AND IS_READ = 0 
+	        ORDER BY CREATED_AT DESC
+	    ) WHERE ROWNUM <= 5
+	    ]]>
+	</select>
+
+    <!-- 읽지 않은 알림 개수 조회 -->
+    <select id="getUnreadNotificationCount" resultType="int">
+        SELECT COUNT(*) FROM MEMBER_NOTIFICATION WHERE RECEIVER_ID = #{receiverId} AND IS_READ = 0
+    </select>
+
+    <!-- 특정 알림 읽음 처리 -->
+    <update id="markAsRead">
+        UPDATE MEMBER_NOTIFICATION SET IS_READ = 1 WHERE NOTIFICATION_ID = #{notificationId}
+    </update>
+
+    <!-- 모든 알림 읽음 처리 -->
+    <update id="markAllAsRead">
+        UPDATE MEMBER_NOTIFICATION SET IS_READ = 1 WHERE RECEIVER_ID = #{receiverId}
+    </update>
+    
+    <select id="getMemberNameById" resultType="string">
+    	SELECT name FROM MEMBER WHERE member_id = #{senderId}
+	</select>
+</mapper>

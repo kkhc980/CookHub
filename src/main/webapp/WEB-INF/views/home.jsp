@@ -3,16 +3,16 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Home</title>
+    <title>Home</title>
 </head>
 <body>
 <h1>
-	Hello world!  
+    Hello world!
 </h1>
 
-<P>  The time on the sefdfrver is ${serverTime}. </P>
+<P> The time on the sever is ${serverTime}. </P>
 
-<div><a href="member/enroll">회원가입 이동 테스트</a></div>
+<div><a href="recipeboard/list">레시피 보드 리스트 이동</a></div>
 <div>test kimheeseung</div>
 <div>test kill</div>
 </body>

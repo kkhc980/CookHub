@@ -17,4 +17,7 @@ public class RecipeDetailVO {
     private String methodName;
     private String situationName;
     private List<IngredientsVO> ingredients;
+    private List<HashtagsVO> hashtags; 
+    private List<RecipeIngredientsDetailVO> ingredientDetails;
+    private List<RecipeBoardStepVO> recipeSteps; 
 }

@@ -36,12 +36,18 @@ public class ServletConfig implements WebMvcConfigurer {
 		.addResourceLocations("file:C:/uploads/");
 	}
 	
-	@Bean
-	public CommonsMultipartResolver multipartResolver() {
-	    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-	    resolver.setDefaultEncoding("UTF-8");
-	    resolver.setMaxUploadSize(10485760); // 10MB
-	    return resolver;
-	}
+	   @Bean
+	   public String uploadPath() {
+	      return "C:\\reviewuploads";
+	      }
+	   
+	   @Bean
+	   public CommonsMultipartResolver multipartResolver() {
+	       CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+	       resolver.setDefaultEncoding("UTF-8");
+	       resolver.setMaxUploadSize(10485760); // 10MB
+	       return resolver;
+	   }
+	
 
 } // end ServletConfig

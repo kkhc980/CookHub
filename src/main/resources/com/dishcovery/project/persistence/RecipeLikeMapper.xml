@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dishcovery.project.persistence.RecipeLikeMapper">
+
+    <!-- 좋아요 추가 -->
+    <insert id="insertLike">
+        INSERT INTO recipe_likes (like_id, recipe_board_id, member_id, created_at)
+        VALUES (recipe_likes_seq.NEXTVAL, #{recipeBoardId}, #{memberId}, SYSTIMESTAMP)
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="deleteLike">
+        DELETE FROM recipe_likes
+        WHERE recipe_board_id = #{recipeBoardId} AND member_id = #{memberId}
+    </delete>
+
+    <!-- 좋아요 여부 확인 -->
+    <select id="isLikedByUser" resultType="int">
+        SELECT COUNT(*)
+        FROM recipe_likes
+        WHERE recipe_board_id = #{recipeBoardId} AND member_id = #{memberId}
+    </select>
+
+    <!-- 좋아요 개수 조회 -->
+    <select id="getLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM recipe_likes
+        WHERE recipe_board_id = #{recipeBoardId}
+    </select>
+</mapper>

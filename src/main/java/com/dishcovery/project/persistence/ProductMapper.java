@@ -1,6 +1,7 @@
 package com.dishcovery.project.persistence;
 
 import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.OrderPageItemDTO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.util.Pagination;
 
@@ -18,4 +19,5 @@ public interface ProductMapper {
     // Ingredients 목록 조회
     List<IngredientsVO> getAllProductIngredients();
     ProductVO getProduct(int productId);
+    OrderPageItemDTO getProductInfo(int productId);
 }

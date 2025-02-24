@@ -19,47 +19,26 @@
             justify-content: center;
         }
 
+        .product-card {
+            width: 22%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #fff;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
         .product-card:hover {
             transform: scale(1.05);
         }
-        
-        .product-card {
-		    width: 22%;
-		    border: 1px solid #ddd;
-		    border-radius: 5px;
-		    overflow: hidden;
-		    background-color: #fff;
-		    cursor: pointer;
-		    text-align: center;
-		    transition: transform 0.2s;
-		    display: flex;
-		    flex-direction: column;
-		    align-items: center; /* 카드 내부 요소 중앙 정렬 */
-		}
-		
-		.product-image-container {
-		    width: 200px;
-		    height: 200px;
-		    display: flex;
-		    align-items: center;  /* 수직 중앙 정렬 */
-		    justify-content: center; /* 수평 중앙 정렬 */
-		    border: 1px solid #ddd;
-		    overflow: hidden; /* 이미지 크기 초과 방지 */
-		}
-		
-		.product-image {
-		    max-width: 100%;  /* 컨테이너 크기에 맞춤 */
-		    max-height: 100%; /* 컨테이너 크기에 맞춤 */
-		    object-fit: contain; /* 비율 유지하며 꽉 차도록 */
-		}
-		
-		.no-image-text {
-		    display: none; /* 기본적으로 숨김 */
-		    color: gray;
-		    font-size: 14px;
-		    text-align: center;
-		    position: absolute;
-		}
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
 
         .product-info {
             padding: 10px;
@@ -143,13 +122,9 @@
             <c:when test="${not empty productList}">
 				<c:forEach var="products" items="${productList}">
 				    <div class="product-card">
-				        <div class="product-image-container">
-				            <img class="product-image" 
-				                 src="${pageContext.request.contextPath}/uploads/${products.productImagePath}" 
-				                 alt="상품 이미지"
-				                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-				            <span class="no-image-text">이미지 없음</span>
-				        </div>
+				        <img class="product-image" src="${pageContext.request.contextPath}/uploads/${products.productImagePath}" 
+				             alt="상품 이미지"
+				             onerror="this.src='${pageContext.request.contextPath}/uploads/product_images/default.png';">
 				        <div class="product-info">
 				            <h3 class="product-title">${products.productName}</h3>
 				            <p class="product-meta">

@@ -1,6 +1,7 @@
 package com.dishcovery.project.service;
 
 import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.OrderPageItemDTO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.persistence.ProductMapper;
 import com.dishcovery.project.util.Pagination;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,5 +82,20 @@ public class ProductServiceImple implements ProductService {
     @Override
     public ProductVO getProduct(int productId) {
         return productMapper.getProduct(productId);
+    }
+
+    @Override
+    public List<OrderPageItemDTO> getProductInfo(List<OrderPageItemDTO> orders) {
+        List<OrderPageItemDTO> result = new ArrayList<OrderPageItemDTO>();
+
+        for (OrderPageItemDTO ord : orders) {
+            OrderPageItemDTO productInfo = productMapper.getProductInfo(ord.getProductId());
+            productInfo.setProductCount(ord.getProductCount());
+            productInfo.initTotal();
+
+            result.add(productInfo);
+        }
+
+        return result;
     }
 }

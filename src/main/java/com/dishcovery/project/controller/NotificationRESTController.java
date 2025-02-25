@@ -16,7 +16,7 @@ import com.dishcovery.project.service.NotificationService;
 
 @RestController
 @RequestMapping("/notifications")
-public class NotificationController {
+public class NotificationRESTController {
 
 	@Autowired
     NotificationService notificationService;

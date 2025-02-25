@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,7 +67,7 @@ public interface RecipeBoardService {
 
 	// Pagination & Filtering
 	Map<String, Object> getRecipeBoardListWithFilters(Pagination pagination);
-	
+	 CompletableFuture<Map<String, Object>> getRecipeBoardListWithFiltersAsync(Pagination pagination);
 
 	default Pagination preprocessPagination(Pagination pagination) {
 		if (pagination.getSort() == null || pagination.getSort().isEmpty()) {

@@ -39,9 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.authorizeRequests()
 		
         		// ✅ store 관련 권한 설정
-		        .antMatchers("/store/register").hasRole("ADMIN") // 관리자만 가능
-		        .antMatchers("/store/update/**").hasRole("ADMIN") // 관리자만 가능
-		        .antMatchers("/store/delete/**").hasRole("ADMIN") // 관리자만 가능
+		        .antMatchers("/store/register").authenticated() //.hasRole("ADMIN") // 관리자만 가능
+		        .antMatchers("/store/update/**").authenticated() //.hasRole("ADMIN") // 관리자만 가능
+		        .antMatchers("/store/delete/**").authenticated() //.hasRole("ADMIN") // 관리자만 가능
 		        .antMatchers("/store/list").permitAll() // 모두 접근 가능
 		        .antMatchers("/store/purchase/**").authenticated() // 로그인한 사용자만 결제 가능
 		        .antMatchers("/store/approve").authenticated() // 로그인한 사용자만 승인 가능

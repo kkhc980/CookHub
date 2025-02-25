@@ -27,7 +27,7 @@
     </div>
     <div class="button_set">
         <button class="btn_cart">장바구니</button>
-        <button class="btn_buy" onclick="purchaseProduct('${product.productId}')">바로구매</button>
+        <button class="purchase-button" onclick="purchaseProduct('${product.productId}', '${product.productName}', ${product.productPrice})">구매하기</button>
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -78,13 +78,43 @@
     });
 
     // 바로구매 버튼
-    function purchaseProduct(productId) {
+    function purchaseProduct(productId, productName, productPrice) {
         let productCount = $(".quantity_input").val();
         if (productCount > stock) {
             alert("재고량이 부족합니다.");
             return;
         }
-        location.href = '${pageContext.request.contextPath}/store/purchase/' + productId;
+
+        let form = document.createElement("form");
+        form.method = "POST"; // POST 사용 (보안 강화)
+        form.action = '${pageContext.request.contextPath}/store/purchase';
+
+        let csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "${_csrf.parameterName}";
+        csrfInput.value = "${_csrf.token}"; // CSRF 방어
+
+        let input1 = document.createElement("input");
+        input1.type = "hidden";
+        input1.name = "productId";
+        input1.value = productId;
+
+        let input2 = document.createElement("input");
+        input2.type = "hidden";
+        input2.name = "productName";
+        input2.value = productName;
+
+        let input3 = document.createElement("input");
+        input3.type = "hidden";
+        input3.name = "productPrice";
+        input3.value = productPrice;
+
+        form.appendChild(csrfInput);
+        form.appendChild(input1);
+        form.appendChild(input2);
+        form.appendChild(input3);
+        document.body.appendChild(form);
+        form.submit();
     }
 
     // 숫자만 입력하도록 제한 및 재고량 체크

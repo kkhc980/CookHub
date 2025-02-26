@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dishcovery.project.domain.ReplyVO;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
 import com.dishcovery.project.persistence.ReplyMapper;
+import com.dishcovery.project.util.Pagination;
 
 import lombok.extern.log4j.Log4j;
 
@@ -37,12 +38,18 @@ public class ReplyServiceImple implements ReplyService{
 	}
 	
 	@Override
-	public List<ReplyVO> getAllReply(int recipeBoardId) {
+	public List<ReplyVO> getAllReply(int recipeBoardId, Pagination pagination) {
 		log.info("getAllReply(), recipeBoardId: " + recipeBoardId);
-		List<ReplyVO> list = replyMapper.selectListByRecipeBoardId(recipeBoardId);
+		List<ReplyVO> list = replyMapper.selectListByRecipeBoardId(recipeBoardId, pagination);
 	     log.info("list size : " + list.size());
 	    return list;
 	}
+	
+	 @Override
+	    public int getTotalReplyCount(int recipeBoardId) {
+	        log.info("getTotalReplyCount(), recipeBoardId: " + recipeBoardId);
+	        return replyMapper.getTotalReplyCount(recipeBoardId);
+	    }
 	
 	@Override
 	public int updateReply(int replyId, String replyContent) {

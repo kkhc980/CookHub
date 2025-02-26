@@ -23,7 +23,8 @@ public class Pagination {
     private Integer typeId; // 타입 ID
     private Integer situationId; // 상황 ID
     private Integer methodId; // 방법 ID
-    private String hashtag;
+    private String hashtag; 
+    
     
 	public Pagination() {
 		this.pageNum = 1; // 기본 페이지 번호 설정
@@ -92,5 +93,5 @@ public class Pagination {
             this.sort = "latest"; // 기본 정렬: 최신순
         }
     }
-
+    
 } // end Pagination

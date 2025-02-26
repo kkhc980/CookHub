@@ -1,7 +1,9 @@
 package com.dishcovery.project.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dishcovery.project.domain.ReplyVO;
 import com.dishcovery.project.service.ReplyService;
+import com.dishcovery.project.util.PageMaker;
+import com.dishcovery.project.util.Pagination;
 
 import lombok.extern.log4j.Log4j;
 
@@ -44,15 +49,37 @@ public class ReplyRESTController {
    }
    
    @GetMapping("/all/{recipeBoardId}") // GET : 댓글 선택(all)
-   public ResponseEntity<List<ReplyVO>> readAllReply(
-         @PathVariable("recipeBoardId") int recipeBoardId){
+   public ResponseEntity<Map<String, Object>> readAllReply(
+	        @PathVariable("recipeBoardId") int recipeBoardId,
+	        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum) {
       // @PathVariable("recipeBoardId") : {recipeBoardId} 값을 설정된 변수에 저장
       log.info("readdAllReply()");
       log.info("recipeBoardId = " + recipeBoardId);
+      log.info("pageNum = " + pageNum);
       
-      List<ReplyVO> list = replyService.getAllReply(recipeBoardId);
+   // Pagination 객체를 명시적으로 생성
+      Pagination pagination = new Pagination(pageNum, 5); 
+      
+      int replyTotalCount = replyService.getTotalReplyCount(recipeBoardId);
+      log.info("총 댓글 개수 (replyTotalCount) = " + replyTotalCount); // ← 로그 추가
+      
+   // PageMaker 객체 생성 및 설정
+      PageMaker pageMaker = new PageMaker();
+      pageMaker.setPagination(pagination);
+      pageMaker.setReplyTotalCount(replyTotalCount);
+      
+      List<ReplyVO> list = replyService.getAllReply(recipeBoardId, pagination);
+      log.info("조회된 댓글 개수 = " + list.size()); // ← 로그 추가
+      
       // ResponseEntity<T> : T의 타입은 프론트 side로 전송될 데이터 타입으로선언
-      return new ResponseEntity<List<ReplyVO>>(list, HttpStatus.OK);
+      Map<String, Object> result = new HashMap<>();
+      result.put("replies", list);
+      result.put("pagination", pageMaker);
+      
+      System.out.println("응답 데이터: " + result); // 🔥 콘솔에 전체 데이터 출력해서 확인
+
+      
+      return new ResponseEntity<>(result, HttpStatus.OK);
    }
    
    

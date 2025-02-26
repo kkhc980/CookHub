@@ -13,7 +13,7 @@ import com.dishcovery.project.service.HashtagService;
 
 @RestController
 @RequestMapping("/autocomplete")
-public class HashtagController {
+public class HashtagRESTController {
 
     @Autowired
     private HashtagService hashtagService;

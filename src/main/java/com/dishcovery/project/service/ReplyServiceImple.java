@@ -30,10 +30,10 @@ public class ReplyServiceImple implements ReplyService{
 		log.info("CreateReply()");
 		log.info("replyVO : " + replyVO.toString());
 		int insertResult = replyMapper.insertReply(replyVO);
-		log.info(insertResult + "�뻾 �뙎湲� 異붽�");
+		log.info(insertResult);
 //		int updateResult = recipeBoardMapper
 //				.updateReplyCount(replyVO.getRecipeBoardId(), 1);
-//		log.info(updateResult + "�뻾 寃뚯떆�뙋 �닔�젙");
+//		log.info(updateResult);
 		return insertResult;
 	}
 	
@@ -70,7 +70,7 @@ public class ReplyServiceImple implements ReplyService{
 		log.info(deleteResult + "�뻾 �뙎湲� �궘�젣");
 //		int updateResult = recipeBoardMapper
 //				.updateReplyCount(recipeBoardId, -1);
-//		log.info(updateResult + "�뻾 寃뚯떆�뙋 �닔�젙");
+//		log.info(updateResult);
 		return 1;
 	}
 }

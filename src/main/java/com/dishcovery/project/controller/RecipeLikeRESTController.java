@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dishcovery.project.domain.CustomUser;
@@ -21,7 +20,7 @@ import lombok.extern.log4j.Log4j;
 @RestController
 @RequestMapping("/recipeboard")
 @Log4j
-public class RecipeLikeController {
+public class RecipeLikeRESTController {
 
     @Autowired
     RecipeLikeService recipeLikeService;
@@ -78,7 +77,6 @@ public class RecipeLikeController {
     }
     
     @GetMapping("/{recipeBoardId}/like-status")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> getLikeStatus(
             @PathVariable int recipeBoardId,
             @AuthenticationPrincipal CustomUser customUser) {

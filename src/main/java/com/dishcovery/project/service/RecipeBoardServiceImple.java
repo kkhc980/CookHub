@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -394,6 +396,26 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 		return result;
 	}
 
+	@Async
+    @Override
+    public CompletableFuture<Map<String, Object>> getRecipeBoardListWithFiltersAsync(Pagination pagination) {
+        pagination = preprocessPagination(pagination);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("recipeList", mapper.getRecipeBoardListWithPaging(pagination));
+        result.put("allIngredients", getAllIngredients());
+        result.put("allTypes", getAllTypes());
+        result.put("allMethods", getAllMethods());
+        result.put("allSituations", getAllSituations());
+
+        int totalCount = mapper.getTotalCountWithFilters(pagination);
+        PageMaker pageMaker = new PageMaker();
+        pageMaker.setPagination(pagination);
+        pageMaker.setTotalCount(totalCount);
+        result.put("pageMaker", pageMaker);
+
+        return CompletableFuture.completedFuture(result);
+    }
 	@Override
 	public Optional<ImageData> getThumbnailByRecipeBoardId(int recipeBoardId) {
 		try {

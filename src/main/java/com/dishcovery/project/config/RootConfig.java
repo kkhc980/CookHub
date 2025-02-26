@@ -14,6 +14,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +27,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableTransactionManagement // 트랜잭션 어노테이션 활성화
 @EnableScheduling
+@EnableAsync
 @ComponentScan(basePackages = {"com.dishcovery.project.service"})
 @MapperScan(basePackages = {"com.dishcovery.project.persistence"})
 public class RootConfig {

@@ -25,8 +25,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         MEMBER_ID,
         REPLY_CONTENT,
         REPLY_DATE_CREATED
+    FROM (
+        SELECT
+            REPLY_ID,
+            RECIPE_BOARD_ID,
+            MEMBER_ID,
+            REPLY_CONTENT,
+            REPLY_DATE_CREATED,
+            ROWNUM AS RN    
      FROM REPLY
      WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+     )
+     WHERE RN BETWEEN #{pagination.start} AND #{pagination.end}
+   </select>
+   
+   <select id="getTotalReplyCount" resultType="int">
+       SELECT COUNT(*)
+       FROM REPLY
+       WHERE RECIPE_BOARD_ID = #{recipeBoardId}
    </select>
    
    <update id="updateReply">

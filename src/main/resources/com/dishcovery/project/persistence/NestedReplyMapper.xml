@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dishcovery.project.persistence.NestedReplyMapper">
+
+	<resultMap type="com.dishcovery.project.domain.NestedReplyVO" id="nestedReplyResultMap">
+      	<id property="nestedReplyId" column="Nested_REPLY_ID" />       
+      	<result property="memberId" column="MEMBER_ID" />
+      	<result property="replyId" column="REPLY_ID" />
+      	<result property="nestedReplyContent" column="NESTED_REPLY_CONTENT" />
+      	<result property="nestedReplyDateCreated" column="NESTED_REPLY_DATE_CREATED" />
+   </resultMap>
+   
+   <insert id="insertNestedReply">
+      INSERT INTO NESTED_REPLY (NESTED_REPLY_ID, MEMBER_ID, REPLY_ID, NESTED_REPLY_CONTENT)
+      VALUES (NESTED_REPLY_SEQ.NEXTVAL, #{memberId}, #{replyId}, #{nestedReplyContent})
+   </insert>
+   
+   <select id="selectListByReplyId" resultMap="nestedReplyResultMap">
+     SELECT
+        NESTED_REPLY_ID,        
+        MEMBER_ID,
+        REPLY_ID,
+        NESTED_REPLY_CONTENT,
+        NESTED_REPLY_DATE_CREATED
+     FROM NESTED_REPLY
+     WHERE REPLY_ID = #{replyId}
+   </select>
+   
+   <update id="updateNestedReply">
+      UPDATE NESTED_REPLY
+      SET NESTED_REPLY_CONTENT = #{nestedReplyContent}
+      WHERE NESTED_REPLY_ID = #{nestedReplyId}
+   </update>
+   
+   <delete id="deleteNestedReply">
+      DELETE FROM NESTED_REPLY
+      WHERE NESTED_REPLY_ID = #{nestedReplyId}
+   </delete>
+   
+</mapper>   

@@ -12,10 +12,22 @@ public class PageMaker {
 	private Pagination pagination; // 페이징 처리 객체
 	private int totalCount; // 전체 게시글 수
 	private int pageCount; // 화면에 표시되는 페이지 번호 수
+	private int replyTotalCount; // 총 댓글 수
 	
 	public PageMaker() {
 		this.pageCount = 5; // 5개의 페이지 번호만 화면에 표시
 	}	
+	
+	
+	// reply의 총 수
+		public void setReplyTotalCount(int replyTotalCount) {
+			this.replyTotalCount = replyTotalCount; // ✅ 제대로 값이 들어가는지 디버깅
+		    System.out.println("setReplyTotalCount 호출됨: " + this.replyTotalCount);
+			
+		    // ✅ totalCount도 replyTotalCount로 설정
+		    this.totalCount = replyTotalCount;
+		  
+		}
 	
 	// 전체 페이지 번호 계산값
 	private int calcTotalPageNum() {

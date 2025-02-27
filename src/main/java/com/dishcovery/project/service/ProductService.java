@@ -1,6 +1,7 @@
 package com.dishcovery.project.service;
 
 import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.OrderPageItemDTO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.util.Pagination;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,4 +17,5 @@ public interface ProductService {
     // Ingredients 목록 조회
     List<IngredientsVO> getAllProductIngredients();
 	ProductVO getProduct(int productId);
+	List<OrderPageItemDTO> getProductInfo(List<OrderPageItemDTO> orders);
 }

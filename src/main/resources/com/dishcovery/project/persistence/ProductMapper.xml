@@ -15,6 +15,12 @@
         <result property="productImagePath" column="PRODUCT_IMAGE_PATH"/>
     </resultMap>
 
+    <resultMap id="ProductItem" type="com.dishcovery.project.domain.OrderPageItemDTO">
+        <id property="productId" column="PRODUCT_ID"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="productPrice" column="PRODUCT_PRICE"/>
+    </resultMap>
+
     <!-- 상품 등록 -->
     <insert id="insertProduct">
         INSERT INTO Products (product_id, product_name, product_price, product_description, ingredient_id,
@@ -47,6 +53,12 @@
 
     <select id="getProduct" resultMap="ProductResultMap">
         SELECT *
+        FROM PRODUCTS
+        WHERE PRODUCT_ID = #{productId}
+    </select>
+
+    <select id="getProductInfo" resultMap="ProductItem">
+        SELECT PRODUCT_ID, PRODUCT_NAME, PRODUCT_PRICE
         FROM PRODUCTS
         WHERE PRODUCT_ID = #{productId}
     </select>

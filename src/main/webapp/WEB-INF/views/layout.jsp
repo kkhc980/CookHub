@@ -313,7 +313,7 @@
                         <sec:authorize access="hasRole('ROLE_ADMIN')">
                             <a href="${pageContext.request.contextPath}/admin/recipeboard">관리자 페이지</a>
                         </sec:authorize>
-                        <a href="${pageContext.request.contextPath}/member/detail">내 정보</a>
+                        <a href="${pageContext.request.contextPath}/store/cart">장바구니</a>
                         <form action="../auth/logout" method="post">
                             <input type="submit" value="로그아웃">
                             <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">

@@ -324,8 +324,8 @@
         </sec:authorize>
 
         <sec:authorize access="isAnonymous()">
-            <a href="../auth/login">로그인</a> &nbsp;
-            <a href="../member/signup">회원가입</a>
+            <a href="${pageContext.request.contextPath}/auth/login">로그인</a> &nbsp;
+            <a href="${pageContext.request.contextPath}/member/signup">회원가입</a>
         </sec:authorize>
     </div>
 </div>

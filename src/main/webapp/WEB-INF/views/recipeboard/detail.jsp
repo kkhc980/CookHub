@@ -1039,11 +1039,6 @@ $(document).ready(function() {
     											var modal = $(this).closest('.editReviewModal'); // ✅ 올바른 클래스명 사용
     											console.log("🔹 닫힐 모달 요소:", modal);
 
-								    if (modal.length === 0) {
-								        alert("❌ 닫을 모달을 찾을 수 없습니다.");
-								        return;
-								    }
-								
 								    modal.hide(); // ✅ 모달 닫기
 								});
                                                                                                   

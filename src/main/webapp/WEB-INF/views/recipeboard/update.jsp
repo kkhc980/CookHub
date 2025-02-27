@@ -302,7 +302,7 @@
         <select name="typeId" required>
             <c:forEach var="type" items="${typesList}">
                 <c:if test="${type.typeId != 1}">
-                    <option value="${type.typeId}" ${recipeBoard.typeId == type.typeId ? 'selected' : ''}>${type.typeName}</option>
+                    <option value="${type.typeId}" ${recipeBoard.typeId eq type.typeId ? 'selected' : ''}>${type.typeName}</option>
                 </c:if>
             </c:forEach>
         </select>
@@ -313,7 +313,7 @@
         <select name="situationId" required>
             <c:forEach var="situation" items="${situationsList}">
                 <c:if test="${situation.situationId != 1}">
-                    <option value="${situation.situationId}" ${recipeBoard.situationId == situation.situationId ? 'selected' : ''}>${situation.situationName}</option>
+                    <option value="${situation.situationId}" ${recipeBoard.situationId eq situation.situationId ? 'selected' : ''}>${situation.situationName}</option>
                 </c:if>
             </c:forEach>
         </select>
@@ -324,27 +324,27 @@
         <select name="methodId" required>
             <c:forEach var="method" items="${methodsList}">
                 <c:if test="${method.methodId != 1}">
-                    <option value="${method.methodId}" ${recipeBoard.methodId == method.methodId ? 'selected' : ''}>${method.methodName}</option>
+                    <option value="${method.methodId}" ${recipeBoard.methodId eq method.methodId ? 'selected' : ''}>${method.methodName}</option>
                 </c:if>
             </c:forEach>
         </select>
     </div>
 
-    <div class="selection-container">
-        <h3>재료별</h3>
-        <ul>
-            <%-- 재료 목록을 반복하여 체크박스 생성 --%>
-            <c:forEach var="ingredient" items="${ingredientsList}">
-                <c:if test="${ingredient.ingredientId != 1}">
-                    <li>
-                        <input type="checkbox" name="ingredientIds" value="${ingredient.ingredientId}"
-                                <c:if test="${fn:contains(recipeDetailVO.recipeBoard.ingredientIds, ingredient.ingredientId)}">checked</c:if>>
-                        ${ingredient.ingredientName}
-                    </li>
-                </c:if>
-            </c:forEach>
-        </ul>
-    </div>
+   <div class="selection-container">
+    <h3>재료별</h3>
+    <ul>
+        <%-- 재료 목록을 반복하여 체크박스 생성 --%>
+        <c:forEach var="ingredient" items="${ingredientsList}">
+            <c:if test="${ingredient.ingredientId != 1}">
+                <li>
+                    <input type="checkbox" name="ingredientIds" value="${ingredient.ingredientId}"
+                            <c:if test="${recipeDetailVO.recipeBoard.ingredientIdsString != null and fn:contains(recipeDetailVO.recipeBoard.ingredientIdsString, ingredient.ingredientId.toString())}">checked</c:if>>
+                    ${ingredient.ingredientName}
+                </li>
+            </c:if>
+        </c:forEach>
+    </ul>
+</div>
 
    <div class="form-group">
         <label for="hashtags">해시태그</label>
@@ -402,37 +402,37 @@
         <div class="form-group">
             <label for="time">시간</label>
             <select id="time" name="time" required>
-                <option value="10" ${recipeBoard.time == 10 ? 'selected' : ''}>10분</option>
-                <option value="20" ${recipeBoard.time == 20 ? 'selected' : ''}>20분</option>
-                <option value="30" ${recipeBoard.time == 30 ? 'selected' : ''}>30분</option>
-                <option value="40" ${recipeBoard.time == 40 ? 'selected' : ''}>40분</option>
-                <option value="50" ${recipeBoard.time == 50 ? 'selected' : ''}>50분</option>
-                <option value="60" ${recipeBoard.time == 60 ? 'selected' : ''}>60분</option>
+                <option value="10" ${recipeBoard.time eq 10 ? 'selected' : ''}>10분</option>
+                <option value="20" ${recipeBoard.time eq 20 ? 'selected' : ''}>20분</option>
+                <option value="30" ${recipeBoard.time eq 30 ? 'selected' : ''}>30분</option>
+                <option value="40" ${recipeBoard.time eq 40 ? 'selected' : ''}>40분</option>
+                <option value="50" ${recipeBoard.time eq 50 ? 'selected' : ''}>50분</option>
+                <option value="60" ${recipeBoard.time eq 60 ? 'selected' : ''}>60분</option>
             </select>
         </div>
         <div class="form-group">
             <label for="difficulty">난이도</label>
             <select id="difficulty" name="difficulty" required>
-                <option value="아주쉬움" ${recipeBoard.difficulty == '아주쉬움' ? 'selected' : ''}>아주 쉬움</option>
-                <option value="쉬움" ${recipeBoard.difficulty == '쉬움' ? 'selected' : ''}>쉬움</option>
-                <option value="보통" ${recipeBoard.difficulty == '보통' ? 'selected' : ''}>보통</option>
-                <option value="어려움" ${recipeBoard.difficulty == '어려움' ? 'selected' : ''}>어려움</option>
-                <option value="매우어려움" ${recipeBoard.difficulty == '매우어려움' ? 'selected' : ''}>매우 어려움</option>
+                <option value="아주쉬움" ${recipeBoard.difficulty eq '아주쉬움' ? 'selected' : ''}>아주 쉬움</option>
+                <option value="쉬움" ${recipeBoard.difficulty eq '쉬움' ? 'selected' : ''}>쉬움</option>
+                <option value="보통" ${recipeBoard.difficulty eq '보통' ? 'selected' : ''}>보통</option>
+                <option value="어려움" ${recipeBoard.difficulty eq '어려움' ? 'selected' : ''}>어려움</option>
+                <option value="매우어려움" ${recipeBoard.difficulty eq '매우어려움' ? 'selected' : ''}>매우 어려움</option>
             </select>
         </div>
         <div class="form-group">
             <label for="servings">인분</label>
             <select id="servings" name="servings" required>
-                <option value="1" ${recipeBoard.servings == 1 ? 'selected' : ''}>1인분</option>
-                <option value="2" ${recipeBoard.servings == 2 ? 'selected' : ''}>2인분</option>
-                <option value="3" ${recipeBoard.servings == 3 ? 'selected' : ''}>3인분</option>
-                <option value="4" ${recipeBoard.servings == 4 ? 'selected' : ''}>4인분</option>
-                <option value="5" ${recipeBoard.servings == 5 ? 'selected' : ''}>5인분</option>
-                <option value="6" ${recipeBoard.servings == 6 ? 'selected' : ''}>6인분</option>
-                <option value="7" ${recipeBoard.servings == 7 ? 'selected' : ''}>7인분</option>
-                <option value="8" ${recipeBoard.servings == 8 ? 'selected' : ''}>8인분</option>
-                <option value="9" ${recipeBoard.servings == 9 ? 'selected' : ''}>9인분</option>
-                <option value="10" ${recipeBoard.servings == 10 ? 'selected' : ''}>10인분</option>
+                <option value="1" ${recipeBoard.servings eq 1 ? 'selected' : ''}>1인분</option>
+                <option value="2" ${recipeBoard.servings eq 2 ? 'selected' : ''}>2인분</option>
+                <option value="3" ${recipeBoard.servings eq 3 ? 'selected' : ''}>3인분</option>
+                <option value="4" ${recipeBoard.servings eq 4 ? 'selected' : ''}>4인분</option>
+                <option value="5" ${recipeBoard.servings eq 5 ? 'selected' : ''}>5인분</option>
+                <option value="6" ${recipeBoard.servings eq 6 ? 'selected' : ''}>6인분</option>
+                <option value="7" ${recipeBoard.servings eq 7 ? 'selected' : ''}>7인분</option>
+                <option value="8" ${recipeBoard.servings eq 8 ? 'selected' : ''}>8인분</option>
+                <option value="9" ${recipeBoard.servings eq 9 ? 'selected' : ''}>9인분</option>
+                <option value="10" ${recipeBoard.servings eq 10 ? 'selected' : ''}>10인분</option>
             </select>
         </div>
     </div>
@@ -615,7 +615,7 @@ $(document).ready(function () {
                 previewImage.style.display = 'none';
             }
         }
-
+/* 사랑중에*/
         fileInput.addEventListener('change', function () {
             previewImage(this, previewImage);
         });

@@ -36,6 +36,7 @@ public class RecipeBoardVO {
 	String time;
 	String difficulty;
 	String recipeTip;
+	 String ingredientIdsString;
 }
 
 

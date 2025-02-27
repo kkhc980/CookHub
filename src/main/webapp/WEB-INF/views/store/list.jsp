@@ -142,7 +142,7 @@
         <c:choose>
             <c:when test="${not empty productList}">
 				<c:forEach var="products" items="${productList}">
-				    <div class="product-card">
+				    <div class="product-card" onclick="goToProductDetail('${products.productId}')">
 				        <div class="product-image-container">
 				            <img class="product-image" 
 				                 src="${pageContext.request.contextPath}/uploads/${products.productImagePath}" 
@@ -155,7 +155,7 @@
 				            <p class="product-meta">
 				                가격: ${products.productPrice}원 | 재고: ${products.stock}
 				            </p>
-				            <button class="purchase-button" onclick="purchaseProduct('${products.productId}')">구매하기</button>
+				            <button class="purchase-button" onclick="event.stopPropagation(); goToProductDetail('${products.productId}')">구매하기</button>
 				        </div>
 				    </div>
 				</c:forEach>
@@ -184,10 +184,10 @@
     </c:if>
 </div>
 
-	<script>
-	function purchaseProduct(productId) {
-	    location.href = '${pageContext.request.contextPath}/store/purchase/' + productId;
-	}
-	</script>
+<script>
+function goToProductDetail(productId) {
+    location.href = '${pageContext.request.contextPath}/store/detail/' + productId;
+}
+</script>
 </body>
 </html>

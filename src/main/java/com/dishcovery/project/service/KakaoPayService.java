@@ -32,7 +32,7 @@ public class KakaoPayService {
     
     private final OrderMapper orderMapper; // ✅ 주문 정보를 저장할 Mapper
 
-    public KakaoPayResponseVO readyToPay(String productId, String productName, int productPrice, Integer memberId, HttpSession session) {
+    public KakaoPayResponseVO readyToPay(String productId, String productName, int totalPrice, int productCount, Integer memberId, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
 
         if (memberId == null) {
@@ -46,8 +46,8 @@ public class KakaoPayService {
         request.setPartner_order_id(partnerOrderId);
         request.setPartner_user_id(memberId.toString());
         request.setItem_name(productName);
-        request.setQuantity(1);
-        request.setTotal_amount(productPrice);
+        request.setQuantity(productCount);
+        request.setTotal_amount(totalPrice);
         request.setApproval_url("http://localhost:8080/project/store/approve");
         request.setCancel_url("http://localhost:8080/project/store/cancel");
         request.setFail_url("http://localhost:8080/project/store/fail");

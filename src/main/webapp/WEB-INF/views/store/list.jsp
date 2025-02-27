@@ -19,26 +19,47 @@
             justify-content: center;
         }
 
-        .product-card {
-            width: 22%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            background-color: #fff;
-            cursor: pointer;
-            text-align: center;
-            transition: transform 0.2s;
-        }
-
         .product-card:hover {
             transform: scale(1.05);
         }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
+        
+        .product-card {
+		    width: 22%;
+		    border: 1px solid #ddd;
+		    border-radius: 5px;
+		    overflow: hidden;
+		    background-color: #fff;
+		    cursor: pointer;
+		    text-align: center;
+		    transition: transform 0.2s;
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center; /* 카드 내부 요소 중앙 정렬 */
+		}
+		
+		.product-image-container {
+		    width: 200px;
+		    height: 200px;
+		    display: flex;
+		    align-items: center;  /* 수직 중앙 정렬 */
+		    justify-content: center; /* 수평 중앙 정렬 */
+		    border: 1px solid #ddd;
+		    overflow: hidden; /* 이미지 크기 초과 방지 */
+		}
+		
+		.product-image {
+		    max-width: 100%;  /* 컨테이너 크기에 맞춤 */
+		    max-height: 100%; /* 컨테이너 크기에 맞춤 */
+		    object-fit: contain; /* 비율 유지하며 꽉 차도록 */
+		}
+		
+		.no-image-text {
+		    display: none; /* 기본적으로 숨김 */
+		    color: gray;
+		    font-size: 14px;
+		    text-align: center;
+		    position: absolute;
+		}
 
         .product-info {
             padding: 10px;
@@ -121,16 +142,20 @@
         <c:choose>
             <c:when test="${not empty productList}">
 				<c:forEach var="products" items="${productList}">
-				    <div class="product-card">
-				        <img class="product-image" src="${pageContext.request.contextPath}/uploads/${products.productImagePath}" 
-				             alt="상품 이미지"
-				             onerror="this.src='${pageContext.request.contextPath}/uploads/product_images/default.png';">
+				    <div class="product-card" onclick="goToProductDetail('${products.productId}')">
+				        <div class="product-image-container">
+				            <img class="product-image" 
+				                 src="${pageContext.request.contextPath}/uploads/${products.productImagePath}" 
+				                 alt="상품 이미지"
+				                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+				            <span class="no-image-text">이미지 없음</span>
+				        </div>
 				        <div class="product-info">
 				            <h3 class="product-title">${products.productName}</h3>
 				            <p class="product-meta">
 				                가격: ${products.productPrice}원 | 재고: ${products.stock}
 				            </p>
-				            <button class="purchase-button" onclick="purchaseProduct('${products.productId}', '${products.productName}', ${products.productPrice})">구매하기</button>
+				            <button class="purchase-button" onclick="event.stopPropagation(); goToProductDetail('${products.productId}')">구매하기</button>
 				        </div>
 				    </div>
 				</c:forEach>
@@ -160,37 +185,8 @@
 </div>
 
 <script>
-function purchaseProduct(productId, productName, productPrice) {
-    let form = document.createElement("form");
-    form.method = "POST"; // POST 사용 (보안 강화)
-    form.action = '${pageContext.request.contextPath}/store/purchase';
-
-    let csrfInput = document.createElement("input");
-    csrfInput.type = "hidden";
-    csrfInput.name = "${_csrf.parameterName}";
-    csrfInput.value = "${_csrf.token}"; // CSRF 방어
-
-    let input1 = document.createElement("input");
-    input1.type = "hidden";
-    input1.name = "productId";
-    input1.value = productId;
-
-    let input2 = document.createElement("input");
-    input2.type = "hidden";
-    input2.name = "productName";
-    input2.value = productName;
-
-    let input3 = document.createElement("input");
-    input3.type = "hidden";
-    input3.name = "productPrice";
-    input3.value = productPrice;
-
-    form.appendChild(csrfInput);
-    form.appendChild(input1);
-    form.appendChild(input2);
-    form.appendChild(input3);
-    document.body.appendChild(form);
-    form.submit();
+function goToProductDetail(productId) {
+    location.href = '${pageContext.request.contextPath}/store/detail/' + productId;
 }
 </script>
 </body>

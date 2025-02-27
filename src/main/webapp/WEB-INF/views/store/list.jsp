@@ -155,7 +155,7 @@
 				            <p class="product-meta">
 				                가격: ${products.productPrice}원 | 재고: ${products.stock}
 				            </p>
-				            <button class="purchase-button" onclick="purchaseProduct('${products.productId}')">구매하기</button>
+				            <button class="purchase-button" onclick="purchaseProduct('${products.productId}', '${products.productName}', ${products.productPrice})">구매하기</button>
 				        </div>
 				    </div>
 				</c:forEach>
@@ -184,10 +184,39 @@
     </c:if>
 </div>
 
-	<script>
-	function purchaseProduct(productId) {
-	    location.href = '${pageContext.request.contextPath}/store/purchase/' + productId;
-	}
-	</script>
+<script>
+function purchaseProduct(productId, productName, productPrice) {
+    let form = document.createElement("form");
+    form.method = "POST"; // POST 사용 (보안 강화)
+    form.action = '${pageContext.request.contextPath}/store/purchase';
+
+    let csrfInput = document.createElement("input");
+    csrfInput.type = "hidden";
+    csrfInput.name = "${_csrf.parameterName}";
+    csrfInput.value = "${_csrf.token}"; // CSRF 방어
+
+    let input1 = document.createElement("input");
+    input1.type = "hidden";
+    input1.name = "productId";
+    input1.value = productId;
+
+    let input2 = document.createElement("input");
+    input2.type = "hidden";
+    input2.name = "productName";
+    input2.value = productName;
+
+    let input3 = document.createElement("input");
+    input3.type = "hidden";
+    input3.name = "productPrice";
+    input3.value = productPrice;
+
+    form.appendChild(csrfInput);
+    form.appendChild(input1);
+    form.appendChild(input2);
+    form.appendChild(input3);
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
 </body>
 </html>

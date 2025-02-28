@@ -4,14 +4,9 @@ $(document).ready(function() {
 
     // 대댓글 작성 모달 창 열기
     $(document).on('click', '.btn_reply', function() {
-     if ($('#loggedInMemberId').val()) {
+     
         openNestedReplyModal(this);
-         } else {
-            // 로그인하지 않은 경우, 알림창 띄우기
-            alert("답글을 작성하려면 로그인해야 합니다.");
-            // 필요에 따라 로그인 페이지로 리디렉션할 수도 있습니다.
-            // window.location.href = "/login";
-        }
+         
     });
 
     // 대댓글 제출 이벤트

@@ -29,15 +29,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
        VALUES (RECIPE_REVIEW_SEQ.NEXTVAL, #{recipeBoardId}, #{memberId}, #{recipeReviewContent}, #{reviewRating})
       </insert>
    
-   <select id="selectListByRecipeBoardId" resultMap="RecipeReviewResultMap">
-       SELECT r.*, 
-           a.ATTACH_ID, a.ATTACH_PATH, a.ATTACH_REAL_NAME, 
-           a.ATTACH_CHG_NAME, a.ATTACH_EXTENSION, a.ATTACH_DATE_CREATED
-       FROM RECIPE_REVIEW r
-       LEFT JOIN REVIEW_ATTACH a ON r.RECIPE_REVIEW_ID = a.RECIPE_REVIEW_ID
-       WHERE r.RECIPE_BOARD_ID = #{recipeBoardId}
-       ORDER BY r.RECIPE_REVIEW_ID
-   </select>
+   <!-- 리뷰 목록 조회 (페이징 처리 + JOIN 적용) -->
+    <select id="selectListByRecipeBoardId" resultMap="RecipeReviewResultMap">
+        <![CDATA[
+        SELECT r.RECIPE_REVIEW_ID, r.RECIPE_BOARD_ID, r.MEMBER_ID, 
+               r.RECIPE_REVIEW_CONTENT, r.REVIEW_RATING, r.RECIPE_REVIEW_DATE_CREATED,
+               a.ATTACH_ID, a.ATTACH_PATH, a.ATTACH_REAL_NAME, 
+               a.ATTACH_CHG_NAME, a.ATTACH_EXTENSION, a.ATTACH_DATE_CREATED
+        FROM (
+            SELECT RECIPE_REVIEW_ID, RECIPE_BOARD_ID, MEMBER_ID, 
+                   RECIPE_REVIEW_CONTENT, REVIEW_RATING, RECIPE_REVIEW_DATE_CREATED
+            FROM (
+                SELECT r.*, ROWNUM AS RN
+                FROM (
+                    SELECT * 
+                    FROM RECIPE_REVIEW
+                    WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+                    ORDER BY RECIPE_REVIEW_ID DESC
+                ) r
+                WHERE ROWNUM <= #{pagination.end}
+            )
+            WHERE RN >= #{pagination.start}
+        ) r
+        LEFT JOIN REVIEW_ATTACH a ON r.RECIPE_REVIEW_ID = a.RECIPE_REVIEW_ID
+        ORDER BY r.RECIPE_REVIEW_ID
+        ]]>
+    </select>
+    
+    <select id="getTotalReviewCount" resultType="int">
+       SELECT COUNT(*)
+       FROM RECIPE_REVIEW
+       WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+   	</select>
+
       
       <update id="updateRecipeReview">
        UPDATE RECIPE_REVIEW

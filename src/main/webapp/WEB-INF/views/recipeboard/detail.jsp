@@ -440,7 +440,7 @@ $(document).ready(function() {
    
    
    
-      <h2>리뷰</h2>   
+      <h2>리뷰 (<span id="reviewTotalCount">0</span>)</h2>   
    
   <c:if test="${not empty loggedInMemberId}">
    <div style="text-align: left;">
@@ -475,6 +475,8 @@ $(document).ready(function() {
        
          <div id="reviews">
          
+         
+         
          <c:forEach var="review" items="${reviews}">
         <div class="recipeReview_item" data-review-id="${review.recipeReviewId}">
             <p class="recipeReviewContentDisplay">${review.recipeReviewContent}</p>
@@ -489,16 +491,16 @@ $(document).ready(function() {
        </c:forEach>
          
          </div>
-
-        <hr>
-        
+              
       <script src="${pageContext.request.contextPath }/resources/js/image.js"></script>
 
    
-   <hr>
    <div style="text-align: left;">
       <div id="reviews"></div>
+      <div id="reviewPagination"></div>
    </div>
+  
+    <hr>
   
    <script type="text/javascript">
    
@@ -885,24 +887,39 @@ $(document).ready(function() {
                                  }); // end replies.on
                                  
                                  // 리뷰 전체 불러오기
-                                 function getAllRecipeReview() {
+                                 function getAllRecipeReview(pageNum = 1) {
                                     var recipeBoardId = $('#recipeBoardId').val();
-                                    var url = '/project/recipeboard/allReviews/'
-                                             + recipeBoardId;
+                                    var url = '/project/recipeboard/allReviews/' + recipeBoardId + '?pageNum=' + pageNum;
+                                          
                                     
                                     $.getJSON(url, function(data) {
-                                                console.log("리뷰 데이터:", data);
+                                        		        
+                                    			
+                                    			console.log("백엔드에서 받은 데이터:", data); // ✅ 받은 데이터 확인
+                                        		console.log("페이지네이션 데이터:", data.pagination);
+                                        		console.log("페이지네이션 totalCount:", data.pagination.totalCount);
+		                                        console.log("페이지네이션 reviewTotalCount:", data.pagination.reviewTotalCount);
+		                                        console.log("페이지네이션 startNum:", data.pagination.startNum);
+		                                        console.log("페이지네이션 endNum:", data.pagination.endNum);
+		                                        
+		                                        if (data.pagination) {
+		                                       	    console.log("reviewTotalCount 값:", data.pagination.reviewTotalCount);
+		                                       	} else {
+		                                       	    console.warn("pagination 데이터가 존재하지 않음!");
+		                                       	}
+                                    			
+                                    			
                                                 var list = '';
                                                 
                                                 
-                                           $(data).each(function() {
+                                           $(data.recipeReviews).each(function() {
+                                        	   		 console.log(this); // 각 리뷰 객체 출력
                                         	   		 var reviewAttachList = this.reviewAttachList || []; // 기본값으로 빈 배열 설정
-                                        	   
-                                 					 console.log("별점 값:", this.reviewRating);
-                                                      var recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
-                                                      var starRatingHTML = '';
+                                        	   		 var recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
                                                       
-                                                      for (let i = 1; i <= 5; i++) {                                                   	                                                  	 
+                                                     var starRatingHTML = '';
+                                                      
+                                                     for (let i = 1; i <= 5; i++) {                                                   	                                                  	 
                                                     	  
                                                           if (i <= this.reviewRating) {
                                                               starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
@@ -981,7 +998,55 @@ $(document).ready(function() {
                                            
                                                 $('#reviews').html(list);
                                                 
+                                             // ✅ 댓글 총 개수 표시 (reviewTotalCount 사용)
+                                                if ($('#reviewTotalCount').length) {
+                                                	 console.log("reviewTotalCount 요소 발견! 업데이트 시도...");
+                                                     $('#reviewTotalCount').text(data.pagination.reviewTotalCount);
+                                                } else {
+                                                    console.warn("reviewTotalCount 요소를 찾을 수 없습니다.");
+                                                }
+                                                 
+                                             	// ✅ 페이지네이션 업데이트
+                                                updateReviewPagination(data.pagination);
                                                 
+                                             // ✅ 페이지네이션 UI 업데이트
+                                                function updateReviewPagination(pageMaker) {
+                        						    if (!pageMaker) {
+                        						        console.warn("페이지네이션 데이터가 없습니다.");
+                        						        return;
+                        						    }
+                        							
+                        						    console.log("페이지네이션 업데이트 실행됨!2", pageMaker);
+                        						    
+                        						    var paginationHtml = '';
+                        						
+                        						    if (pageMaker.prev) {
+                        						        paginationHtml += '<a href="#" class="page-link" data-page="' + (pageMaker.startNum - 1) + '">◀ 이전</a> ';
+                        						    }
+                        						
+                        						    for (var i = pageMaker.startNum; i <= pageMaker.endNum; i++) {
+                        						        paginationHtml += '<a href="#" class="page-link" data-page="' + i + '">' + i + '</a> ';
+                        						    }
+                        						
+                        						    if (pageMaker.next) {
+                        						        paginationHtml += '<a href="#" class="page-link" data-page="' + (pageMaker.endNum + 1) + '">다음 ▶</a>';
+                        						    }
+                        						    
+                        						    console.log("생성된 paginationHtml:", paginationHtml)
+                        							
+                        						    if ($('#reviewPagination').length) {
+                        						    $('#reviewPagination').html(paginationHtml);
+                        						    } else {
+                        						        console.warn("pagination 요소를 찾을 수 없습니다.");
+                        						    }
+                        						    
+                                                  	 // ✅ 페이지 번호 클릭 시 기본 이벤트 제거 & AJAX 호출
+                                                     $('.page-link').on('click', function(event) {
+                                                         event.preventDefault(); // 기본 이벤트 제거 (페이지 이동 방지)
+                                                         var pageNum = $(this).data('page');
+                                                         getAllRecipeReview(pageNum); // AJAX로 댓글 불러오기
+                                                     });
+                                                 }
                                                 
                                              });
                                    

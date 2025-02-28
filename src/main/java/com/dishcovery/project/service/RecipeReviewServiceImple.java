@@ -13,6 +13,7 @@ import com.dishcovery.project.domain.ReviewAttachDTO;
 import com.dishcovery.project.domain.ReviewAttachVO;
 import com.dishcovery.project.persistence.RecipeReviewMapper;
 import com.dishcovery.project.persistence.ReviewAttachMapper;
+import com.dishcovery.project.util.Pagination;
 
 import lombok.extern.log4j.Log4j;
 
@@ -48,14 +49,22 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
    } // createRecipeReview
    
    @Override
-   public List<RecipeReviewDTO> getAllRecipeReview(int recipeBoardId) {
-      log.info("getAllRecipeReview()");
-      List<RecipeReviewVO> list = recipeReviewMapper.selectListByRecipeBoardId(recipeBoardId);
+   public List<RecipeReviewDTO> getAllRecipeReview(int recipeBoardId, Pagination pagination) {
+	  log.info("getAllRecipeReview() 호출 - recipeBoardId: " + recipeBoardId);
+	  log.info("Pagination 정보 - start: " + pagination.getStart() + ", end: " + pagination.getEnd());
+
+      List<RecipeReviewVO> list = recipeReviewMapper.selectListByRecipeBoardId(recipeBoardId, pagination);
+      
+      log.info("조회된 리뷰 개수: " + list.size());
       
       return list.stream().map(this::toDTO).collect(Collectors.toList());
    } // end getAllRecipeReview
    
-   
+   @Override
+   public int getTotalReviewCount(int recipeBoardId) {
+       log.info("getTotalReviewCount(), recipeBoardId: " + recipeBoardId);
+       return recipeReviewMapper.getTotalReviewCount(recipeBoardId);
+   }
    
    @Override
    @Transactional(value = "transactionManager")

@@ -1,5 +1,6 @@
 package com.dishcovery.project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,27 +27,38 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
    
    @Autowired
    private ReviewAttachMapper reviewAttachMapper;
+
    
-   @Transactional(value = "transactionManager")   
+   @Transactional(value = "transactionManager")
    @Override
    public int createRecipeReview(RecipeReviewDTO recipeReviewDTO) {
-      log.info("CreateRecipeReview()");
-      log.info("recipeReviewDTO = " + recipeReviewDTO);
-      int insertRecipeReviewResult = recipeReviewMapper.insertRecipeReview(toEntity(recipeReviewDTO));
-      log.info(insertRecipeReviewResult + "행 리뷰 등록");
-      
-      
-      List<ReviewAttachDTO> reviewAttachList = recipeReviewDTO.getReviewAttachList();
-      
-      int insertReviewAttachResult = 0;
-      
-      for(ReviewAttachDTO reviewAttachDTO : reviewAttachList) {
-         insertRecipeReviewResult += reviewAttachMapper.attachInsert(toEntity(reviewAttachDTO));
-      }
-      log.info(insertReviewAttachResult + "행 파일 정보 등록");
-      
-      return 1;
-   } // createRecipeReview
+       log.info("CreateRecipeReview()");
+       
+       // 1. 리뷰 등록
+       int insertRecipeReviewResult = recipeReviewMapper.insertRecipeReview(toEntity(recipeReviewDTO));
+       log.info(insertRecipeReviewResult + "행 리뷰 등록");
+       
+       if (insertRecipeReviewResult > 0) {
+           int recipeReviewId = recipeReviewDTO.getRecipeReviewId(); // 등록된 리뷰 ID 가져오기
+           
+           List<ReviewAttachDTO> reviewAttachList = new ArrayList<>();
+           if (recipeReviewDTO.getReviewAttachList() != null) {
+               reviewAttachList.addAll(recipeReviewDTO.getReviewAttachList());
+           }
+           
+           // 2. 리뷰 ID 설정 후 이미지 정보 삽입
+           int insertReviewAttachResult = 0;
+           for (ReviewAttachDTO reviewAttachDTO : reviewAttachList) {
+               reviewAttachDTO.setRecipeReviewId(recipeReviewId);
+               insertReviewAttachResult += reviewAttachMapper.attachInsert(toEntity(reviewAttachDTO));
+           }
+           log.info(insertReviewAttachResult + "행 파일 정보 등록");
+       }
+       
+       return insertRecipeReviewResult;
+   }
+
+   
    
    @Override
    public List<RecipeReviewDTO> getAllRecipeReview(int recipeBoardId, Pagination pagination) {

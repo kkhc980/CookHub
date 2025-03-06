@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="insertModify">
 		INSERT INTO REVIEW_ATTACH
-		(REVIEW_ATTACH_ID, RECIPE_REVIEW_ID, ATTACH_PATH, ATTACH_REAL_NAME, ATTACH_CHG_NAME, ATTACH_EXTENSION)
+		(ATTACH_ID, RECIPE_REVIEW_ID, ATTACH_PATH, ATTACH_REAL_NAME, ATTACH_CHG_NAME, ATTACH_EXTENSION)
 		VALUES (SEQ_REVIEW_ATTACH.NEXTVAL, #{recipeReviewId}, #{attachPath}, #{attachRealName}, #{attachChgName}, #{attachExtension})
 	</insert>
 	

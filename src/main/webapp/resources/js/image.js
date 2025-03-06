@@ -38,14 +38,24 @@ $(document).ready(function(){
 	
 	// 파일을 끌어다 놓을 때(drag&drop)
 	// 브라우저가 파일을 자동으로 열어주는 기능을 막음
-	$('.image-drop').on('dragenter dragover', function(event){
-		event.preventDefault();
-		console.log('drag 테스트');
-	}); 
+//	$('.image-drop').on('dragenter dragover', function(event){
+//		event.preventDefault();
+//		console.log('drag 테스트');
+//	});
+
+ 	// ✅ 동적 요소에 대한 이벤트 위임 처리
+	$(document).on('dragenter dragover', '.image-drop', function(event){
+    	event.preventDefault(); // 기본 동작 방지
+    	console.log('drag 테스트'); // 콘솔 확인
+	});
 	
-	$('.image-drop').on('drop', function(event){
-		event.preventDefault();
-		console.log('drop 테스트');
+//	$('.image-drop').on('drop', function(event){
+//		event.preventDefault();
+//		console.log('drop 테스트');
+		
+	$(document).on('drop', '.image-drop', function(event){
+    	event.preventDefault(); // 기본 동작 방지
+    	console.log('drop 테스트'); // 콘솔 확인
 		
 		$('.reviewAttachDTOImg-list').empty(); // 기존 이미지 dto 초기화
 						
@@ -113,7 +123,6 @@ $(document).ready(function(){
 				        + "&attachExtension=" + reviewAttachDTO.attachExtension
 				        + '" />'
 				        + '</a>'
-				        + '<button class="image_delete" >x</button>'
 				        + '</pre>'
 				        + '</div>';
 				}); // end each()

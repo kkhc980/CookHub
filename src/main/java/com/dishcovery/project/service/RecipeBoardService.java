@@ -85,5 +85,5 @@ public interface RecipeBoardService {
 
 	RecipeDetailVO getRecipeDetailForUpdate(int recipeBoardId);
 
-
+	int getTotalRecipeBoardCount();
 }

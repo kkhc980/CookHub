@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -61,7 +62,8 @@ public class RecipeBoardController {
                        @RequestParam(value = "methodId", defaultValue = "1") Integer methodId,
                        @RequestParam(value = "hashtag", required = false) String hashtag, // 추가
                        @RequestParam(value = "sort", defaultValue = "latest") String sort, Model model) {
-
+    	
+    	int totalRecipeBoards = recipeBoardService.getTotalRecipeBoardCount();
         // Pagination 설정
         Pagination pagination = new Pagination(pageNum, pageSize);
         pagination.setIngredientIdsFromString(ingredientIdsStr);
@@ -86,7 +88,7 @@ public class RecipeBoardController {
                 ingredientIdsStr != null ? Arrays.asList(ingredientIdsStr.split(",")) : List.of("1"));
         model.addAttribute("searchHashtag", hashtag); // 추가
         model.addAttribute("selectedSort", sort);
-
+        model.addAttribute("totalRecipeBoards", totalRecipeBoards);
         // 공통 레이아웃에 포함될 페이지 설정
         model.addAttribute("pageContent", "recipeboard/list.jsp");
         // 공통 레이아웃 반환
@@ -137,6 +139,7 @@ public class RecipeBoardController {
             return "recipeboard/register"; // 등록 폼으로 다시 이동
         }
     }
+    
     @GetMapping("/detail/{recipeBoardId}")
     public String getRecipeDetail(@PathVariable int recipeBoardId, Model model, HttpServletRequest request) {
         log.info("getRecipeDetail() called with recipeBoardId: " + recipeBoardId);
@@ -187,7 +190,7 @@ public class RecipeBoardController {
         model.addAttribute("pageContent", "recipeboard/update.jsp");
         return "layout";
     }
-
+    
     @PostMapping("/update")
     public String updateRecipe(@ModelAttribute @Valid RecipeUpdateRequest request, BindingResult bindingResult, Model model) {
         log.info("updateRecipe() called with request: " + request);
@@ -207,7 +210,7 @@ public class RecipeBoardController {
             return "recipeboard/update"; // 수정 폼으로 다시 이동
         }
     }
-
+    
     @PostMapping("/delete/{recipeBoardId}")
     public String deleteRecipe(@PathVariable int recipeBoardId) {
         log.info("deleteRecipe() called with recipeBoardId: " + recipeBoardId);

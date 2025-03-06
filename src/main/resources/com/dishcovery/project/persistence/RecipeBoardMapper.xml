@@ -529,8 +529,12 @@
 	
 	<!-- 좋아요 개수 업데이트 -->
 	<update id="updateLikeCount" parameterType="map">
-    UPDATE recipe_board
-    SET like_count = #{likeCount}
-    WHERE recipe_board_id = #{recipeBoardId}
+    	UPDATE recipe_board
+	    SET like_count = #{likeCount}
+	    WHERE recipe_board_id = #{recipeBoardId}
 	</update>
+	
+	<select id="getTotalRecipeBoardCount" resultType="int">
+	    SELECT COUNT(*) FROM recipe_board  <!-- 레시피 보드의 총 개수 조회 -->
+	</select>
 </mapper>

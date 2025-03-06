@@ -28,7 +28,7 @@ public class KakaoPayController {
 
     // ✅ 결제 요청 (카카오페이 결제창으로 리디렉트)
     @PostMapping("/purchase")
-    public RedirectView kakaoPayReady(@RequestParam("productId") String productId,
+    public RedirectView kakaoPayReady(@RequestParam("productId") int productId,
                                       @RequestParam("productName") String productName,
                                       @RequestParam("productPrice") int productPrice,
                                       @RequestParam("productCount") int productCount,  // 추가
@@ -68,7 +68,9 @@ public class KakaoPayController {
         session.removeAttribute("tid");
         session.removeAttribute("member_id");
         session.removeAttribute("partner_order_id");
-
+        session.removeAttribute("product_id");
+        session.removeAttribute("product_name");  // ✅ 추가
+        session.removeAttribute("product_count");
         return mv;
     }
 

@@ -32,7 +32,7 @@ public class KakaoPayService {
     
     private final OrderMapper orderMapper; // ✅ 주문 정보를 저장할 Mapper
 
-    public KakaoPayResponseVO readyToPay(String productId, String productName, int totalPrice, int productCount, Integer memberId, HttpSession session) {
+    public KakaoPayResponseVO readyToPay(int productId, String productName, int totalPrice, int productCount, Integer memberId, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
 
         if (memberId == null) {
@@ -65,6 +65,9 @@ public class KakaoPayService {
                 session.setAttribute("tid", response.getBody().getTid());
                 session.setAttribute("member_id", memberId);
                 session.setAttribute("partner_order_id", partnerOrderId);
+                session.setAttribute("product_id", productId);
+                session.setAttribute("product_name", productName);  // ✅ 추가
+                session.setAttribute("product_count", productCount);
             }
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -83,8 +86,11 @@ public class KakaoPayService {
         String tid = (String) session.getAttribute("tid");
         String partnerOrderId = (String) session.getAttribute("partner_order_id");
         Integer memberId = (Integer) session.getAttribute("member_id");
-
-        if (tid == null || partnerOrderId == null || memberId == null) {
+        Integer productId = (Integer) session.getAttribute("product_id");  
+        String productName = (String) session.getAttribute("product_name");  // ✅ 추가
+        Integer productCount = (Integer) session.getAttribute("product_count");
+        
+        if (tid == null || partnerOrderId == null || memberId == null || productId == null || productName == null || productCount == null) {
             throw new RuntimeException("❌ 결제 정보가 유효하지 않습니다.");
         }
 
@@ -120,7 +126,7 @@ public class KakaoPayService {
             }
 
             // ✅ 결제 승인 성공 → DB에 주문 정보 저장
-            orderMapper.insertOrder(memberId, partnerOrderId, approveVO.getAmount().getTotal());
+            orderMapper.insertOrder(memberId, partnerOrderId, approveVO.getAmount().getTotal(), productId, productName, productCount);
 
             System.out.println("✅ 결제 승인 성공: " + approveVO.getAid());
             return approveVO;

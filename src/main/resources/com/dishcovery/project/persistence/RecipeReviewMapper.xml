@@ -27,7 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    <insert id="insertRecipeReview">
        INSERT INTO RECIPE_REVIEW (RECIPE_REVIEW_ID, RECIPE_BOARD_ID, MEMBER_ID, RECIPE_REVIEW_CONTENT, REVIEW_RATING)
        VALUES (RECIPE_REVIEW_SEQ.NEXTVAL, #{recipeBoardId}, #{memberId}, #{recipeReviewContent}, #{reviewRating})
-      </insert>
+   </insert>
    
    <!-- 리뷰 목록 조회 (페이징 처리 + JOIN 적용) -->
     <select id="selectListByRecipeBoardId" resultMap="RecipeReviewResultMap">

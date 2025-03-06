@@ -460,15 +460,17 @@ $(document).ready(function() {
       </span>
       
       <div class="image-upload">
+      
+    </div>
   
       <div class="image-drop">drag - image</div>
+      
      </div>
 
       <div class="reviewAttachDTOImg-list">
      </div>
       
       <button id="btnReviewAdd">리뷰 작성</button>
-    </div>
    </c:if>  
    
       <hr>
@@ -615,6 +617,7 @@ $(document).ready(function() {
                         
                          });
                       }); // end btn Add.click()
+                  
                       
                       $('#btnReviewAdd').click(function() {
                           var recipeBoardId = $('#recipeBoardId').val();
@@ -644,14 +647,19 @@ $(document).ready(function() {
                           var reviewAttachDTOs = [];
                           $("input[type='hidden'][name='reviewAttachDTO']").each(function() {
                               var attachData = JSON.parse($(this).val()); // JSON 파싱
-                              reviewAttachDTOs.push(attachData);
+                              
+                           	  // 이미지 정보 중복 등록 방지
+                              if (!reviewAttachDTOs.some(dto => dto.attachChgName === attachData.attachChgName)) {
+                            	  reviewAttachDTOs.push(attachData);
+                              }
                           });
                           
                           var obj = {
                               'recipeBoardId': recipeBoardId,
                               'memberId': memberId,
                               'recipeReviewContent': recipeReviewContent,
-                              'reviewRating': reviewRating
+                              'reviewRating': reviewRating,
+                              'reviewAttachList': reviewAttachDTOs
                            
                           };
                           
@@ -962,7 +970,7 @@ $(document).ready(function() {
                                                                                                       
                                                       // 이미지가 있는 경우만 추가
                                                       if (imageHTML !== '') {
-                                                          list += '<div class="review_images image-list">' + imageHTML + '</div>';
+                                                          list += '<div class="review_images show-image-list">' + imageHTML + '</div>';
                                                       }
                                                       
                                                    // ✅ 리뷰 수정 모달 추가 (초기 숨김 상태)
@@ -985,8 +993,8 @@ $(document).ready(function() {
                                                             // ✅ 이미지 Drag & Drop 업로드 영역 추가
                                                           list += '</div>'
 											                + '<div class="image-upload">'
-											                + '<div class="image-drop update-mode" id="dropZone_' + this.recipeReviewId + '">drag - image</div>'
-											                + '<div class="image-list" id="imageList_' + this.recipeReviewId + '"></div>'
+											                + '<div class="image-drop">drag - image</div>'
+											                + '<div class="show-image-list" id="imageList_' + this.recipeReviewId + '"></div>'
 											                + '<div class="reviewAttachDTOImg-list" id="reviewAttachDTOImgList_' + this.recipeReviewId + '"></div>'
 											                + '</div>'
 											                + '<button class="btnEditComplete" data-review-id="' + this.recipeReviewId + '">수정 완료</button>'
@@ -1061,11 +1069,7 @@ $(document).ready(function() {
                                                                
                                  // 수정 버튼을 클릭하면 선택된 리뷰 수정
                                  $('#reviews').on('click', '.btn_review_update', function() {
-                                	 			
-                                	 			if(!confirm('기존의 이미지는 삭제됩니다. 계속 하시겠습니까?')){
-                         	    				return;
-                         	    				}
-                                                                                  
+                                	 			                           
                                                 var selectedReviewId = $(this).data('review-id'); // ✅ 속성을 확실하게 가져오기
                                                
                                                 console.log("선택한 리뷰 ID:", selectedReviewId); // ✅    값이 들어오는지 디버깅
@@ -1163,7 +1167,11 @@ $(document).ready(function() {
                                                     var updateReviewAttachDTOs = [];
                                                     $("input[type='hidden'][name='reviewAttachDTO']").each(function() {
                                                         var attachData = JSON.parse($(this).val()); // JSON 파싱
-                                                        updateReviewAttachDTOs.push(attachData);
+                                                        
+                                                        // 이미지 정보 중복 등록 방지
+                                                        if (!updateReviewAttachDTOs.some(dto => dto.attachChgName === attachData.attachChgName)) {
+                                                      	  updateReviewAttachDTOs.push(attachData);
+                                                        }
                                                     });
                                                     
                                                     var reviewData = {

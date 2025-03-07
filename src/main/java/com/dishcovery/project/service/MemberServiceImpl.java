@@ -12,6 +12,7 @@ import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.persistence.MemberMapper;
 
 import lombok.extern.log4j.Log4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Log4j
@@ -21,15 +22,11 @@ public class MemberServiceImpl implements MemberService {
     MemberMapper memberMapper;
 
     @Override
+    @Transactional
     public int registerMember(MemberDTO memberDTO, String authKey) {
         int insertMemberResult = memberMapper.insert(toEntity(memberDTO));
-        log.info(insertMemberResult + " member register");
-
         int insertMemberRoleResult = memberMapper.insertMemberRole(memberDTO.getEmail());
-        log.info(insertMemberRoleResult + " member_role register");
-
         int insertMemberAuthKey = createAuthKey(memberDTO.getEmail(), authKey);
-        log.info(insertMemberAuthKey + " member_authKey register");
         return 1;
     }
 
@@ -44,26 +41,18 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO getMemberByEmail(String email) {
-        log.info("getMemberByEmail");
         return toDTO(memberMapper.selectEmail(email));
     }
 
     @Override
     public int updateMember(MemberDTO memberDTO) {
-        log.info("updateMember");
         return memberMapper.updateMember(toEntity(memberDTO));
     }
 
     @Override
     public int deleteMember(String email) {
-        log.info("email : " + email);
-
         int deleteMemberRole = memberMapper.deleteMemberRole(email);
-        log.info(deleteMemberRole + "row deleteMemberRole");
-
         int deleteMember = memberMapper.deleteMember(email);
-        log.info(deleteMember + "row deleteMember");
-
         return 1;
     }
 

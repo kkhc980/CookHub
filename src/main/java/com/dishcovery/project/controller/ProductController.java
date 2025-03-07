@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +103,7 @@ public class ProductController {
         orderItem.setProductCount(productCount);
         orderItem.setProductName(productVO.getProductName());
         orderItem.setProductPrice(productVO.getProductPrice());
+        orderItem.setStock(productVO.getStock());
         orderItem.initTotal(); // 총 가격 계산
 
         // 3. 세션에서 장바구니 목록 가져오기 (없으면 생성)
@@ -122,7 +124,12 @@ public class ProductController {
 
     // 장바구니 페이지 보여주기
     @GetMapping("/cart")
-    public String showCart(Model model) {
+    public String showCart(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        MemberDTO memberDTO = memberService.getMemberByEmail(email);
+
+        model.addAttribute("memberDTO", memberDTO);
+
         // 1. 세션에서 장바구니 목록 가져오기
         List<OrderPageItemDTO> cart = (List<OrderPageItemDTO>) session.getAttribute("cart");
 
@@ -138,6 +145,13 @@ public class ProductController {
         return "layout";
     }
 
+    @GetMapping("/cart/update/{productId}")
+    @ResponseBody
+    public int getProductPrice(@PathVariable int productId) {
+        ProductVO productVO = productService.getProduct(productId);
+        return productVO.getProductPrice();
+    }
+
     @GetMapping("/cart/delete/{productId}")
     public String deleteCartItem(@PathVariable int productId) {
         List<OrderPageItemDTO> cart = (List<OrderPageItemDTO>) session.getAttribute("cart");
@@ -146,5 +160,42 @@ public class ProductController {
             session.setAttribute("cart", cart);
         }
         return "redirect:/store/cart";
+    }
+
+    @PostMapping("/order/{memberId}")
+    public String orderPage(@PathVariable("memberId") String memberId, @RequestParam("orders") List<String> orders, Model model) {
+        // 1. OrderPageItemDTO 리스트 생성
+        List<OrderPageItemDTO> orderList = new ArrayList<>();
+
+        // 2. orders 파라미터를 순회하며 OrderPageItemDTO 객체 생성 및 값 설정
+        for (String order : orders) {
+            String[] parts = order.split(",");
+            int productId = Integer.parseInt(parts[0]);
+            int productCount = Integer.parseInt(parts[1]);
+
+            // 상품 정보 가져오기
+            ProductVO productVO = productService.getProduct(productId);
+
+            OrderPageItemDTO orderItem = new OrderPageItemDTO();
+            orderItem.setProductId(productId);
+            orderItem.setProductCount(productCount);
+            orderItem.setProductName(productVO.getProductName());
+            orderItem.setProductPrice(productVO.getProductPrice());
+            orderItem.setStock(productVO.getStock());
+            orderItem.initTotal(); // 총 가격 계산
+
+            orderList.add(orderItem);
+        }
+
+        // 3. OrderPageDTO 객체 생성 및 OrderPageItemDTO 리스트 설정
+        OrderPageDTO orderPageDTO = new OrderPageDTO();
+        orderPageDTO.setOrders(orderList);
+
+        // 4. Model에 OrderPageDTO 객체와 memberId 추가
+        model.addAttribute("orderPageDTO", orderPageDTO);
+        model.addAttribute("memberId", memberId);
+        model.addAttribute("pageContent", "store/order.jsp");
+
+        return "layout";
     }
 }

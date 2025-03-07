@@ -534,7 +534,7 @@
 	    WHERE recipe_board_id = #{recipeBoardId}
 	</update>
 	
-<<<<<<< HEAD
+
 	<!-- recipeReview 개수 업데이트 -->
 	<update id="updateRecipeReviewCount">
     	UPDATE RECIPE_BOARD

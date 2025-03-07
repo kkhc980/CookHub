@@ -533,4 +533,19 @@
     SET like_count = #{likeCount}
     WHERE recipe_board_id = #{recipeBoardId}
 	</update>
+	
+	<!-- recipeReview 개수 업데이트 -->
+	<update id="updateRecipeReviewCount">
+    	UPDATE RECIPE_BOARD
+    	SET recipe_Review_Count = (SELECT COUNT(*) FROM RECIPE_REVIEW WHERE recipe_board_id = #{recipeBoardId})
+    	WHERE recipe_Board_Id = #{recipeBoardId}
+	</update>
+	
+	<!-- 리뷰 퍙점 update -->
+	<update id="updateAvgRating" parameterType="map">
+		UPDATE RECIPE_BOARD
+		SET AVG_RATING = #{avgRating}
+		WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+	</update>
+	
 </mapper>

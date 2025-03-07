@@ -26,7 +26,6 @@ public class RecipeBoardVO {
     private int methodId;
     private int situationId;
     private double avgRating;
-    private int replyCount;
     private int recipeReviewCount;
     private String thumbnailPath;
     private List<Integer> ingredientIds;

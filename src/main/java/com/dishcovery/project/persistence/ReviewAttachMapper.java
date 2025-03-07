@@ -14,4 +14,6 @@ public interface ReviewAttachMapper {
 	int insertModify(ReviewAttachVO reviewAttachVO);
 	int attachDelete(int recipeReviewId);
 	List<ReviewAttachVO> selectOldList();
+	// 📌 현재 DB에 존재하는 리뷰 이미지 파일 목록 조회
+    List<String> getAllAttachFileNames();
 }

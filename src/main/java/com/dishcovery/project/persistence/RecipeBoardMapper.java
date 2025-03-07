@@ -91,5 +91,10 @@ public interface RecipeBoardMapper {
     void updateLikeCount(@Param("recipeBoardId") int recipeBoardId, @Param("likeCount") int likeCount);
 
 	MemberVO getMemberByUsername(String username);
-
+	
+	// reviewCount 업데이트
+	void updateRecipeReviewCount(@Param("recipeBoardId") int recipeBoardId);
+	
+	// 
+	void updateAvgRating(int recipeBoardId, double avgRating);
 }

@@ -440,7 +440,7 @@ $(document).ready(function() {
    
    
    
-      <h2>리뷰</h2>   
+      <h2>리뷰 (<span id="reviewTotalCount">0</span>)</h2>   
    
   <c:if test="${not empty loggedInMemberId}">
    <div style="text-align: left;">
@@ -460,20 +460,24 @@ $(document).ready(function() {
       </span>
       
       <div class="image-upload">
+      
+    </div>
   
       <div class="image-drop">drag - image</div>
+      
      </div>
 
       <div class="reviewAttachDTOImg-list">
      </div>
       
       <button id="btnReviewAdd">리뷰 작성</button>
-    </div>
    </c:if>  
    
       <hr>
        
          <div id="reviews">
+         
+         
          
          <c:forEach var="review" items="${reviews}">
         <div class="recipeReview_item" data-review-id="${review.recipeReviewId}">
@@ -489,16 +493,16 @@ $(document).ready(function() {
        </c:forEach>
          
          </div>
-
-        <hr>
-        
+              
       <script src="${pageContext.request.contextPath }/resources/js/image.js"></script>
 
    
-   <hr>
    <div style="text-align: left;">
       <div id="reviews"></div>
+      <div id="reviewPagination"></div>
    </div>
+  
+    <hr>
   
    <script type="text/javascript">
    
@@ -613,6 +617,7 @@ $(document).ready(function() {
                         
                          });
                       }); // end btn Add.click()
+                  
                       
                       $('#btnReviewAdd').click(function() {
                           var recipeBoardId = $('#recipeBoardId').val();
@@ -642,14 +647,19 @@ $(document).ready(function() {
                           var reviewAttachDTOs = [];
                           $("input[type='hidden'][name='reviewAttachDTO']").each(function() {
                               var attachData = JSON.parse($(this).val()); // JSON 파싱
-                              reviewAttachDTOs.push(attachData);
+                              
+                           	  // 이미지 정보 중복 등록 방지
+                              if (!reviewAttachDTOs.some(dto => dto.attachChgName === attachData.attachChgName)) {
+                            	  reviewAttachDTOs.push(attachData);
+                              }
                           });
                           
                           var obj = {
                               'recipeBoardId': recipeBoardId,
                               'memberId': memberId,
                               'recipeReviewContent': recipeReviewContent,
-                              'reviewRating': reviewRating
+                              'reviewRating': reviewRating,
+                              'reviewAttachList': reviewAttachDTOs
                            
                           };
                           
@@ -885,24 +895,39 @@ $(document).ready(function() {
                                  }); // end replies.on
                                  
                                  // 리뷰 전체 불러오기
-                                 function getAllRecipeReview() {
+                                 function getAllRecipeReview(pageNum = 1) {
                                     var recipeBoardId = $('#recipeBoardId').val();
-                                    var url = '/project/recipeboard/allReviews/'
-                                             + recipeBoardId;
+                                    var url = '/project/recipeboard/allReviews/' + recipeBoardId + '?pageNum=' + pageNum;
+                                          
                                     
                                     $.getJSON(url, function(data) {
-                                                console.log("리뷰 데이터:", data);
+                                        		        
+                                    			
+                                    			console.log("백엔드에서 받은 데이터:", data); // ✅ 받은 데이터 확인
+                                        		console.log("페이지네이션 데이터:", data.pagination);
+                                        		console.log("페이지네이션 totalCount:", data.pagination.totalCount);
+		                                        console.log("페이지네이션 reviewTotalCount:", data.pagination.reviewTotalCount);
+		                                        console.log("페이지네이션 startNum:", data.pagination.startNum);
+		                                        console.log("페이지네이션 endNum:", data.pagination.endNum);
+		                                        
+		                                        if (data.pagination) {
+		                                       	    console.log("reviewTotalCount 값:", data.pagination.reviewTotalCount);
+		                                       	} else {
+		                                       	    console.warn("pagination 데이터가 존재하지 않음!");
+		                                       	}
+                                    			
+                                    			
                                                 var list = '';
                                                 
                                                 
-                                           $(data).each(function() {
+                                           $(data.recipeReviews).each(function() {
+                                        	   		 console.log(this); // 각 리뷰 객체 출력
                                         	   		 var reviewAttachList = this.reviewAttachList || []; // 기본값으로 빈 배열 설정
-                                        	   
-                                 					 console.log("별점 값:", this.reviewRating);
-                                                      var recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
-                                                      var starRatingHTML = '';
+                                        	   		 var recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
                                                       
-                                                      for (let i = 1; i <= 5; i++) {                                                   	                                                  	 
+                                                     var starRatingHTML = '';
+                                                      
+                                                     for (let i = 1; i <= 5; i++) {                                                   	                                                  	 
                                                     	  
                                                           if (i <= this.reviewRating) {
                                                               starRatingHTML += '<span style="color:gold;">★</span>'; // 채워진 별
@@ -945,7 +970,7 @@ $(document).ready(function() {
                                                                                                       
                                                       // 이미지가 있는 경우만 추가
                                                       if (imageHTML !== '') {
-                                                          list += '<div class="review_images image-list">' + imageHTML + '</div>';
+                                                          list += '<div class="review_images show-image-list">' + imageHTML + '</div>';
                                                       }
                                                       
                                                    // ✅ 리뷰 수정 모달 추가 (초기 숨김 상태)
@@ -968,8 +993,8 @@ $(document).ready(function() {
                                                             // ✅ 이미지 Drag & Drop 업로드 영역 추가
                                                           list += '</div>'
 											                + '<div class="image-upload">'
-											                + '<div class="image-drop update-mode" id="dropZone_' + this.recipeReviewId + '">drag - image</div>'
-											                + '<div class="image-list" id="imageList_' + this.recipeReviewId + '"></div>'
+											                + '<div class="image-drop">drag - image</div>'
+											                + '<div class="show-image-list" id="imageList_' + this.recipeReviewId + '"></div>'
 											                + '<div class="reviewAttachDTOImg-list" id="reviewAttachDTOImgList_' + this.recipeReviewId + '"></div>'
 											                + '</div>'
 											                + '<button class="btnEditComplete" data-review-id="' + this.recipeReviewId + '">수정 완료</button>'
@@ -981,7 +1006,55 @@ $(document).ready(function() {
                                            
                                                 $('#reviews').html(list);
                                                 
+                                             // ✅ 댓글 총 개수 표시 (reviewTotalCount 사용)
+                                                if ($('#reviewTotalCount').length) {
+                                                	 console.log("reviewTotalCount 요소 발견! 업데이트 시도...");
+                                                     $('#reviewTotalCount').text(data.pagination.reviewTotalCount);
+                                                } else {
+                                                    console.warn("reviewTotalCount 요소를 찾을 수 없습니다.");
+                                                }
+                                                 
+                                             	// ✅ 페이지네이션 업데이트
+                                                updateReviewPagination(data.pagination);
                                                 
+                                             // ✅ 페이지네이션 UI 업데이트
+                                                function updateReviewPagination(pageMaker) {
+                        						    if (!pageMaker) {
+                        						        console.warn("페이지네이션 데이터가 없습니다.");
+                        						        return;
+                        						    }
+                        							
+                        						    console.log("페이지네이션 업데이트 실행됨!2", pageMaker);
+                        						    
+                        						    var paginationHtml = '';
+                        						
+                        						    if (pageMaker.prev) {
+                        						        paginationHtml += '<a href="#" class="page-link" data-page="' + (pageMaker.startNum - 1) + '">◀ 이전</a> ';
+                        						    }
+                        						
+                        						    for (var i = pageMaker.startNum; i <= pageMaker.endNum; i++) {
+                        						        paginationHtml += '<a href="#" class="page-link" data-page="' + i + '">' + i + '</a> ';
+                        						    }
+                        						
+                        						    if (pageMaker.next) {
+                        						        paginationHtml += '<a href="#" class="page-link" data-page="' + (pageMaker.endNum + 1) + '">다음 ▶</a>';
+                        						    }
+                        						    
+                        						    console.log("생성된 paginationHtml:", paginationHtml)
+                        							
+                        						    if ($('#reviewPagination').length) {
+                        						    $('#reviewPagination').html(paginationHtml);
+                        						    } else {
+                        						        console.warn("pagination 요소를 찾을 수 없습니다.");
+                        						    }
+                        						    
+                                                  	 // ✅ 페이지 번호 클릭 시 기본 이벤트 제거 & AJAX 호출
+                                                     $('.page-link').on('click', function(event) {
+                                                         event.preventDefault(); // 기본 이벤트 제거 (페이지 이동 방지)
+                                                         var pageNum = $(this).data('page');
+                                                         getAllRecipeReview(pageNum); // AJAX로 댓글 불러오기
+                                                     });
+                                                 }
                                                 
                                              });
                                    
@@ -996,11 +1069,7 @@ $(document).ready(function() {
                                                                
                                  // 수정 버튼을 클릭하면 선택된 리뷰 수정
                                  $('#reviews').on('click', '.btn_review_update', function() {
-                                	 			
-                                	 			if(!confirm('기존의 이미지는 삭제됩니다. 계속 하시겠습니까?')){
-                         	    				return;
-                         	    				}
-                                                                                  
+                                	 			                           
                                                 var selectedReviewId = $(this).data('review-id'); // ✅ 속성을 확실하게 가져오기
                                                
                                                 console.log("선택한 리뷰 ID:", selectedReviewId); // ✅    값이 들어오는지 디버깅
@@ -1098,7 +1167,11 @@ $(document).ready(function() {
                                                     var updateReviewAttachDTOs = [];
                                                     $("input[type='hidden'][name='reviewAttachDTO']").each(function() {
                                                         var attachData = JSON.parse($(this).val()); // JSON 파싱
-                                                        updateReviewAttachDTOs.push(attachData);
+                                                        
+                                                        // 이미지 정보 중복 등록 방지
+                                                        if (!updateReviewAttachDTOs.some(dto => dto.attachChgName === attachData.attachChgName)) {
+                                                      	  updateReviewAttachDTOs.push(attachData);
+                                                        }
                                                     });
                                                     
                                                     var reviewData = {

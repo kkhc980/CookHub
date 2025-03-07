@@ -11,56 +11,98 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-		.no-results {
-		    text-align: center;
-		    margin-top: 50px;
-		    font-size: 18px;
-		    color: #555;
-		}
-		
-        .filters-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-        }
-
-        .filter-title {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .filter-button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-
-        .filter-button.active {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .recipe-list {
-		    display: flex;
-		    flex-wrap: wrap;
-		    gap: 20px;
-		    justify-content: center;
-		    align-items: center;
-		}
-
-        .recipe-card {
+	body {
+	    font-family: Arial, sans-serif;
+	}
+	
+	.no-results {
+	    text-align: center;
+	    margin-top: 50px;
+	    font-size: 18px;
+	    color: #555;
+	}
+	
+	/* 필터 컨테이너 */
+	.filters-container {
+	    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+	    overflow: hidden;
+	}
+	
+	/* 닫기 버튼 스타일 */
+	.filter-toggle {
+	    text-align: center;
+	    font-size: 14px;
+	    color: #2c8c3a;
+	    cursor: pointer;
+	    padding: 10px 0;
+	    border-top: 1px solid #ddd;
+	}
+	
+	.filter-toggle:hover {
+	    font-weight: bold;
+	}
+	
+	/* 필터 그룹 */
+	.filter-group {
+	    display: flex;
+	    align-items: center;
+	    flex-wrap: wrap;
+	    gap: 20px;  /* 여백을 늘리기 위해 10px에서 20px로 수정 */
+	    border-top: 1px solid #ddd;
+	}
+	
+	/* 필터 제목 */
+	.filter-title {
+	    font-weight: bold;
+	    color: #2c8c3a; /* 초록색 */
+	    margin-right: 10px;
+	    min-width: 80px;
+	}
+	
+	/* 필터 버튼 */
+	.filter-button, .ingredient-button {
+	    border: 1px solid #ddd;
+	    background-color: #fff;
+	    color: #333;
+	    padding: 5px 12px;
+	    border-radius: 20px; /* 둥글게 */
+	    cursor: pointer;
+	    font-size: 14px;
+	    transition: background-color 0.2s ease-in-out;
+	    margin: 10px 0.01px;
+	}
+	
+	/* 전체(ALL) 버튼 */
+	.filter-button:first-child, .ingredient-button:first-child {
+	    background-color: #2c8c3a; /* 초록색 */
+	    color: white;
+	    font-weight: bold;
+	    border: none;
+	}
+	
+	/* 활성화된 버튼 */
+	.filter-button.active, .ingredient-button.active {
+	    background-color: #2c8c3a;
+	    color: white;
+	    border: none;
+	}
+	
+	/* 버튼 호버 효과 */
+	.filter-button:hover, .ingredient-button:hover {
+	    background-color: #f0f0f0;
+	}
+	
+	/* 레시피 리스트 */
+	.recipe-list {
+	    display: flex;
+	    flex-wrap: wrap;
+	    gap: 20px;
+	    justify-content: center;
+	    align-items: center;
+	}
+	
+	/* 레시피 카드 */
+	.recipe-card {
 	    width: 22%;
 	    border: 1px solid #ddd;
 	    border-radius: 5px;
@@ -68,117 +110,108 @@
 	    cursor: pointer;
 	    background-color: #fff;
 	    transition: transform 0.2s;
-	    display: flex; /* 카드 내부를 Flexbox로 설정 */
-	    flex-direction: column; /* 세로로 배치 */
-	    align-items: center; /* 수평 중앙 정렬 */
-	    justify-content: center; /* 수직 중앙 정렬 */
+	    display: flex;
+	    flex-direction: column;
+	    align-items: center;
+	    justify-content: center;
 	}
-
-        .recipe-card:hover {
-            transform: scale(1.05);
-        }
-
-        .recipe-thumbnail {
-		    width: 50%;
-		    height: auto;
-		    object-fit: cover;
-		}
-
-        .recipe-info {
-            padding: 10px;
-        }
-
-        .recipe-title {
-            font-size: 18px;
-            margin: 5px 0;
-        }
-
-        .recipe-meta {
-            color: #777;
-        }
-
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination-link {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .pagination-link.active {
-            font-weight: bold;
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .ingredient-button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
-
-        .ingredient-button.active {
-            background-color: #4caf50;
-            color: white;
-            border: 1px solid #4caf50;
-        }
-
-        .ingredient-button[disabled] {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .register-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-        }
-
-        .register-button:hover {
-            background-color: #45a049;
-        }
-        
-        .sort-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-        }
-
-        .sort-button {
-            padding: 5px 15px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .sort-button.active {
-            background-color: #4caf50;
-            color: white;
-        }
-    </style>
+	
+	.recipe-card:hover {
+	    transform: scale(1.05);
+	}
+	
+	/* 레시피 이미지 */
+	.recipe-thumbnail {
+	    width: 50%;
+	    height: auto;
+	    object-fit: cover;
+	}
+	
+	/* 레시피 정보 */
+	.recipe-info {
+	    padding: 10px;
+	}
+	
+	.recipe-title {
+	    font-size: 18px;
+	    margin: 5px 0;
+	}
+	
+	.recipe-meta {
+	    color: #777;
+	}
+	
+	/* 페이지네이션 */
+	.pagination-container {
+	    display: flex;
+	    justify-content: center;
+	    margin-top: 20px;
+	}
+	
+	.pagination-link {
+	    margin: 0 5px;
+	    padding: 5px 10px;
+	    border: 1px solid #ddd;
+	    text-decoration: none;
+	    color: #333;
+	}
+	
+	.pagination-link.active {
+	    font-weight: bold;
+	    background-color: #4caf50;
+	    color: white;
+	}
+	
+	/* 재료 필터 버튼 */
+	.ingredient-button[disabled] {
+	    background-color: #ccc;
+	    cursor: not-allowed;
+	}
+	
+	/* 등록 버튼 */
+	.register-button {
+	    display: block;
+	    margin: 20px auto;
+	    padding: 10px 20px;
+	    font-size: 16px;
+	    background-color: #4caf50;
+	    color: white;
+	    border: none;
+	    border-radius: 5px;
+	    cursor: pointer;
+	    text-align: center;
+	    text-decoration: none;
+	}
+	
+	.register-button:hover {
+	    background-color: #45a049;
+	}
+	
+	/* 정렬 버튼 */
+	.sort-container {
+	    display: flex;
+	    justify-content: flex-end;
+	    margin-bottom: 20px;
+	}
+	
+	.sort-button {
+	    padding: 5px 15px;
+	    border: 1px solid #ddd;
+	    background-color: #f9f9f9;
+	    cursor: pointer;
+	    margin-left: 10px;
+	}
+	
+	.sort-button.active {
+	    background-color: #4caf50;
+	    color: white;
+	}
+	</style>
 </head>
 <body>
-    <h1>Recipe Board</h1>
     
     <!-- Filters Section -->
-    <div class="filters-container">
+    <div class="filters-container" id="filtersContainer">
         <!-- Type Filter -->
         <div class="filter-group">
             <span class="filter-title">종류별</span>
@@ -220,10 +253,13 @@
             </c:forEach>
         </div>
     </div>
-	
+	<div class="filter-toggle" id="filterToggle">
+	    카테고리 닫기 ▲
+	</div>
 	<!-- 정렬 버튼 추가 -->
+	<p>총 <span style="color: green; font-size: 32px;">${totalRecipeBoards}</span> 개의 레시피가 있습니다.</p>
+
 	<div class="sort-container">
-	    <span>정렬: </span>
 	    <button type="button" class="sort-button ${empty param.sort || param.sort == 'latest' ? 'active' : ''}" 
 	            onclick="applySort('latest')">
 	        최신순
@@ -252,7 +288,7 @@
 	                    <div class="recipe-info">
 	                        <h3 class="recipe-title">${recipe.recipeBoardTitle}</h3>
 	                        <p class="recipe-meta">
-	                            조회수: ${recipe.viewCount} | 평점: ${recipe.avgRating}
+	                            조회수: ${recipe.viewCount} | 평점: ${recipe.avgRating} | ❤️: ${recipe.likeCount}
 	                        </p>
 	                    </div>
 	                </div>
@@ -311,7 +347,7 @@
             urlParams.delete("hashtag");
             window.location.search = urlParams.toString();
         }
-
+    	
         document.addEventListener("DOMContentLoaded", function () {
             const ingredientButtons = document.querySelectorAll(".ingredient-button");
             const ingredientIdsInput = document.getElementById("ingredientIdsInput");
@@ -385,6 +421,23 @@
         });
     </script>
     
+    <script>
+    document.getElementById("filterToggle").addEventListener("click", function() {
+        var filters = document.getElementById("filtersContainer");
+
+        if (filters.style.display === "none" || filters.style.display === "") {
+            // 필터 열기
+            filters.style.display = "block";
+            filters.style.opacity = "1";
+            this.innerHTML = "카테고리 닫기 ▲";
+        } else {
+            // 필터 닫기
+            filters.style.display = "none";
+            filters.style.opacity = "0";
+            this.innerHTML = "카테고리 열기 ▼";
+        }
+    });
+    </script>
     <script>
 	    $(document).ready(function () {
 	        // 자동완성 적용

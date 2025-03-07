@@ -13,6 +13,7 @@ public class KakaoPayApproveVO {
     private String payment_method_type;     // 결제 수단 (CARD, MONEY 등)
     private Amount amount;                  // 결제 금액 정보
     private String item_name;               // 상품명
+    private int quantity;					// 상품 개수
     private String created_at;              // 결제 요청 시간
     private String approved_at;             // 결제 승인 시간
 

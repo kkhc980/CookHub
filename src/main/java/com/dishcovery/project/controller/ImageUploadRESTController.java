@@ -43,9 +43,11 @@ public class ImageUploadRESTController {
 		
 		ArrayList<ReviewAttachDTO> list = new ArrayList<>();
 		
+		log.info(files.length);
 		for (MultipartFile file : files) {
 			// UUID 생성
 			String chgName = UUID.randomUUID().toString();
+		
 			// 파일 저장
 			ImageUploadUtil.saveFile(uploadPath, file, chgName);
 			

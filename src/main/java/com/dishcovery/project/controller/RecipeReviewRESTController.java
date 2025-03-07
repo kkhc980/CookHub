@@ -1,6 +1,8 @@
 package com.dishcovery.project.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dishcovery.project.domain.RecipeReviewDTO;
 import com.dishcovery.project.service.RecipeReviewService;
+import com.dishcovery.project.util.PageMaker;
+import com.dishcovery.project.util.Pagination;
 
 import lombok.extern.log4j.Log4j;
 
@@ -42,14 +47,38 @@ public class RecipeReviewRESTController {
    
    
    @GetMapping("/allReviews/{recipeBoardId}")
-   public ResponseEntity<List<RecipeReviewDTO>> readAllRecipeReview(
-         @PathVariable("recipeBoardId") int recipeBoardId) {
-      log.info("readAllRecipeReview()");
-      log.info("recipeBoardId = " + recipeBoardId);
+   public ResponseEntity<Map<String, Object>> readAllRecipeReview(
+           @PathVariable("recipeBoardId") int recipeBoardId,
+           @RequestParam(value = "pageNum", defaultValue = "1") int pageNum) {
 
-      List<RecipeReviewDTO> list = recipeReviewService.getAllRecipeReview(recipeBoardId);
+       log.info("readAllRecipeReview()");
+       log.info("recipeBoardId = " + recipeBoardId);
+       log.info("pageNum = " + pageNum);
 
-      return new ResponseEntity<List<RecipeReviewDTO>>(list, HttpStatus.OK);
+       // ✅ Pagination 객체 생성 (한 페이지에 5개씩)
+       Pagination pagination = new Pagination(pageNum, 5);
+
+       // ✅ 전체 리뷰 개수 조회
+       int reviewTotalCount = recipeReviewService.getTotalReviewCount(recipeBoardId);
+       log.info("총 리뷰 개수 (reviewTotalCount) = " + reviewTotalCount);
+
+       // ✅ PageMaker 설정
+       PageMaker pageMaker = new PageMaker();
+       pageMaker.setPagination(pagination);
+       pageMaker.setReviewTotalCount(reviewTotalCount); // 이름이 `replyTotalCount`인데 리뷰용으로 변경 필요
+
+       // ✅ 페이징 적용된 리뷰 목록 가져오기
+       List<RecipeReviewDTO> list = recipeReviewService.getAllRecipeReview(recipeBoardId, pagination);
+       log.info("조회된 리뷰 개수 = " + list.size());
+
+       // ✅ 결과 데이터 구성
+       Map<String, Object> result = new HashMap<>();
+       result.put("recipeReviews", list);
+       result.put("pagination", pageMaker);
+
+       System.out.println("응답 데이터: " + result); // 🔥 콘솔에서 데이터 확인
+
+       return new ResponseEntity<>(result, HttpStatus.OK);
    }
    
 //   @PreAuthorize("principal.username == #recipeReviewDTO.memberId")

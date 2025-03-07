@@ -16,14 +16,16 @@
     <div class="container">
         <h2 class="${not empty result ? 'success' : 'fail'}">${message}</h2>
 
-        <c:if test="${not empty result}">
-            <p><strong>✅ 결제 승인 번호:</strong> ${result.aid}</p>
-            <p><strong>💰 결제 금액:</strong> ${result.amount.total}원</p>
-            <p><strong>💳 결제 수단:</strong> ${result.payment_method_type}</p>
-            <p><strong>📅 결제 일시:</strong> ${result.approved_at}</p>
-            <br>
-            <a href="/project/store/list">🔙 돌아가기</a>
-        </c:if>
+		<c:if test="${not empty result}">
+		    <p><strong>🛍 상품명:</strong> ${result.item_name}</p>
+		    <p><strong>📦 수량:</strong> ${result.quantity}개</p>
+		    <p><strong>✅ 결제 승인 번호:</strong> ${result.aid}</p>
+		    <p><strong>💰 결제 금액:</strong> ${result.amount.total}원</p>
+		    <p><strong>💳 결제 수단:</strong> ${result.payment_method_type}</p>
+		    <p><strong>📅 결제 일시:</strong> ${result.approved_at}</p>
+		    <br>
+		    <a href="/project/store/list">🔙 돌아가기</a>
+		</c:if>
 
         <c:if test="${empty result}">
             <p>❌ 결제가 실패하였습니다. 다시 시도해주세요.</p>

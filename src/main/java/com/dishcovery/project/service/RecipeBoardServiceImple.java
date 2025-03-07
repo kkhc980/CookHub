@@ -719,4 +719,9 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     }
     
 
+    @Override
+    public int getTotalRecipeBoardCount() {
+        return mapper.getTotalRecipeBoardCount();
+    }
+
 }

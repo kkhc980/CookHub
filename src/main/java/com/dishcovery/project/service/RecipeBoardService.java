@@ -84,7 +84,11 @@ public interface RecipeBoardService {
                                         String ingredientIds, String hashtag);
 
 	RecipeDetailVO getRecipeDetailForUpdate(int recipeBoardId);
+
 	
 	void updateAverageRating(int recipeBoardId);
+
+
+	int getTotalRecipeBoardCount();
 
 }

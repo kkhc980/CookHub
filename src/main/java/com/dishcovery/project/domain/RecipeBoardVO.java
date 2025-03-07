@@ -22,6 +22,7 @@ public class RecipeBoardVO {
     private int memberId;
     private Date recipeBoardCreatedDate;
     private int viewCount;
+    private int likeCount;
     private int typeId;
     private int methodId;
     private int situationId;

@@ -12,6 +12,7 @@ import com.dishcovery.project.domain.RecipeReviewDTO;
 import com.dishcovery.project.domain.RecipeReviewVO;
 import com.dishcovery.project.domain.ReviewAttachDTO;
 import com.dishcovery.project.domain.ReviewAttachVO;
+import com.dishcovery.project.persistence.RecipeBoardMapper;
 import com.dishcovery.project.persistence.RecipeReviewMapper;
 import com.dishcovery.project.persistence.ReviewAttachMapper;
 import com.dishcovery.project.util.Pagination;
@@ -27,6 +28,9 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
    
    @Autowired
    private ReviewAttachMapper reviewAttachMapper;
+   
+   @Autowired
+   private RecipeBoardMapper recipeBoardMapper;
 
    
    @Transactional(value = "transactionManager")
@@ -53,6 +57,10 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
                insertReviewAttachResult += reviewAttachMapper.attachInsert(toEntity(reviewAttachDTO));
            }
            log.info(insertReviewAttachResult + "행 파일 정보 등록");
+           
+        // 3. 📌 리뷰 개수 업데이트
+           recipeBoardMapper.updateRecipeReviewCount(recipeReviewDTO.getRecipeBoardId());
+           log.info("recipeBoard의 리뷰 수 업데이트 완료");
        }
        
        return insertRecipeReviewResult;
@@ -112,11 +120,10 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
       int deleteRecipeReviewResult = recipeReviewMapper.deleteRecipeReview(recipeReviewId);
       log.info(deleteRecipeReviewResult + "행 리뷰 정보 삭제");
       
-//      int updateResult = recipeBoardMapper
-//            .updateRecipeReviewCount(recipeBoardId, -1);
-//      log.info(updateResult + " 뻾 寃뚯떆 뙋  닔 젙");
-      // board  뀒 씠釉  updateRecipeReviewCount - 1  궘 젣
-      
+      // 📌 리뷰 삭제 후 리뷰 개수 업데이트
+      recipeBoardMapper.updateRecipeReviewCount(recipeBoardId);
+      log.info("recipeBoard의 리뷰 수 업데이트 완료");
+            
       return 1;
    }
    

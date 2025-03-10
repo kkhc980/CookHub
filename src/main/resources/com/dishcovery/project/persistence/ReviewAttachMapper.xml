@@ -49,4 +49,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE ATTACH_PATH = TO_CHAR(SYSDATE -1, 'yyyy\mm\dd')
 	</select>
 	
+	<select id="getAllAttachFileNames" resultType="String">
+    	SELECT attach_real_name FROM REVIEW_ATTACH
+	</select>
+	
 	</mapper>

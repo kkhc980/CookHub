@@ -56,13 +56,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ]]>
     </select>
     
-    <select id="getTotalReviewCount" resultType="int">
-       SELECT COUNT(*)
-       FROM RECIPE_REVIEW
-       WHERE RECIPE_BOARD_ID = #{recipeBoardId}
-   	</select>
-
-      
+     <select id="getTotalReviewCount" resultType="int">
+        SELECT COUNT(*)
+        FROM RECIPE_REVIEW
+        WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+   	 </select>
+	 
       <update id="updateRecipeReview">
        UPDATE RECIPE_REVIEW
        SET RECIPE_REVIEW_CONTENT = #{recipeReviewContent},
@@ -74,5 +73,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
        DELETE FROM RECIPE_REVIEW
        WHERE RECIPE_REVIEW_ID = #{recipeReviewId}
       </delete>   
+      
+      <select id="getReviewRating" resultType="int">
+	 	SELECT AVG(REVIEW_RATING)
+	 	FROM RECIPE_REVIEW
+	 	WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+	  </select>
+	  
+	  <update id="updateAvgRating" parameterType="map">
+    	UPDATE RECIPE_BOARD
+    	SET AVG_RATING = #{avgRating}
+    	WHERE RECIPE_BOARD_ID = #{recipeBoardId}
+	 </update>
       
 </mapper>

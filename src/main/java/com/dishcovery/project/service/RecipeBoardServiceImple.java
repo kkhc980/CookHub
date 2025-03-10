@@ -3,6 +3,7 @@ package com.dishcovery.project.service;
 import com.dishcovery.project.domain.*;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
 import com.dishcovery.project.persistence.RecipeRankingMapper;
+import com.dishcovery.project.persistence.RecipeReviewMapper;
 import com.dishcovery.project.persistence.RecipeViewStatsMapper;
 import com.dishcovery.project.util.FileUploadUtil;
 import com.dishcovery.project.util.PageMaker;
@@ -31,6 +32,12 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 
     @Autowired
     private RecipeRankingMapper rankingMapper;
+    
+    @Autowired
+    private RecipeReviewService recipeReviewService;
+    
+    @Autowired
+    private RecipeReviewMapper recipeReviewMapper;  // 리뷰 매퍼 호출
 
     @Override
     public RecipeBoardVO getByRecipeBoardId(int recipeBoardId) {
@@ -150,7 +157,6 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         detail.setMethodName(mapper.getMethodName(recipeBoard.getMethodId()));
         detail.setSituationName(mapper.getSituationName(recipeBoard.getSituationId()));
         detail.setAvgRating(recipeBoard.getAvgRating());
-        detail.setReplyCount(recipeBoard.getReplyCount());
         detail.setRecipeReviewCount(recipeBoard.getRecipeReviewCount());
         detail.setThumbnailPath(recipeBoard.getThumbnailPath());
         detail.setServings(recipeBoard.getServings());
@@ -687,6 +693,31 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 
         return result;
     }
+    
+    @Override
+    @Transactional
+    public void updateAverageRating(int recipeBoardId) {
+    	try {
+    	// 1. 리뷰 별점 평균 구하기
+    	Integer avgRating = recipeReviewMapper.getReviewRating(recipeBoardId);
+    	
+    	// avgRating이 null인 경우 0으로 처리
+    	if (avgRating == null) {
+    		avgRating = 0;
+    	}
+    	
+    	 // 로그로 값 확인
+        log.info("업데이트할 평점: " + avgRating);
+        log.info("업데이트할 RecipeBoardId: " + recipeBoardId);
+    	
+     // 2. AVG_RATING 업데이트
+        recipeReviewMapper.updateAvgRating(recipeBoardId, avgRating);
+    } catch (Exception e) {
+        log.error("평점 업데이트 중 오류 발생", e);
+    }
+    	
+    }
+    
 
     @Override
     public int getTotalRecipeBoardCount() {

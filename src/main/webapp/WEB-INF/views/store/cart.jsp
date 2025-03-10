@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>장바구니</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
     <style>
         body {
             font-family: sans-serif;
@@ -85,10 +88,12 @@
             text-align: right;
             margin-top: 10px;
         }
+
         .message {
             color: green;
             font-weight: bold;
         }
+
         input[type="checkbox"] {
             transform: scale(1.5); /* 체크박스 크기 조정 */
         }
@@ -96,36 +101,38 @@
     </style>
 </head>
 <body>
-
 <h2>장바구니</h2>
-
 <c:if test="${not empty message}">
     <p class="message">${message}</p>
 </c:if>
-
 <c:if test="${not empty cart}">
     <table>
         <thead>
         <tr>
-            <th></th>
+            <th><input type="checkbox" id="select-all"></th>
             <th>상품명</th>
             <th>가격</th>
             <th>수량</th>
-            <th>총 가격</th>
+            <th>합계</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         <c:forEach var="item" items="${cart}" varStatus="status">
             <tr>
-                <td><input type="checkbox" checked="checked"></td>
+                <td><input type="checkbox" checked="checked" class="item-checkbox"></td>
                 <td>${item.productName}</td>
-                <td>${item.productPrice}</td>
+                <td><span class="product-price" data-product-id="${item.productId}">${item.productPrice}</span></td>
                 <td>
                     <div class="quantity-container">
-                        <button class="quantity-btn minus-btn" data-index="${status.index}" data-product-id="${item.productId}">-</button>
-                        <input type="number" class="quantity-input" value="${item.productCount}" min="1" max="${item.stock}" data-index="${status.index}" data-product-id="${item.productId}">
-                        <button class="quantity-btn plus-btn" data-index="${status.index}" data-product-id="${item.productId}">+</button>
+                        <button class="quantity-btn minus-btn" data-index="${status.index}"
+                                data-product-id="${item.productId}">-
+                        </button>
+                        <input type="number" class="quantity-input" value="${item.productCount}" min="1"
+                               max="${item.stock}" data-index="${status.index}" data-product-id="${item.productId}">
+                        <button class="quantity-btn plus-btn" data-index="${status.index}"
+                                data-product-id="${item.productId}">+
+                        </button>
                     </div>
                 </td>
                 <td><span class="total-price" data-product-id="${item.productId}">${item.totalPrice}</span></td>
@@ -146,119 +153,115 @@
 <a class="order_btn">주문하기</a>
 <form class="order_form" action="${pageContext.request.contextPath}/store/order/${memberDTO.memberId}" method="post">
 </form>
-
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // 수량 증가 버튼 클릭 이벤트
-        $(".plus-btn").on("click", function() {
-            let index = $(this).data("index");
-            let productId = $(this).data("product-id");
-            let quantityInput = $(".quantity-input[data-index='" + index + "']");
-            let totalPriceSpan = $(".total-price[data-product-id='" + productId + "']");
-            // 해당 상품의 stock 값을 가져옴
-            let quantity = parseInt(quantityInput.val());
-            let stock = parseInt(quantityInput.attr('max'));
-
-            if (quantity < stock) {
-                quantity++;
-                quantityInput.val(quantity);
-                updateTotalPrice(productId, quantity, totalPriceSpan); //총 가격 업데이트
-            } else {
-                alert("최대 구매 수량입니다.");
-            }
+        $(".plus-btn").on("click", function () {
+            updateQuantity($(this), 1);
         });
-
         // 수량 감소 버튼 클릭 이벤트
-        $(".minus-btn").on("click", function() {
-            let index = $(this).data("index");
-            let productId = $(this).data("product-id");
-            let quantityInput = $(".quantity-input[data-index='" + index + "']");
-            let totalPriceSpan = $(".total-price[data-product-id='" + productId + "']");
-            let quantity = parseInt(quantityInput.val());
-
-            if (quantity > 1) {
-                quantity--;
-                quantityInput.val(quantity);
-                updateTotalPrice(productId, quantity, totalPriceSpan); //총 가격 업데이트
-            }
+        $(".minus-btn").on("click", function () {
+            updateQuantity($(this), -1);
+        });
+        // 수량 직접 입력 이벤트
+        $(".quantity-input").on("input", function () {
+            updateQuantity($(this), 0);
         });
 
-        // 수량 직접 입력 이벤트
-        $(".quantity-input").on("input", function() {
-            let index = $(this).data("index");
-            let productId = $(this).data("product-id");
+        function updateQuantity(element, change) {
+            let index = element.data("index");
+            let productId = element.data("product-id");
             let quantityInput = $(".quantity-input[data-index='" + index + "']");
             let totalPriceSpan = $(".total-price[data-product-id='" + productId + "']");
-            // 해당 상품의 stock 값을 가져옴
             let quantity = parseInt(quantityInput.val());
             let stock = parseInt(quantityInput.attr('max'));
-
-            if (isNaN(quantity) || quantity < 1) {
-                quantity = 1;
-            } else if (quantity > stock) {
-                quantity = stock;
-                alert("최대 구매 수량을 초과했습니다.");
+            if (change === 1 && quantity < stock) {
+                quantity++;
+            } else if (change === -1 && quantity > 1) {
+                quantity--;
+            } else if (change === 0) {
+                if (isNaN(quantity) || quantity < 1) {
+                    quantity = 1;
+                } else if (quantity > stock) {
+                    quantity = stock;
+                    alert("최대 구매 수량을 초과했습니다.");
+                }
             }
-
             quantityInput.val(quantity);
-            updateTotalPrice(productId, quantity, totalPriceSpan); //총 가격 업데이트
-        });
+            updateTotalPrice(productId, quantity, totalPriceSpan);
+        }
 
-        // 총 가격 업데이트 함수 (기존 코드에 통합)
+        // 총 가격 업데이트 함수
         function updateTotalPrice(productId, quantity, totalPriceSpan) {
             $.ajax({
                 url: "../store/cart/update/" + productId,
                 type: "GET",
-                success: function(price) {
+                success: function (price) {
                     let totalPrice = price * quantity;
-                    totalPriceSpan.text(totalPrice);
-                    calculateAndDisplayTotalCartPrice(); // 총 가격 업데이트 후 전체 총 가격 갱신
+                    totalPriceSpan.text(totalPrice.toLocaleString());
+                    updateProductPrice(productId, price);
+                    calculateAndDisplayTotalCartPrice();
                 },
-                error: function() {
+                error: function () {
                     alert("가격 정보를 가져오는 데 실패했습니다.");
                 }
             });
         }
 
+        function updateProductPrice(productId, price) {
+            $(".product-price[data-product-id='" + productId + "']").text(price.toLocaleString());
+        }
+
         // 총 가격 계산 및 표시 함수
         function calculateAndDisplayTotalCartPrice() {
             let totalCartPrice = 0;
-            $("input[type='checkbox']:checked").each(function() {
+            $(".item-checkbox:checked").each(function () {
                 let productId = $(this).closest("tr").find(".total-price").data("product-id");
                 let totalPriceElement = $(".total-price[data-product-id='" + productId + "']");
-                let totalPrice = parseInt(totalPriceElement.text());
-
+                let totalPrice = parseInt(totalPriceElement.text().replace(/,/g, '').replace(" 원", ""));
                 if (!isNaN(totalPrice)) {
                     totalCartPrice += totalPrice;
                 }
             });
-            $("#total-price-value").text(totalCartPrice);
+            $("#total-price-value").text(totalCartPrice.toLocaleString() + " 원");
         }
 
-        // 체크박스 변경 이벤트 핸들러
-        $("input[type='checkbox']").on("change", function() {
+        function initialize() {
+            $(".product-price").each(function () {
+                let productId = $(this).data("product-id");
+                let price = parseInt($(this).text());
+                updateProductPrice(productId, price);
+            });
+
+            $(".total-price").each(function () { // 초기 로딩 시 쉼표 추가
+                let totalPrice = parseInt($(this).text().replace(/,/g, ''));
+                $(this).text(totalPrice.toLocaleString() + " 원");
+            });
+
+            calculateAndDisplayTotalCartPrice();
+        }
+
+        initialize();
+
+        // 전체 선택/해제 기능 추가
+        $("#select-all").on("change", function () {
+            $(".item-checkbox").prop("checked", $(this).prop("checked"));
             calculateAndDisplayTotalCartPrice();
         });
-
-        // 페이지 로드 시 초기 총 가격 계산
-        calculateAndDisplayTotalCartPrice();
-
+        // 체크 박스 변경 이벤트 핸들러 수정
+        $(".item-checkbox").on("change", function () {
+            calculateAndDisplayTotalCartPrice();
+        });
         $(".order_btn").on("click", function () {
-            // 폼 비우기
             $(".order_form").empty();
-
-            // 체크된 상품 정보 폼에 추가
-            $("input[type='checkbox']:checked").each(function() {
+            $(".item-checkbox:checked").each(function () {
                 let productId = $(this).closest("tr").find(".quantity-input").data("product-id");
                 let productCount = $(this).closest("tr").find(".quantity-input").val();
-
-                // input hidden 필드 추가
-                let orderValue = productId + ":" + productCount;  // productId와 productCount를 쉼표로 구분
+                let orderValue = productId + ":" + productCount;
                 let orderInput = $("<input type='hidden' name='orders' value='" + orderValue + "'>");
-
                 $(".order_form").append(orderInput);
             });
-            $(".order_form").submit(); // 폼 제출
+            $(".order_form").submit();
         });
     });
 </script>

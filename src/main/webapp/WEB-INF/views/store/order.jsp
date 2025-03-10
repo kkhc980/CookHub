@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
@@ -25,7 +26,7 @@
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: left;
+            text-align: center; /* 가운데 정렬 추가 */
         }
 
         th {
@@ -69,7 +70,7 @@
             <th>상품명</th>
             <th>수량</th>
             <th>가격</th>
-            <th>총 가격</th>
+            <th>합계</th>
         </tr>
         </thead>
         <tbody>
@@ -77,8 +78,8 @@
             <tr>
                 <td>${order.productName}</td>
                 <td>${order.productCount}</td>
-                <td>${order.productPrice}</td>
-                <td>${order.totalPrice}</td>
+                <td><fmt:formatNumber value="${order.productPrice}" pattern="#,### 원"/></td>
+                <td><fmt:formatNumber value="${order.totalPrice}" pattern="#,### 원"/></td>
             </tr>
         </c:forEach>
         </tbody>
@@ -90,7 +91,7 @@
         <c:forEach var="order" items="${orderPageDTO.orders}">
             <c:set var="totalPayment" value="${totalPayment + order.totalPrice}"/>
         </c:forEach>
-            ${totalPayment} 원
+        <fmt:formatNumber value="${totalPayment}" pattern="#,### 원"/>
     </div>
 
     <div>
@@ -124,7 +125,7 @@
         let productCountInput = document.createElement("input");
         productCountInput.type = "hidden";
         productCountInput.name = "orders[" + ${status.index} + "].productCount";
-        productIdInput.value = "${order.productCount}";
+        productCountInput.value = "${order.productCount}";
         form.appendChild(productCountInput);
 
         let productNameInput = document.createElement("input");
@@ -144,6 +145,5 @@
         form.submit();
     }
 </script>
-
 </body>
 </html>

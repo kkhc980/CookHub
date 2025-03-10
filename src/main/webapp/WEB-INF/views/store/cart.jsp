@@ -4,15 +4,103 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>장바구니</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .quantity-container {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .quantity-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .order_btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .shopping_btn {
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #total-cart-price {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+        }
+        .message {
+            color: green;
+            font-weight: bold;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.5); /* 체크박스 크기 조정 */
+        }
+
+    </style>
 </head>
 <body>
 
 <h2>장바구니</h2>
 
 <c:if test="${not empty message}">
-    <p>${message}</p>
+    <p class="message">${message}</p>
 </c:if>
 
 <c:if test="${not empty cart}">
@@ -38,7 +126,6 @@
                         <button class="quantity-btn minus-btn" data-index="${status.index}" data-product-id="${item.productId}">-</button>
                         <input type="number" class="quantity-input" value="${item.productCount}" min="1" max="${item.stock}" data-index="${status.index}" data-product-id="${item.productId}">
                         <button class="quantity-btn plus-btn" data-index="${status.index}" data-product-id="${item.productId}">+</button>
-                        <!-- stock 값을 숨겨진 필드에 저장 -->
                     </div>
                 </td>
                 <td><span class="total-price" data-product-id="${item.productId}">${item.totalPrice}</span></td>
@@ -55,7 +142,7 @@
         </tbody>
     </table>
 </c:if>
-<a href="../store/list">계속 쇼핑하기</a>
+<a href="../store/list" class="shopping_btn">계속 쇼핑하기</a>
 <a class="order_btn">주문하기</a>
 <form class="order_form" action="${pageContext.request.contextPath}/store/order/${memberDTO.memberId}" method="post">
 </form>
@@ -166,7 +253,7 @@
                 let productCount = $(this).closest("tr").find(".quantity-input").val();
 
                 // input hidden 필드 추가
-                let orderValue = productId + "," + productCount;  // productId와 productCount를 쉼표로 구분
+                let orderValue = productId + ":" + productCount;  // productId와 productCount를 쉼표로 구분
                 let orderInput = $("<input type='hidden' name='orders' value='" + orderValue + "'>");
 
                 $(".order_form").append(orderInput);

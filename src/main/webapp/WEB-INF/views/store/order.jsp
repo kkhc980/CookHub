@@ -4,13 +4,63 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>주문 확인</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .div-total-payment {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .purchase-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .empty-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
 <h2>주문 확인</h2>
 
-<p>주문자 ID: ${memberId}</p>
+<p>주문자 : ${memberDTO.name}</p>
 
 <c:if test="${not empty orderPageDTO.orders}">
     <table>
@@ -34,8 +84,7 @@
         </tbody>
     </table>
 
-    <!-- 결제 금액 표시 -->
-    <div>
+    <div class="div-total-payment">
         총 결제 금액:
         <c:set var="totalPayment" value="0"/>
         <c:forEach var="order" items="${orderPageDTO.orders}">
@@ -50,60 +99,47 @@
 </c:if>
 
 <c:if test="${empty orderPageDTO.orders}">
-    <p>선택된 상품이 없습니다.</p>
+    <p class="empty-message">선택된 상품이 없습니다.</p>
 </c:if>
 
 <script>
     function purchaseProduct() {
-        // 1. 폼 생성
         let form = document.createElement("form");
         form.method = "POST";
         form.action = '${pageContext.request.contextPath}/store/purchase';
 
-        // 2. CSRF 토큰 추가
         let csrfInput = document.createElement("input");
         csrfInput.type = "hidden";
         csrfInput.name = "${_csrf.parameterName}";
         csrfInput.value = "${_csrf.token}";
         form.appendChild(csrfInput);
 
-        // 3. orderPageDTO.orders에 있는 각 상품 정보를 폼에 추가
         <c:forEach var="order" items="${orderPageDTO.orders}" varStatus="status">
-        let productId = "${order.productId}";
-        let productCount = "${order.productCount}";
-        let productName = "${order.productName}";
-        let productPrice = "${order.productPrice}";
-
-        // productId
         let productIdInput = document.createElement("input");
         productIdInput.type = "hidden";
         productIdInput.name = "orders[" + ${status.index} + "].productId";
-        productIdInput.value = productId;
+        productIdInput.value = "${order.productId}";
         form.appendChild(productIdInput);
 
-        // productCount
         let productCountInput = document.createElement("input");
         productCountInput.type = "hidden";
         productCountInput.name = "orders[" + ${status.index} + "].productCount";
-        productCountInput.value = productCount;
+        productIdInput.value = "${order.productCount}";
         form.appendChild(productCountInput);
 
-        // productName
         let productNameInput = document.createElement("input");
         productNameInput.type = "hidden";
         productNameInput.name = "orders[" + ${status.index} + "].productName";
-        productNameInput.value = productName;
+        productNameInput.value = "${order.productName}";
         form.appendChild(productNameInput);
 
-        // productPrice
         let productPriceInput = document.createElement("input");
         productPriceInput.type = "hidden";
         productPriceInput.name = "orders[" + ${status.index} + "].productPrice";
-        productPriceInput.value = productPrice;
+        productPriceInput.value = "${order.productPrice}";
         form.appendChild(productPriceInput);
         </c:forEach>
 
-        // 4. 폼 제출
         document.body.appendChild(form);
         form.submit();
     }

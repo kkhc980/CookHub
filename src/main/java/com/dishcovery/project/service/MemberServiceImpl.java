@@ -45,6 +45,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public MemberDTO getMemberById(int memberId) {
+        return toDTO(memberMapper.selectMemberId(memberId));
+    }
+
+    @Override
     public int updateMember(MemberDTO memberDTO) {
         return memberMapper.updateMember(toEntity(memberDTO));
     }

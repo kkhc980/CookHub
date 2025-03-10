@@ -8,8 +8,6 @@
     <style>
      body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
         }
 
         .product-list {

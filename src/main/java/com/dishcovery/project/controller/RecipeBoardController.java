@@ -158,7 +158,13 @@ public class RecipeBoardController {
 
         model.addAttribute("recipeBoard", detail);
         model.addAttribute("pageContent", "recipeboard/detail.jsp");
-
+        model.addAttribute("typeName", detail.getTypeName());
+        model.addAttribute("methodName", detail.getMethodName());
+        model.addAttribute("situationName", detail.getSituationName());
+        model.addAttribute("ingredients", detail.getIngredients());
+        model.addAttribute("hashtags", detail.getHashtags());
+        model.addAttribute("steps", detail.getRecipeSteps()); 
+        model.addAttribute("ingredientDetails", recipeBoardService.getRecipeIngredientsDetailsByRecipeId(recipeBoardId));
         // 공통 레이아웃 반환
         return "layout";
     }

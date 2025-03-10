@@ -29,15 +29,15 @@
             color: #343a40;
         }
 
-        form {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e0e0e0;
-        }
+        .update-form {
+		    max-width: 900px;
+		    margin: 0 auto;
+		    padding: 40px;
+		    background-color: #fff;
+		    border-radius: 10px;
+		    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		    border: 1px solid #e0e0e0;
+		}
 
         .form-group {
             margin-bottom: 20px;
@@ -68,21 +68,31 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
         }
 
-        button[type="submit"], button[type="button"] {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-
-        button[type="submit"]:hover, button[type="button"]:hover {
-            background-color: #0056b3;
-        }
+	    /* 기존 버튼 스타일을 recipe-button 클래스로 변경 */
+	    .recipe-button {
+	        background-color: #007bff;
+	        color: white;
+	        padding: 12px 25px;
+	        border: none;
+	        border-radius: 8px;
+	        cursor: pointer;
+	        font-size: 1.1rem;
+	        transition: background-color 0.3s ease;
+	        margin-top: 20px;
+	    }
+	
+	    .recipe-button:hover {
+	        background-color: #0056b3;
+	    }
+	
+	    /* 삭제 버튼은 빨간색 유지 */
+	    .recipe-button.delete {
+	        background-color: #dc3545;
+	    }
+	
+	    .recipe-button.delete:hover {
+	        background-color: #c82333;
+	    }
 
         /* 썸네일 이미지 미리보기 */
         .thumbnail-preview {
@@ -262,7 +272,7 @@
 </head>
 <body>
 <h1>레시피 수정</h1>
-<form action="${pageContext.request.contextPath}/recipeboard/update" method="post" enctype="multipart/form-data">
+<form class="update-form" action="${pageContext.request.contextPath}/recipeboard/update" method="post" enctype="multipart/form-data">
     <input type="hidden" name="recipeBoardId" value="${recipeBoard.recipeBoardId}">
 
     <div class="form-group">
@@ -353,14 +363,16 @@
                 <div class="input-group mb-1">
                     <input type="text" class="form-control" name="hashtags[${status.index}].hashtagName"
                            value="${hashtag.hashtagName}"/>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-danger remove-hashtag" type="button">삭제</button>
-                    </div>
+					<div class="input-group-append">
+					    <button class="recipe-button delete remove-hashtag" type="button">삭제</button>
+					</div>
+
                 </div>
             </c:forEach>
              <input type="text" id="hashtagInput" placeholder="해시태그를 입력하세요. (엔터로 추가)">
         </div>
-        <button id="addHashtag" class="btn btn-secondary" type="button">해시태그 추가</button>
+        <button id="addHashtag" class="recipe-button" type="button">해시태그 추가</button>
+
     </div>
 
     <div class="selection-container">
@@ -372,11 +384,13 @@
                     <input type="text" name="ingredientAmount[${status.index}]" value="${ingredientDetail.ingredientAmount}" required>
                     <input type="text" name="ingredientUnit[${status.index}]" value="${ingredientDetail.ingredientUnit}" required>
                     <input type="text" name="ingredientNote[${status.index}]" value="${ingredientDetail.ingredientNote}">
-                    <button type="button" class="remove-ingredient">삭제</button>
+                    <button type="button" class="recipe-button delete remove-ingredient">삭제</button>
+
                 </div>
             </c:forEach>
         </div>
-        <button type="button" id="addIngredient">재료 추가</button>
+        <button type="button" id="addIngredient" class="recipe-button">재료 추가</button>
+
     </div>
 
     <div class="selection-container">
@@ -388,14 +402,16 @@
                     <textarea name="stepDescription[${status.index}]" required>${step.stepDescription}</textarea>
                     <input type="file" name="stepImage[${status.index}]" accept="image/*">
                     <input type="number" name="stepOrder[${status.index}]" value="${step.stepOrder}" style="width: 80px;">
-                    <button type="button" class="remove-step">삭제</button>
+                    <button type="button" class="recipe-button delete remove-step">삭제</button>
+
                     <div class="step-preview">
                         <img src="${step.stepImageUrl != null ? step.stepImageUrl : '#'}" alt="Step Preview" style="display: ${step.stepImageUrl != null ? 'block' : 'none'};">
                     </div>
                 </div>
             </c:forEach>
         </div>
-        <button type="button" id="addStep">조리 순서 추가</button>
+        <button type="button" id="addStep" class="recipe-button">조리 순서 추가</button>
+
     </div>
 
     <div class="recipe-info-container">
@@ -438,7 +454,8 @@
     </div>
 
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-    <button type="submit">수정</button>
+    <button type="submit" class="recipe-button">수정</button>
+
 </form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

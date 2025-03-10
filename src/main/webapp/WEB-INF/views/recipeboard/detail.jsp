@@ -87,13 +87,31 @@
    background-color: #45a049;
 }
 
-.thumbnail {
-   max-width: 200px;
-   max-height: 200px;
-   border: 1px solid #ddd;
-   border-radius: 5px;
-   object-fit: cover;
+.thumbnail-container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    border: 1px solid #ddd;
+    overflow: hidden; /* 이미지 크기 초과 방지 */
+    position: relative;
 }
+
+.thumbnail {
+    max-width: 100%;  /* 컨테이너 크기에 맞춤 */
+    max-height: 100%; /* 컨테이너 크기에 맞춤 */
+    object-fit: contain; /* 비율 유지하며 꽉 차도록 */
+}
+
+.no-image-text {
+    display: none; /* 기본적으로 숨김 */
+    color: gray;
+    font-size: 14px;
+    text-align: center;
+    position: absolute;
+}
+
 </style>
 
 </head>
@@ -104,12 +122,17 @@
       <p>제목 :</p>
       <p>${recipeBoard.recipeBoardTitle }</p>
    </div>
-   <div>
-      <p>Thumbnail:</p>
-      <img
-         src="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}"
-         alt="Thumbnail" class="thumbnail">
-   </div>
+	<div>
+	    <p>Thumbnail:</p>
+	    <div class="thumbnail-container">
+	        <img class="thumbnail"
+	             src="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}"
+	             alt="Thumbnail"
+	             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+	        <span class="no-image-text">이미지 없음</span>
+	    </div>
+	</div>
+
 
 <!-- 작성자 버튼 -->
 <div>
@@ -127,7 +150,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h5 class="modal-title">팔로우 정보</h5>
+                <h5 class="modal-title">작성자 정보</h5>
             </div>
             <div class="modal-body">
                 <p><strong>작성자 ID:</strong> <span id="popupMemberId"></span></p>

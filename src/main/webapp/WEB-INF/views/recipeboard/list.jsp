@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+ 
     <style>
 	body {
 	    font-family: Arial, sans-serif;
@@ -20,12 +21,6 @@
 	    margin-top: 50px;
 	    font-size: 18px;
 	    color: #555;
-	}
-	
-	/* 필터 컨테이너 */
-	.filters-container {
-	    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-	    overflow: hidden;
 	}
 	
 	/* 닫기 버튼 스타일 */
@@ -42,13 +37,23 @@
 	    font-weight: bold;
 	}
 	
+	/* 필터 컨테이너 */
+	.filters-container {
+	    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+	    overflow: hidden;
+	}
+	
+	
 	/* 필터 그룹 */
 	.filter-group {
 	    display: flex;
 	    align-items: center;
-	    flex-wrap: wrap;
-	    gap: 20px;  /* 여백을 늘리기 위해 10px에서 20px로 수정 */
+	    flex-wrap: nowrap;
+	    gap: 1px;  /* 여백을 늘리기 위해 10px에서 20px로 수정 */
 	    border-top: 1px solid #ddd;
+	    overflow-x: auto; /* 가로 스크롤 활성화 */
+	    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+	    padding-bottom: 10px; /* 스크롤바 영역 확보 */
 	}
 	
 	/* 필터 제목 */
@@ -70,6 +75,7 @@
 	    font-size: 14px;
 	    transition: background-color 0.2s ease-in-out;
 	    margin: 10px 0.01px;
+	    white-space: nowrap; /* 버튼 내 텍스트 줄바꿈 방지 */
 	}
 	
 	/* 전체(ALL) 버튼 */
@@ -98,7 +104,6 @@
 	    flex-wrap: wrap;
 	    gap: 20px;
 	    justify-content: center;
-	    align-items: center;
 	}
 	
 	/* 레시피 카드 */
@@ -107,13 +112,13 @@
 	    border: 1px solid #ddd;
 	    border-radius: 5px;
 	    overflow: hidden;
-	    cursor: pointer;
 	    background-color: #fff;
+	    cursor: pointer;
+	    text-align: center;
 	    transition: transform 0.2s;
 	    display: flex;
 	    flex-direction: column;
-	    align-items: center;
-	    justify-content: center;
+	    align-items: center; /* 카드 내부 요소 중앙 정렬 */
 	}
 	
 	.recipe-card:hover {
@@ -123,10 +128,36 @@
 	/* 레시피 이미지 */
 	.recipe-thumbnail {
 	    width: 50%;
-	    height: auto;
+	    height: auto%;
 	    object-fit: cover;
 	}
 	
+	/* 이미지 없음 텍스트 컨테이너 */
+	.recipe-thumbnail-container {
+	    width: 100%;
+	    height: 200px; /* 고정된 높이로 설정 */
+	    display: flex;
+	    align-items: center; /* 수직 중앙 정렬 */
+	    justify-content: center; /* 수평 중앙 정렬 */
+	    border: 1px solid #ddd;
+	    overflow: hidden; /* 이미지 크기 초과 방지 */
+	    position: relative;
+	    background-color: #f0f0f0; /* 이미지를 불러오지 못했을 때 배경색 */
+	}
+	
+	/* 이미지 없음 텍스트 스타일 */
+	.no-image-text {
+	    display: none; /* 기본적으로 숨김 */
+	    color: gray;
+	    font-size: 14px;
+	    text-align: center;
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%); /* 중앙 정렬 */
+	}
+
+
 	/* 레시피 정보 */
 	.recipe-info {
 	    padding: 10px;
@@ -278,13 +309,19 @@
 	    </button>
 	</div>
         
-	<!-- Recipe List Section -->
+	<!-- 레시피 리스트 섹션 -->
 	<div class="recipe-list">
 	    <c:choose>
 	        <c:when test="${not empty recipeList}">
 	            <c:forEach var="recipe" items="${recipeList}">
 	                <div class="recipe-card" onclick="location.href='${pageContext.request.contextPath}/recipeboard/detail/${recipe.recipeBoardId}'">
-	                    <img class="recipe-thumbnail" src="${pageContext.request.contextPath}/uploads/${recipe.thumbnailPath}" alt="Thumbnail">
+	                    <div class="recipe-thumbnail-container">
+	                        <img class="recipe-thumbnail" 
+	                             src="${pageContext.request.contextPath}/uploads/${recipe.thumbnailPath}" 
+	                             alt="Thumbnail"
+	                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+	                        <span class="no-image-text">이미지 없음</span>
+	                    </div>
 	                    <div class="recipe-info">
 	                        <h3 class="recipe-title">${recipe.recipeBoardTitle}</h3>
 	                        <p class="recipe-meta">
@@ -296,13 +333,14 @@
 	        </c:when>
 	        <c:otherwise>
 	            <div class="no-results">
-				    <h3>검색 결과가 없습니다</h3>
-				    <p>- 일반적인 검색어로 다시 검색해 보세요</p>
-				    <p>- 검색어의 단어 수를 줄이거나, 다른 검색어로 검색해 보세요.</p>
-				</div>
+	                <h3>검색 결과가 없습니다</h3>
+	                <p>- 일반적인 검색어로 다시 검색해 보세요</p>
+	                <p>- 검색어의 단어 수를 줄이거나, 다른 검색어로 검색해 보세요.</p>
+	            </div>
 	        </c:otherwise>
 	    </c:choose>
 	</div>
+
 
     <!-- Pagination Section -->
 	<div class="pagination-container">

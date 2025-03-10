@@ -33,7 +33,7 @@ h1 {
 	color: #343a40;
 }
 
-form {
+register-form {
 	max-width: 900px;
 	margin: 0 auto;
 	padding: 40px;
@@ -72,21 +72,33 @@ form {
 	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
 }
 
-button[type="submit"], button[type="button"] {
-	background-color: #007bff;
-	color: white;
-	padding: 12px 25px;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 1.1rem;
-	transition: background-color 0.3s ease;
-	margin-top: 20px;
+.register-button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
 }
 
-button[type="submit"]:hover, button[type="button"]:hover {
-	background-color: #0056b3;
+.register-button:hover {
+    background-color: #0056b3;
 }
+
+/* 삭제 버튼은 빨간색 유지 */
+.register-button.remove-ingredient,
+.register-button.remove-step {
+    background-color: #dc3545;
+}
+
+.register-button.remove-ingredient:hover,
+.register-button.remove-step:hover {
+    background-color: #c82333;
+}
+
 
 /* 썸네일 이미지 미리보기 */
 .thumbnail-preview {
@@ -520,7 +532,7 @@ button[type="submit"]:hover, button[type="button"]:hover {
 <body>
 	<h1>레시피 등록</h1>
 	<%-- 레시피 등록 폼 시작 --%>
-	<form action="${pageContext.request.contextPath}/recipeboard/register"
+	<form class="register-form" action="${pageContext.request.contextPath}/recipeboard/register"
 		method="post" enctype="multipart/form-data" id="registerForm">
 		<div class="form-group">
 			<label for="recipeBoardTitle">레시피 제목</label> <input type="text"
@@ -614,10 +626,10 @@ button[type="submit"]:hover, button[type="button"]:hover {
 						placeholder="예) 10(수량)" required> <input type="text"
 						name="ingredientUnit" placeholder="예) g,ml(단위)" required>
 					<input type="text" name="ingredientNote" placeholder="예) (비고)">
-					<button type="button" class="remove-ingredient">삭제</button>
+					<button type="button" class="register-button remove-ingredient">삭제</button>
 				</div>
 			</div>
-			<button type="button" id="addIngredient">재료 추가</button>
+			<button type="button" id="addIngredient" class="register-button">재료 추가</button>
 		</div>
 		<%-- 조리 순서 입력 컨테이너 --%>
 		<div class="selection-container">
@@ -629,13 +641,13 @@ button[type="submit"]:hover, button[type="button"]:hover {
 						placeholder="예) 소고기는 기름기를 떼어내고 적당한 크기로 썰어주세요." required></textarea>
 					<input type="file" name="stepImage" accept="image/*"> <input
 						type="number" name="stepOrder" value="1" style="width: 80px;">
-					<button type="button" class="remove-step">삭제</button>
+					<button type="button" class="register-button remove-step">삭제</button>
 					<div class="step-preview">
 						<img src="#" alt="Step Preview" style="display: none;">
 					</div>
 				</div>
 			</div>
-			<button type="button" id="addStep">조리 순서 추가</button>
+			<button type="button" id="addStep" class="register-button">조리 순서 추가</button>
 		</div>
 		<%-- 요리 정보 컨테이너 --%>
 		<div class="recipe-info-container">
@@ -678,7 +690,7 @@ button[type="submit"]:hover, button[type="button"]:hover {
 		<input type="hidden" name="${_csrf.parameterName }"
 			value="${_csrf.token }">
 		<!-- Submit Button -->
-		<button type="submit">Submit</button>
+		<button type="submit" class="register-button">Submit</button>
 	</form>
 </body>
 </html>

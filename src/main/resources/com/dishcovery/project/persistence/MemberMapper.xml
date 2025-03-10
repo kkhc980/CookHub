@@ -95,6 +95,12 @@
           AND AUTH_STATUS = 1
     </select>
 
+    <select id="selectMemberId" resultMap="MemberResultMap">
+        SELECT *
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
     <!-- 유저 여부 확인 -->
     <select id="checkUser" resultMap="MemberResultMap">
         SELECT *

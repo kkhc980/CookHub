@@ -697,21 +697,20 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     @Override
     @Transactional
     public void updateAverageRating(int recipeBoardId) {
+    	log.info("🚀 [디버깅] updateAverageRating 메서드 실행됨! recipeBoardId: " + recipeBoardId); // ← 실행 여부 확인
+    	
     	try {
     	// 1. 리뷰 별점 평균 구하기
-    	Integer avgRating = recipeReviewMapper.getReviewRating(recipeBoardId);
+    	Double avgRating = recipeReviewMapper.getReviewRating(recipeBoardId);
     	
     	// avgRating이 null인 경우 0으로 처리
     	if (avgRating == null) {
-    		avgRating = 0;
+    		avgRating = 0.0;
     	}
-    	
-    	 // 로그로 값 확인
-        log.info("업데이트할 평점: " + avgRating);
-        log.info("업데이트할 RecipeBoardId: " + recipeBoardId);
-    	
-     // 2. AVG_RATING 업데이트
-        recipeReviewMapper.updateAvgRating(recipeBoardId, avgRating);
+    	    	
+    	// 2. AVG_RATING 업데이트
+        mapper.updateAvgRating(recipeBoardId, avgRating);
+        
     } catch (Exception e) {
         log.error("평점 업데이트 중 오류 발생", e);
     }

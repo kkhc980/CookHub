@@ -85,5 +85,10 @@ public interface RecipeBoardService {
 
 	RecipeDetailVO getRecipeDetailForUpdate(int recipeBoardId);
 
+	
+	void updateAverageRating(int recipeBoardId);
+
+
 	int getTotalRecipeBoardCount();
+
 }

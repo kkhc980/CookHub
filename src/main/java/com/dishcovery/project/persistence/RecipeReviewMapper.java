@@ -20,4 +20,10 @@ public interface RecipeReviewMapper {
 	int getTotalReviewCount(@Param("recipeBoardId") int recipeBoardId);
 	int updateRecipeReview(RecipeReviewVO recipeReviewVO); // 특정 리뷰 수정
 	int deleteRecipeReview(int RecipeReviewId); // 특정 리뷰 삭제
+	
+	Integer getReviewRating(int recipeBoardId); // 리뷰 별점 평균 계산
+	
+	// AVG_RATING 업데이트
+	void updateAvgRating(@Param("recipeBoardId") int recipeBoardId, @Param("avgRating") int avgRating);
+	
 }

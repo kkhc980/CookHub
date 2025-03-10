@@ -92,5 +92,12 @@ public interface RecipeBoardMapper {
 
 	MemberVO getMemberByUsername(String username);
 	
+
+	// reviewCount 업데이트
+	void updateRecipeReviewCount(@Param("recipeBoardId") int recipeBoardId);
+	
+	// 
+	void updateAvgRating(int recipeBoardId, double avgRating);
+
 	int getTotalRecipeBoardCount();
 }

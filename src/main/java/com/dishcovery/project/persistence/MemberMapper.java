@@ -18,6 +18,7 @@ public interface MemberMapper {
     int updateExpiresFlag(Map<String, String> map);
     int updateAuthStatus(String email);
     MemberVO selectEmail(String email);
+    MemberVO selectMemberId(int memberId);
     MemberVO checkUser(String email);
     MemberRole selectRoleByMemberId(int memberId);
     int updateMember(MemberVO memberVO);

@@ -17,6 +17,7 @@ public class OrderPageItemDTO {
     // DB 에서 꺼내올 값
     private String productName;
     private int productPrice;
+    private int stock;
 
     // 생성해 낼 값
     private int totalPrice;

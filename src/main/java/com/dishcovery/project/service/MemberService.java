@@ -11,6 +11,8 @@ public interface MemberService {
 
     MemberDTO getMemberByEmail(String email); // 회원 정보 조회
 
+    MemberDTO getMemberById(int memberId);
+
     int updateMember(MemberDTO memberDTO);
 
     int deleteMember(String email);

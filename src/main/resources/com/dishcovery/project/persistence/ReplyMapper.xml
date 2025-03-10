@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
    </insert>
    
    <select id="selectListByRecipeBoardId" resultMap="replyResultMap">
-     SELECT
+    SELECT
         REPLY_ID,
         RECIPE_BOARD_ID,
         MEMBER_ID,

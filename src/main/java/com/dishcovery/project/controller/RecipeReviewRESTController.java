@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dishcovery.project.domain.RecipeReviewDTO;
+import com.dishcovery.project.service.RecipeBoardService;
 import com.dishcovery.project.service.RecipeReviewService;
 import com.dishcovery.project.util.PageMaker;
 import com.dishcovery.project.util.Pagination;
@@ -33,6 +34,10 @@ public class RecipeReviewRESTController {
    @Autowired
    private RecipeReviewService recipeReviewService;
    
+   @Autowired
+   private RecipeBoardService recipeBoardService;  // 추가: RecipeBoardService 주입
+
+   
    @PreAuthorize("hasRole('ROLE_MEMBER')")
    @PostMapping("/reviews/detail")
    public ResponseEntity<Integer> createRecipeReview(@RequestBody RecipeReviewDTO recipeReviewDTO) {
@@ -41,6 +46,10 @@ public class RecipeReviewRESTController {
       
       int result = recipeReviewService.createRecipeReview(recipeReviewDTO);
       log.info(result + "리뷰 등록");
+      
+      // 리뷰 추가 후 별점 평균 갱신
+      recipeBoardService.updateAverageRating(recipeReviewDTO.getRecipeBoardId());
+
       return new ResponseEntity<Integer>(result, HttpStatus.OK);
       
    }
@@ -65,7 +74,7 @@ public class RecipeReviewRESTController {
        // ✅ PageMaker 설정
        PageMaker pageMaker = new PageMaker();
        pageMaker.setPagination(pagination);
-       pageMaker.setReviewTotalCount(reviewTotalCount); // 이름이 `replyTotalCount`인데 리뷰용으로 변경 필요
+       pageMaker.setReviewTotalCount(reviewTotalCount);
 
        // ✅ 페이징 적용된 리뷰 목록 가져오기
        List<RecipeReviewDTO> list = recipeReviewService.getAllRecipeReview(recipeBoardId, pagination);
@@ -92,6 +101,10 @@ public class RecipeReviewRESTController {
       log.info("updateRecipeReview()");
       log.info("recipeReviewDTO = " + recipeReviewDTO);
       int result = recipeReviewService.updateRecipeReview(recipeReviewDTO);
+      
+      // 리뷰 수정 후 별점 평균 갱신
+      recipeBoardService.updateAverageRating(recipeReviewDTO.getRecipeBoardId());
+
       return new ResponseEntity<Integer>(result, HttpStatus.OK);
    }
    
@@ -106,6 +119,9 @@ public class RecipeReviewRESTController {
       log.info("recipeReviewId = " + recipeReviewId);
 
       int result = recipeReviewService.deleteRecipeReview(recipeReviewId, recipeBoardId);
+      
+      // 리뷰 삭제 후 별점 평균 갱신
+      recipeBoardService.updateAverageRating(recipeBoardId);
       
       return new ResponseEntity<Integer>(result, HttpStatus.OK);
    }

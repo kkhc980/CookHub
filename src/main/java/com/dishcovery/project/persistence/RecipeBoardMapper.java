@@ -1,6 +1,7 @@
 package com.dishcovery.project.persistence;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -96,8 +97,9 @@ public interface RecipeBoardMapper {
 	// reviewCount 업데이트
 	void updateRecipeReviewCount(@Param("recipeBoardId") int recipeBoardId);
 	
-	// 
-	void updateAvgRating(int recipeBoardId, double avgRating);
+	// avgRating update
+	void updateAvgRating(@Param("recipeBoardId") int recipeBoardId, @Param("avgRating") Double avgRating);
+
 
 	int getTotalRecipeBoardCount();
 }

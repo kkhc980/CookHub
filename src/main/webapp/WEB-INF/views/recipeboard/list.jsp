@@ -288,7 +288,7 @@
 	                    <div class="recipe-info">
 	                        <h3 class="recipe-title">${recipe.recipeBoardTitle}</h3>
 	                        <p class="recipe-meta">
-	                            조회수: ${recipe.viewCount} | 평점: ${recipe.avgRating} | ❤️: ${recipe.likeCount}
+	                            조회수: ${recipe.viewCount} | <span style="color: gold;">★</span> ${recipe.avgRating} (${recipe.recipeReviewCount}) | ❤️: ${recipe.likeCount}
 	                        </p>
 	                    </div>
 	                </div>

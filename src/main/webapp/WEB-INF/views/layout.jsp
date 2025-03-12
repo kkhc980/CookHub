@@ -364,7 +364,7 @@
 <div class="content">
     <jsp:include page="${pageContent}"/>
 </div>
-
+<jsp:include page="/WEB-INF/views/footer.jsp" />
 <script>
     $(document).ready(function () {
         $(".search-input").autocomplete({

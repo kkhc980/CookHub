@@ -1,5 +1,7 @@
 package com.dishcovery.project.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -16,32 +17,32 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dishcovery.project.domain.CustomUser;
 import com.dishcovery.project.domain.ImageData;
 import com.dishcovery.project.domain.RecipeBoardDTO;
+import com.dishcovery.project.domain.RecipeBoardStepVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
-import com.dishcovery.project.domain.RecipeRegisterRequest;
-import com.dishcovery.project.domain.RecipeUpdateRequest;
+import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
+import com.dishcovery.project.util.FileUploadUtil;
 import com.dishcovery.project.util.Pagination;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
 
@@ -107,37 +108,114 @@ public class RecipeBoardController {
         return "layout";
     }
 
+    
+	/* 코드 간소화 작업 (DTO 사용) 미완성
+	 * @PostMapping("/register") public String registerRecipe(@ModelAttribute @Valid
+	 * RecipeRegisterRequest request, BindingResult bindingResult, Model model) {
+	 * log.info("registerRecipe() called with request: " + request); if
+	 * (bindingResult.hasErrors()) { log.warn("Validation errors: " +
+	 * bindingResult.getAllErrors()); model.addAttribute("errors",
+	 * bindingResult.getAllErrors()); // 필요한 attribute를 다시 model에 담아준다 (typesList,
+	 * methodsList, situationsList, ingredientsList) model.addAttribute("typesList",
+	 * recipeBoardService.getAllTypes()); model.addAttribute("methodsList",
+	 * recipeBoardService.getAllMethods()); model.addAttribute("situationsList",
+	 * recipeBoardService.getAllSituations()); model.addAttribute("ingredientsList",
+	 * recipeBoardService.getAllIngredients()); return "recipeboard/register"; // 폼
+	 * 페이지로 다시 이동 }
+	 * 
+	 * try { Integer currentUserId = getCurrentUserId(); // 현재 사용자 ID 가져오기 if
+	 * (currentUserId == null) { model.addAttribute("errorMessage", "로그인이 필요합니다.");
+	 * return "redirect:/login"; // 로그인 페이지로 리다이렉트 }
+	 * request.setMemberId(currentUserId); // DTO에 memberId 설정
+	 * recipeBoardService.createRecipe(request);
+	 * log.info("Recipe created successfully."); return
+	 * "redirect:/recipeboard/list"; // 성공 시 목록 페이지로 리다이렉트 } catch (Exception e) {
+	 * log.error("Error creating recipe: " + e.getMessage(), e);
+	 * model.addAttribute("errorMessage", "레시피 등록에 실패했습니다."); return
+	 * "recipeboard/register"; // 등록 폼으로 다시 이동 } }
+	 */
+    
     @PostMapping("/register")
-    public String registerRecipe(@ModelAttribute @Valid RecipeRegisterRequest request,
-                                 BindingResult bindingResult,
-                                 Model model) {
-        log.info("registerRecipe() called with request: " + request);
-        if (bindingResult.hasErrors()) {
-            log.warn("Validation errors: " + bindingResult.getAllErrors());
-            model.addAttribute("errors", bindingResult.getAllErrors());
-            // 필요한 attribute를 다시 model에 담아준다 (typesList, methodsList, situationsList, ingredientsList)
-            model.addAttribute("typesList", recipeBoardService.getAllTypes());
-            model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-            model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-            model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-            return "recipeboard/register"; // 폼 페이지로 다시 이동
+    public String registerRecipe(
+        RecipeBoardVO recipeBoard,
+        @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+        @RequestParam(value = "hashtags", required = false) String hashtags,
+        @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
+        @RequestParam(value = "stepDescription", required = false) List<String> stepDescriptions,
+        @RequestPart(value = "stepImage", required = false) List<MultipartFile> stepImages,
+        @RequestParam(value = "servings", required = false) String servings,
+        @RequestParam(value = "time", required = false) String time,
+        @RequestParam(value = "difficulty", required = false) String difficulty,
+        @RequestParam(value = "stepOrder", required = false) List<Integer> stepOrders,
+        @RequestParam(value = "ingredientName", required = false) List<String> ingredientNames,
+        @RequestParam(value = "ingredientAmount", required = false) List<String> ingredientAmounts,
+        @RequestParam(value = "ingredientUnit", required = false) List<String> ingredientUnits,
+        @RequestParam(value = "ingredientNote", required = false) List<String> ingredientNotes
+    ) throws IOException {
+
+    	 Integer currentUserId = getCurrentUserId();
+    	 log.info("Current User ID: " + currentUserId);	
+    	 if (currentUserId != null) {
+    	        recipeBoard.setMemberId(currentUserId);
+    	        log.info("Setting recipeBoard.memberId to: " + currentUserId);
+    	    }
+        List<RecipeIngredientsDetailVO> ingredientDetails = new ArrayList<>();
+        if (ingredientNames != null) {
+            for (int i = 0; i < ingredientNames.size(); i++) {
+                RecipeIngredientsDetailVO detail = new RecipeIngredientsDetailVO();
+                detail.setIngredientName(ingredientNames.get(i));
+                  if(ingredientAmounts != null && i < ingredientAmounts.size()){
+                          detail.setIngredientAmount(ingredientAmounts.get(i));
+                      }
+                  if(ingredientUnits != null && i < ingredientUnits.size()){
+                         detail.setIngredientUnit(ingredientUnits.get(i));
+                      }
+                   if(ingredientNotes != null && i < ingredientNotes.size()){
+                        detail.setIngredientNote(ingredientNotes.get(i));
+                     }
+                ingredientDetails.add(detail);
+                log.info("Ingredient Detail: " + detail);
+            }
         }
 
-        try {
-            Integer currentUserId = getCurrentUserId(); // 현재 사용자 ID 가져오기
-            if (currentUserId == null) {
-                model.addAttribute("errorMessage", "로그인이 필요합니다.");
-                return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        List<RecipeBoardStepVO> steps = new ArrayList<>();
+        if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
+            for (int i = 0; i < stepDescriptions.size(); i++) {
+                RecipeBoardStepVO step = new RecipeBoardStepVO();
+                if (stepOrders != null && i < stepOrders.size()) {
+                    Integer order = stepOrders.get(i);
+                    step.setStepOrder(order == null ? i + 1 : order);
+                } else {
+                    step.setStepOrder(i + 1);
+                }
+                step.setStepDescription(stepDescriptions.get(i));
+                if (stepImages != null && i < stepImages.size() && stepImages.get(i) != null && !stepImages.get(i).isEmpty()) {
+                    // 파일 경로는 실제 저장되는 경로로 변경해야 합니다.
+                    String stepImageUrl = FileUploadUtil.saveFile("C:/uploads", stepImages.get(i));
+                    step.setStepImageUrl(stepImageUrl);
+                } else {
+                    step.setStepImageUrl(null);
+                }
+                steps.add(step);
+                log.info("Step info in controller: " + step);
             }
-            request.setMemberId(currentUserId); // DTO에 memberId 설정
-            recipeBoardService.createRecipe(request);
-            log.info("Recipe created successfully.");
-            return "redirect:/recipeboard/list"; // 성공 시 목록 페이지로 리다이렉트
-        } catch (Exception e) {
-            log.error("Error creating recipe: " + e.getMessage(), e);
-            model.addAttribute("errorMessage", "레시피 등록에 실패했습니다.");
-            return "recipeboard/register"; // 등록 폼으로 다시 이동
         }
+
+        log.info("RecipeBoard value before createRecipe method called: " + recipeBoard);
+        if (servings != null) {
+            recipeBoard.setServings(servings);
+        }
+        if (time != null) {
+            recipeBoard.setTime(time);
+        }
+        if (difficulty != null) {
+            recipeBoard.setDifficulty(difficulty);
+        }
+       
+       
+        
+        recipeBoardService.createRecipe(recipeBoard, ingredientIds, hashtags, thumbnail, steps, ingredientDetails);
+        return "redirect:/recipeboard/list";
     }
     
     @GetMapping("/detail/{recipeBoardId}")
@@ -170,52 +248,167 @@ public class RecipeBoardController {
     }
 
     @GetMapping("/update/{recipeBoardId}")
-    public String updateForm(@PathVariable int recipeBoardId, Model model) {
-        log.info("updateForm() called with recipeBoardId: " + recipeBoardId);
-        RecipeDetailVO recipeDetailVO = recipeBoardService.getRecipeDetailForUpdate(recipeBoardId);
-        if (recipeDetailVO == null) {
-            log.warn("Recipe not found with id: " + recipeBoardId);
-            return "redirect:/recipeboard/list";
-        }
+	public String updateForm(@PathVariable int recipeBoardId, Model model) {
+		RecipeBoardVO recipeBoard = recipeBoardService.getByRecipeBoardId(recipeBoardId);
+		if (recipeBoard == null) {
+			return "redirect:/recipeboard/list";
+		}
 
-        Integer currentUserId = getCurrentUserId();
-        if (recipeDetailVO.getRecipeBoard().getMemberId() != currentUserId) {
-            log.warn("Unauthorized access to recipe id: " + recipeBoardId + " by user: " + currentUserId);
-            return "redirect:/recipeboard/list";
-        }
+		Integer currentUserId = getCurrentUserId();
+		if (recipeBoard.getMemberId() != currentUserId) {
+			return "redirect:/recipeboard/list";
+		}
 
-        model.addAttribute("recipeBoard", recipeDetailVO.getRecipeBoard());
-        model.addAttribute("typesList", recipeBoardService.getAllTypes());
-        model.addAttribute("methodsList", recipeBoardService.getAllMethods());
-        model.addAttribute("situationsList", recipeBoardService.getAllSituations());
-        model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
-        model.addAttribute("ingredientDetails", recipeDetailVO.getIngredientDetails());  // ingredientDetails 추가
-        model.addAttribute("steps", recipeDetailVO.getRecipeSteps()); // steps 추가
-        model.addAttribute("recipeDetailVO", recipeDetailVO); // recipeDetailVO 추가
+		model.addAttribute("recipeBoard", recipeBoard);
+		model.addAttribute("selectedIngredientIds",
+				recipeBoardService.getSelectedIngredientIdsByRecipeBoardId(recipeBoardId));
+		model.addAttribute("typesList", recipeBoardService.getAllTypes());
+		model.addAttribute("methodsList", recipeBoardService.getAllMethods());
+		model.addAttribute("situationsList", recipeBoardService.getAllSituations());
+		model.addAttribute("ingredientsList", recipeBoardService.getAllIngredients());
+		model.addAttribute("hashtags", recipeBoardService.getHashtagsByRecipeBoardId(recipeBoardId));
+		model.addAttribute("ingredientDetails",
+				recipeBoardService.getRecipeIngredientsDetailsByRecipeId(recipeBoardId));
+		List<RecipeBoardStepVO> steps = recipeBoardService.getRecipeBoardStepsByBoardId(recipeBoardId);
+		String contextPath = "/project";
+		String uploadPath = contextPath + "/recipeboard/project/upload"; // URL 생성
+
+		for (RecipeBoardStepVO step : steps) {
+			if (step.getStepImageUrl() != null && !step.getStepImageUrl().startsWith("http")) {
+				step.setStepImageUrl(uploadPath + "/2025/02/10/" + step.getStepImageUrl());
+			}
+		}
+		model.addAttribute("steps", recipeBoardService.getRecipeBoardStepsByBoardId(recipeBoardId)); // 스텝 정보 추가
+		model.addAttribute("ingredientDetails",
+				recipeBoardService.getRecipeIngredientsDetailsByRecipeId(recipeBoardId));
 
         model.addAttribute("pageContent", "recipeboard/update.jsp");
         return "layout";
     }
     
+    
     @PostMapping("/update")
-    public String updateRecipe(@ModelAttribute @Valid RecipeUpdateRequest request, BindingResult bindingResult, Model model) {
-        log.info("updateRecipe() called with request: " + request);
-        if (bindingResult.hasErrors()) {
-            log.warn("Validation errors: " + bindingResult.getAllErrors());
-            model.addAttribute("errors", bindingResult.getAllErrors());
-            return "recipeboard/update"; // 수정 폼으로 다시 이동
-        }
+	public String updateRecipe(RecipeBoardVO recipeBoard,
+	                           @RequestParam(value = "ingredientIds", required = false) List<Integer> ingredientIds,
+	                           @RequestParam(value = "hashtags", required = false) String hashtags,
+	                           @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail,
+	                           @RequestParam(value = "stepDescription", required = false) List<String> stepDescriptions,
+	                           @RequestPart(value = "stepImage", required = false) List<MultipartFile> stepImages,
+	                           @RequestParam(value = "servings", required = false) String servings,
+	                           @RequestParam(value = "time", required = false) String time,
+	                           @RequestParam(value = "difficulty", required = false) String difficulty,
+	                           @RequestParam(value = "stepOrder", required = false) List<Integer> stepOrders,
+	                           @RequestParam(value = "deleteStepIds", required = false) List<Integer> deleteStepIds,
+	                           @RequestParam(value = "recipeIngredientsJson", required = false, defaultValue = "[]") String recipeIngredientsJson,
+	                           Model model) throws IOException {
+	    log.info("updateRecipe() called");
+	    log.info("RecipeBoard: " + recipeBoard);
+	    log.info("ingredientIds: " + ingredientIds);
+	    log.info("hashtags: " + hashtags);
+	    log.info("thumbnail: " + (thumbnail != null ? thumbnail.getOriginalFilename() : "null"));
+	    log.info("stepDescriptions: " + stepDescriptions);
+	    log.info("stepImages: " + (stepImages != null ? stepImages.size() : "null"));
+	    log.info("servings: " + servings);
+	    log.info("time: " + time);
+	    log.info("difficulty: " + difficulty);
+	    log.info("stepOrders: " + stepOrders);
+	    log.info("deleteStepIds: " + deleteStepIds);
+	    log.info("recipeIngredientsJson: " + recipeIngredientsJson);
 
-        try {
-            recipeBoardService.updateRecipe(request);
-            log.info("Recipe updated successfully with id: " + request.getRecipeBoardId());
-            return "redirect:/recipeboard/detail/" + request.getRecipeBoardId();
-        } catch (Exception e) {
-            log.error("Error updating recipe: " + e.getMessage(), e);
-            model.addAttribute("errorMessage", "레시피 수정 중 오류가 발생했습니다.");
-            return "recipeboard/update"; // 수정 폼으로 다시 이동
-        }
-    }
+	    try {
+	        Integer currentUserId = getCurrentUserId();
+	        RecipeBoardVO existingBoard = recipeBoardService.getByRecipeBoardId(recipeBoard.getRecipeBoardId());
+
+	        if (existingBoard == null || existingBoard.getMemberId() != currentUserId) {
+	            log.warn("Unauthorized access attempt!");
+	            return "redirect:/recipeboard/list";
+	        }
+	        recipeBoard.setMemberId(currentUserId);
+	        log.info("Current user ID set to recipeBoard: " + currentUserId);
+
+	        ObjectMapper mapper = new ObjectMapper();
+	        List<RecipeIngredientsDetailVO> ingredientDetails = new ArrayList<>();
+	        if (recipeIngredientsJson != null && !recipeIngredientsJson.trim().isEmpty()) {
+	            try {
+	                ingredientDetails = mapper.readValue(recipeIngredientsJson, new TypeReference<List<RecipeIngredientsDetailVO>>() {});
+	                log.info("Parsed ingredientDetails: " + ingredientDetails);
+	            } catch (Exception e) {
+	                log.error("Failed to parse recipeIngredientsJson: " + recipeIngredientsJson, e);
+	                model.addAttribute("errorMessage", "재료 정보를 파싱하는 데 실패했습니다.");
+	                return "recipeboard/update";
+	            }
+	        } else {
+	            log.info("recipeIngredientsJson is null or empty, skipping parsing.");
+	        }
+
+	        List<RecipeBoardStepVO> steps = new ArrayList<>();
+	        if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
+	            for (int i = 0; i < stepDescriptions.size(); i++) {
+	                RecipeBoardStepVO step = new RecipeBoardStepVO();
+	                if (stepOrders != null && i < stepOrders.size()) {
+	                    Integer order = stepOrders.get(i);
+	                    step.setStepOrder(order == null ? i + 1 : order);
+	                } else {
+	                    step.setStepOrder(i + 1);
+	                }
+	                step.setStepDescription(stepDescriptions.get(i));
+	                if (stepImages != null && i < stepImages.size() && stepImages.get(i) != null && !stepImages.get(i).isEmpty()) {
+	                    String stepImageUrl = FileUploadUtil.saveFile("C:/uploads", stepImages.get(i));
+	                    step.setStepImageUrl(stepImageUrl);
+	                    log.info("Uploaded step image: " + stepImageUrl);
+	                } else {
+	                    step.setStepImageUrl(null);
+	                }
+	                steps.add(step);
+	                log.info("Step info in controller: " + step);
+	            }
+	        } else {
+	            log.info("stepDescriptions is null or empty, skipping step creation.");
+	        }
+
+	        log.info("RecipeBoard value before updateRecipe method called: " + recipeBoard);
+	        if (servings != null) {
+	            recipeBoard.setServings(servings);
+	        }
+	        if (time != null) {
+	            recipeBoard.setTime(time);
+	        }
+	        if (difficulty != null) {
+	            recipeBoard.setDifficulty(difficulty);
+	        }
+
+	        recipeBoardService.updateRecipe(recipeBoard.getRecipeBoardId(), recipeBoard, ingredientIds, hashtags,
+	                thumbnail, steps, deleteStepIds, ingredientDetails);
+
+	        log.info("Recipe update completed successfully.");
+	        return "redirect:/recipeboard/detail/" + recipeBoard.getRecipeBoardId();
+	    } catch (IllegalArgumentException e) {
+	        log.error("Error updating recipe: " + e.getMessage());
+	        return "redirect:/recipeboard/update/" + recipeBoard.getRecipeBoardId() + "?error=" + e.getMessage();
+	    } catch (Exception e) {
+	        log.error("Unexpected error during update: " + e.getMessage(), e);
+	        model.addAttribute("errorMessage", "레시피 수정 중 예기치 않은 오류가 발생했습니다.");
+	        return "recipeboard/update";
+	    }
+	}
+
+    
+    /* 미완성 코드 (간소화 작업)
+     * @PostMapping("/update") public String updateRecipe(@ModelAttribute @Valid
+     * RecipeUpdateRequest request, BindingResult bindingResult, Model model) {
+     * log.info("updateRecipe() called with request: " + request); if
+     * (bindingResult.hasErrors()) { log.warn("Validation errors: " +
+     * bindingResult.getAllErrors()); model.addAttribute("errors",
+     * bindingResult.getAllErrors()); return "recipeboard/update"; // 수정 폼으로 다시 이동 }
+     * 
+     * try { recipeBoardService.updateRecipe(request);
+     * log.info("Recipe updated successfully with id: " +
+     * request.getRecipeBoardId()); return "redirect:/recipeboard/detail/" +
+     * request.getRecipeBoardId(); } catch (Exception e) {
+     * log.error("Error updating recipe: " + e.getMessage(), e);
+     * model.addAttribute("errorMessage", "레시피 수정 중 오류가 발생했습니다."); return
+     * "recipeboard/update"; // 수정 폼으로 다시 이동 } }
+     */
     
     @PostMapping("/delete/{recipeBoardId}")
     public String deleteRecipe(@PathVariable int recipeBoardId) {

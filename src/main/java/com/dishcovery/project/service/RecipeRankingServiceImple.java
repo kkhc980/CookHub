@@ -29,10 +29,23 @@ public class RecipeRankingServiceImple implements RecipeRankingService {
      */
     @Override
     public List<RecipeRankingVO> getRankings(String rankType) {
-        // 랭킹 데이터를 Mapper를 통해 가져오기
-        return rankingMapper.getRankings(rankType);
+        List<RecipeRankingVO> rankings = rankingMapper.getRankings(rankType);
+
+        // ✅ 로그 추가하여 데이터 확인
+        log.info("✅ getRankings() called for type: " + rankType);
+        log.info("✅ Retrieved " + rankings.size() + " rankings");
+
+        if (rankings.isEmpty()) {
+            log.warn("❌ No data returned from rankingMapper.getRankings()");
+        }
+
+        return rankings;
     }
     
+    @Override
+    public List<RecipeRankingVO> getTotalRankings(String rankType) {
+        return rankingMapper.getTotalRankings(rankType);
+    }
     @Override
     @Transactional
     public void updateRankings(String type) {

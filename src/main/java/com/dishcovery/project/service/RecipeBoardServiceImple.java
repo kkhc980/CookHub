@@ -1,6 +1,36 @@
 package com.dishcovery.project.service;
 
-import com.dishcovery.project.domain.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.dishcovery.project.domain.HashtagsVO;
+import com.dishcovery.project.domain.ImageData;
+import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.MethodsVO;
+import com.dishcovery.project.domain.RecipeBoardDTO;
+import com.dishcovery.project.domain.RecipeBoardStepVO;
+import com.dishcovery.project.domain.RecipeBoardVO;
+import com.dishcovery.project.domain.RecipeBoardViewLogVO;
+import com.dishcovery.project.domain.RecipeDetailVO;
+import com.dishcovery.project.domain.RecipeHashtagsVO;
+import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
+import com.dishcovery.project.domain.RecipeIngredientsVO;
+import com.dishcovery.project.domain.SituationsVO;
+import com.dishcovery.project.domain.TypesVO;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
 import com.dishcovery.project.persistence.RecipeRankingMapper;
 import com.dishcovery.project.persistence.RecipeReviewMapper;
@@ -8,17 +38,8 @@ import com.dishcovery.project.persistence.RecipeViewStatsMapper;
 import com.dishcovery.project.util.FileUploadUtil;
 import com.dishcovery.project.util.PageMaker;
 import com.dishcovery.project.util.Pagination;
-import lombok.extern.log4j.Log4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j;
 
 @Service
 @Log4j
@@ -45,99 +66,127 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         return mapper.getByRecipeBoardId(recipeBoardId);
     }
 
+	/* DTO 사용한 코드 간소화 작업 미완성본
+	 * @Override
+	 * 
+	 * @Transactional public void createRecipe(RecipeRegisterRequest request) { //
+	 * 1. RecipeRegisterRequest에서 데이터를 꺼내 RecipeBoardVO를 생성 RecipeBoardVO
+	 * recipeBoard = new RecipeBoardVO();
+	 * recipeBoard.setRecipeBoardTitle(request.getRecipeBoardTitle());
+	 * recipeBoard.setRecipeBoardContent(request.getRecipeBoardContent()); int
+	 * memberId = request.getMemberId(); if (memberId <= 0) {
+	 * log.error("Invalid memberId: " + memberId); throw new
+	 * IllegalArgumentException("유효하지 않은 회원 ID입니다."); }
+	 * recipeBoard.setMemberId(memberId);
+	 * recipeBoard.setTypeId(request.getTypeId());
+	 * recipeBoard.setMethodId(request.getMethodId());
+	 * recipeBoard.setSituationId(request.getSituationId());
+	 * recipeBoard.setServings(request.getServings());
+	 * recipeBoard.setTime(request.getTime());
+	 * recipeBoard.setDifficulty(request.getDifficulty());
+	 * recipeBoard.setRecipeTip(request.getRecipeTip());
+	 * 
+	 * try { // 썸네일 저장 MultipartFile thumbnail = request.getThumbnail(); if
+	 * (thumbnail != null && !thumbnail.isEmpty()) { String thumbnailPath =
+	 * saveThumbnail(thumbnail); recipeBoard.setThumbnailPath(thumbnailPath); } else
+	 * { throw new
+	 * IllegalArgumentException("Thumbnail is required for creating a recipe."); }
+	 * 
+	 * // 게시글 ID 생성 및 저장 log.info("Inserting recipe with memberId: {}" +
+	 * recipeBoard.getMemberId()); mapper.insertRecipeBoard(recipeBoard);
+	 * log.info("Inserted recipe board with ID: " + recipeBoard.getRecipeBoardId());
+	 * 
+	 * // RecipeViewStats 초기화 (insertInitialViewStats 호출)
+	 * log.info("Inserting initial view stats for recipeBoardId: " +
+	 * recipeBoard.getRecipeBoardId());
+	 * viewStatsMapper.insertInitialViewStats(recipeBoard.getRecipeBoardId());
+	 * 
+	 * // 재료 정보 추가 List<Integer> ingredientIds = request.getIngredientIds();
+	 * log.info("Adding ingredients to recipe with ID: " +
+	 * recipeBoard.getRecipeBoardId());
+	 * addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
+	 * 
+	 * // 해시태그 처리 String hashtags = request.getHashtags();
+	 * saveHashtagsForRecipe(recipeBoard.getRecipeBoardId(), hashtags);
+	 * 
+	 * // 스텝 정보 추가 List<String> stepDescriptions = request.getStepDescriptions();
+	 * List<MultipartFile> stepImages = request.getStepImages(); List<Integer>
+	 * stepOrders = request.getStepOrders();
+	 * 
+	 * if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
+	 * List<RecipeBoardStepVO> steps = new ArrayList<>(); for (int i = 0; i <
+	 * stepDescriptions.size(); i++) { RecipeBoardStepVO step = new
+	 * RecipeBoardStepVO(); step.setRecipeBoardId(recipeBoard.getRecipeBoardId());
+	 * step.setStepDescription(stepDescriptions.get(i));
+	 * 
+	 * // 스텝 순서 설정 (stepOrders가 제공되면 사용, 아니면 기본 순서 사용) if (stepOrders != null && i <
+	 * stepOrders.size()) { step.setStepOrder(stepOrders.get(i)); } else {
+	 * step.setStepOrder(i + 1); }
+	 * 
+	 * // 스텝 이미지 저장 및 URL 설정 if (stepImages != null && i < stepImages.size() &&
+	 * stepImages.get(i) != null && !stepImages.get(i).isEmpty()) { String
+	 * stepImageUrl = saveStepImage(stepImages.get(i)); // 스텝 이미지 저장 메서드
+	 * step.setStepImageUrl(stepImageUrl); }
+	 * 
+	 * steps.add(step); } saveRecipeSteps(recipeBoard.getRecipeBoardId(), steps); //
+	 * 스텝 정보 저장 메서드 호출 }
+	 * 
+	 * 
+	 * } catch (IOException e) { log.error("Failed to save thumbnail: " +
+	 * e.getMessage(), e); throw new
+	 * RuntimeException("Failed to create recipe due to thumbnail processing", e); }
+	 * catch (Exception e) { log.error("createRecipe failed: " + e.getMessage(), e);
+	 * throw new RuntimeException("Failed to create recipe", e); } } private String
+	 * saveStepImage(MultipartFile multipartFile) { // TODO Auto-generated method
+	 * stub return null; }
+	 */
     @Override
-    @Transactional
-    public void createRecipe(RecipeRegisterRequest request) {
-        // 1. RecipeRegisterRequest에서 데이터를 꺼내 RecipeBoardVO를 생성
-        RecipeBoardVO recipeBoard = new RecipeBoardVO();
-        recipeBoard.setRecipeBoardTitle(request.getRecipeBoardTitle());
-        recipeBoard.setRecipeBoardContent(request.getRecipeBoardContent());
-        int memberId = request.getMemberId();
-        if (memberId <= 0) {
-            log.error("Invalid memberId: " + memberId);
-            throw new IllegalArgumentException("유효하지 않은 회원 ID입니다.");
-        }
-        recipeBoard.setMemberId(memberId);
-        recipeBoard.setTypeId(request.getTypeId());
-        recipeBoard.setMethodId(request.getMethodId());
-        recipeBoard.setSituationId(request.getSituationId());
-        recipeBoard.setServings(request.getServings());
-        recipeBoard.setTime(request.getTime());
-        recipeBoard.setDifficulty(request.getDifficulty());
-        recipeBoard.setRecipeTip(request.getRecipeTip());
+	@Transactional
+	public void createRecipe(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, String hashtags,
+			MultipartFile thumbnail, List<RecipeBoardStepVO> steps,
+			List<RecipeIngredientsDetailVO> ingredientsDetails) {
+		if (thumbnail == null || thumbnail.isEmpty()) {
+			throw new IllegalArgumentException("Thumbnail is required for creating a recipe.");
+		}
 
-        try {
-            // 썸네일 저장
-            MultipartFile thumbnail = request.getThumbnail();
-            if (thumbnail != null && !thumbnail.isEmpty()) {
-                String thumbnailPath = saveThumbnail(thumbnail);
-                recipeBoard.setThumbnailPath(thumbnailPath);
-            } else {
-                throw new IllegalArgumentException("Thumbnail is required for creating a recipe.");
-            }
+		try {
+			// 썸네일 저장
+			String thumbnailPath = saveThumbnail(thumbnail);
+			recipeBoard.setThumbnailPath(thumbnailPath);
 
-            // 게시글 ID 생성 및 저장
-            log.info("Inserting recipe with memberId: {}" + recipeBoard.getMemberId());
-            mapper.insertRecipeBoard(recipeBoard);
-            log.info("Inserted recipe board with ID: " + recipeBoard.getRecipeBoardId());
+			// 게시글 ID 생성 및 저장
 
-            // RecipeViewStats 초기화 (insertInitialViewStats 호출)
-            log.info("Inserting initial view stats for recipeBoardId: " + recipeBoard.getRecipeBoardId());
-            viewStatsMapper.insertInitialViewStats(recipeBoard.getRecipeBoardId());
+			log.info("Inserting recipe with memberId: {}" + recipeBoard.getMemberId());
+			log.info(recipeBoard.getRecipeBoardId());
+			mapper.insertRecipeBoard(recipeBoard);
+			log.info("Inserted recipe board with ID: " + recipeBoard.getRecipeBoardId());
 
-            // 재료 정보 추가
-            List<Integer> ingredientIds = request.getIngredientIds();
-            log.info("Adding ingredients to recipe with ID: " + recipeBoard.getRecipeBoardId());
-            addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
+			// RecipeViewStats 초기화 (insertInitialViewStats 호출)
+			log.info("Inserting initial view stats for recipeBoardId: " + recipeBoard.getRecipeBoardId());
+			viewStatsMapper.insertInitialViewStats(recipeBoard.getRecipeBoardId());
 
-            // 해시태그 처리
-            String hashtags = request.getHashtags();
-            saveHashtagsForRecipe(recipeBoard.getRecipeBoardId(), hashtags);
+			// 재료 정보 추가
+			log.info("Adding ingredients to recipe with ID: " + recipeBoard.getRecipeBoardId());
+			addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
+			// 재료 상세 정보 추가
+			if (ingredientsDetails != null && !ingredientsDetails.isEmpty()) {
+				addIngredientDetailsToRecipe(recipeBoard.getRecipeBoardId(), ingredientsDetails);
+			}
+			// 해시태그 처리
+			saveHashtagsForRecipe(recipeBoard.getRecipeBoardId(), hashtags);
 
-             // 스텝 정보 추가
-            List<String> stepDescriptions = request.getStepDescriptions();
-            List<MultipartFile> stepImages = request.getStepImages();
-            List<Integer> stepOrders = request.getStepOrders();
-
-            if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
-                List<RecipeBoardStepVO> steps = new ArrayList<>();
-                for (int i = 0; i < stepDescriptions.size(); i++) {
-                    RecipeBoardStepVO step = new RecipeBoardStepVO();
-                    step.setRecipeBoardId(recipeBoard.getRecipeBoardId());
-                    step.setStepDescription(stepDescriptions.get(i));
-
-                    // 스텝 순서 설정 (stepOrders가 제공되면 사용, 아니면 기본 순서 사용)
-                    if (stepOrders != null && i < stepOrders.size()) {
-                        step.setStepOrder(stepOrders.get(i));
-                    } else {
-                        step.setStepOrder(i + 1);
-                    }
-
-                    // 스텝 이미지 저장 및 URL 설정
-                    if (stepImages != null && i < stepImages.size() && stepImages.get(i) != null && !stepImages.get(i).isEmpty()) {
-                        String stepImageUrl = saveStepImage(stepImages.get(i)); // 스텝 이미지 저장 메서드
-                        step.setStepImageUrl(stepImageUrl);
-                    }
-
-                    steps.add(step);
-                }
-                saveRecipeSteps(recipeBoard.getRecipeBoardId(), steps); // 스텝 정보 저장 메서드 호출
-            }
-
-
-        } catch (IOException e) {
-            log.error("Failed to save thumbnail: " + e.getMessage(), e);
-            throw new RuntimeException("Failed to create recipe due to thumbnail processing", e);
-        } catch (Exception e) {
-            log.error("createRecipe failed: " + e.getMessage(), e);
-            throw new RuntimeException("Failed to create recipe", e);
-        }
-    }
-    private String saveStepImage(MultipartFile multipartFile) {
-		// TODO Auto-generated method stub
-		return null;
+			// 스텝 정보 추가
+			if (steps != null && !steps.isEmpty()) {
+				saveRecipeSteps(recipeBoard.getRecipeBoardId(), steps);
+			} else {
+				log.info("steps is empty or null");
+			}
+		} catch (Exception e) {
+			log.error("createRecipe failed " + e.getMessage(), e);
+			throw new RuntimeException("Failed to create recipe with thumbnail and hashtags", e);
+		}
 	}
-
+    
     @Override
     public RecipeBoardDTO getRecipeDetailById(int recipeBoardId) {
         log.info("Fetching recipe detail for ID: " + recipeBoardId);
@@ -212,93 +261,129 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         return recipeDetailVO;
     }
 
-	 @Override
-	    @Transactional
-	    public void updateRecipe(RecipeUpdateRequest request) {
-	        int id = request.getRecipeBoardId();
-	        RecipeBoardVO existingRecipe = getByRecipeBoardId(id);
-	        if (existingRecipe == null) {
-	            throw new IllegalArgumentException("Recipe not found with id: " + id);
-	        }
+	/*
+	 * @Override
+	 * 
+	 * @Transactional public void updateRecipe(RecipeUpdateRequest request) { int id
+	 * = request.getRecipeBoardId(); RecipeBoardVO existingRecipe =
+	 * getByRecipeBoardId(id); if (existingRecipe == null) { throw new
+	 * IllegalArgumentException("Recipe not found with id: " + id); }
+	 * 
+	 * // 1. RecipeUpdateRequest에서 데이터를 꺼내 RecipeBoardVO를 업데이트 RecipeBoardVO
+	 * recipeBoard = new RecipeBoardVO();
+	 * recipeBoard.setRecipeBoardId(request.getRecipeBoardId());
+	 * recipeBoard.setRecipeBoardTitle(request.getRecipeBoardTitle());
+	 * recipeBoard.setRecipeBoardContent(request.getRecipeBoardContent());
+	 * recipeBoard.setMemberId(request.getMemberId());
+	 * recipeBoard.setTypeId(request.getTypeId());
+	 * recipeBoard.setMethodId(request.getMethodId());
+	 * recipeBoard.setSituationId(request.getSituationId());
+	 * recipeBoard.setServings(request.getServings());
+	 * recipeBoard.setTime(request.getTime());
+	 * recipeBoard.setDifficulty(request.getDifficulty());
+	 * recipeBoard.setRecipeTip(request.getRecipeTip()); try {
+	 * 
+	 * MultipartFile thumbnail = request.getThumbnail(); String thumbnailPath =
+	 * null; if (thumbnail != null && !thumbnail.isEmpty()) { thumbnailPath =
+	 * saveThumbnail(thumbnail); } else { thumbnailPath =
+	 * existingRecipe.getThumbnailPath(); }
+	 * recipeBoard.setThumbnailPath(thumbnailPath); // 2. RecipeBoardVO를 사용하여
+	 * 데이터베이스에 레시피를 업데이트 mapper.updateRecipeBoard(recipeBoard);
+	 * 
+	 * // 3. 나머지 로직 (해시태그, 재료 등) updateHashtags(id, request.getHashtags());
+	 * mapper.deleteRecipeIngredientsByRecipeId(id); addIngredientsToRecipe(id,
+	 * request.getIngredientIds());
+	 * 
+	 * // 스텝 정보 업데이트 List<String> stepDescriptions = request.getStepDescriptions();
+	 * List<MultipartFile> stepImages = request.getStepImages(); List<Integer>
+	 * stepOrders = request.getStepOrders(); List<Integer> deleteStepIds =
+	 * request.getDeleteStepIds(); // 삭제할 스텝 ID 목록
+	 * 
+	 * // 삭제할 스텝 삭제 if (deleteStepIds != null && !deleteStepIds.isEmpty()) { for
+	 * (int stepId : deleteStepIds) { mapper.deleteRecipeBoardStepByStepId(stepId);
+	 * } }
+	 * 
+	 * if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
+	 * List<RecipeBoardStepVO> steps = new ArrayList<>(); for (int i = 0; i <
+	 * stepDescriptions.size(); i++) { RecipeBoardStepVO step = new
+	 * RecipeBoardStepVO(); step.setRecipeBoardId(recipeBoard.getRecipeBoardId());
+	 * step.setStepDescription(stepDescriptions.get(i));
+	 * 
+	 * // 스텝 순서 설정 (stepOrders가 제공되면 사용, 아니면 기본 순서 사용) if (stepOrders != null && i <
+	 * stepOrders.size()) { step.setStepOrder(stepOrders.get(i)); } else {
+	 * step.setStepOrder(i + 1); }
+	 * 
+	 * // 스텝 이미지 저장 및 URL 설정 if (stepImages != null && i < stepImages.size() &&
+	 * stepImages.get(i) != null && !stepImages.get(i).isEmpty()) { String
+	 * stepImageUrl = saveStepImage(stepImages.get(i)); // 스텝 이미지 저장 메서드
+	 * step.setStepImageUrl(stepImageUrl); }
+	 * 
+	 * steps.add(step); } saveRecipeSteps(recipeBoard.getRecipeBoardId(), steps); //
+	 * 스텝 정보 저장 메서드 호출 }
+	 * 
+	 * } catch (IOException e) {
+	 * log.error("Failed to save thumbnail or step image: " + e.getMessage(), e);
+	 * throw new RuntimeException("Failed to update recipe due to file processing",
+	 * e); } catch (Exception e) { log.error("updateRecipe failed: " +
+	 * e.getMessage(), e); throw new RuntimeException("Failed to update recipe", e);
+	 * } }
+	 */
 
-	        // 1. RecipeUpdateRequest에서 데이터를 꺼내 RecipeBoardVO를 업데이트
-	        RecipeBoardVO recipeBoard = new RecipeBoardVO();
-	        recipeBoard.setRecipeBoardId(request.getRecipeBoardId());
-	        recipeBoard.setRecipeBoardTitle(request.getRecipeBoardTitle());
-	        recipeBoard.setRecipeBoardContent(request.getRecipeBoardContent());
-	        recipeBoard.setMemberId(request.getMemberId());
-	        recipeBoard.setTypeId(request.getTypeId());
-	        recipeBoard.setMethodId(request.getMethodId());
-	        recipeBoard.setSituationId(request.getSituationId());
-	        recipeBoard.setServings(request.getServings());
-	        recipeBoard.setTime(request.getTime());
-	        recipeBoard.setDifficulty(request.getDifficulty());
-	        recipeBoard.setRecipeTip(request.getRecipeTip());
-	        try {
+    @Override
+	@Transactional
+	public void updateRecipe(int id, RecipeBoardVO recipe, List<Integer> ingredientIds, String hashtags,
+			MultipartFile thumbnail, List<RecipeBoardStepVO> steps, List<Integer> deleteStepIds,
+			List<RecipeIngredientsDetailVO> ingredientDetails) {
 
-	            MultipartFile thumbnail = request.getThumbnail();
-	            String thumbnailPath = null;
-	            if (thumbnail != null && !thumbnail.isEmpty()) {
-	                thumbnailPath = saveThumbnail(thumbnail);
-	            } else {
-	                thumbnailPath = existingRecipe.getThumbnailPath();
-	            }
-	            recipeBoard.setThumbnailPath(thumbnailPath);
-	            // 2. RecipeBoardVO를 사용하여 데이터베이스에 레시피를 업데이트
-	            mapper.updateRecipeBoard(recipeBoard);
+		try {
+			RecipeBoardVO existingRecipe = getByRecipeBoardId(id);
+			if (existingRecipe == null) {
+				throw new IllegalArgumentException("Recipe not found with id: " + id);
+			}
 
-	            // 3. 나머지 로직 (해시태그, 재료 등)
-	            updateHashtags(id, request.getHashtags());
-	            mapper.deleteRecipeIngredientsByRecipeId(id);
-	            addIngredientsToRecipe(id, request.getIngredientIds());
+			if (existingRecipe.getRecipeBoardId() == 0) {
+				throw new IllegalArgumentException("RecipeBoardId is not set properly after getByRecipeBoardId.");
+			}
 
-	               // 스텝 정보 업데이트
-	            List<String> stepDescriptions = request.getStepDescriptions();
-	            List<MultipartFile> stepImages = request.getStepImages();
-	            List<Integer> stepOrders = request.getStepOrders();
-	            List<Integer> deleteStepIds = request.getDeleteStepIds(); // 삭제할 스텝 ID 목록
+			String thumbnailPath = null;
+			if (thumbnail != null && !thumbnail.isEmpty()) {
 
-	            // 삭제할 스텝 삭제
-	            if (deleteStepIds != null && !deleteStepIds.isEmpty()) {
-	                for (int stepId : deleteStepIds) {
-	                    mapper.deleteRecipeBoardStepByStepId(stepId);
-	                }
-	            }
+				thumbnailPath = saveThumbnail(thumbnail);
+			} else {
 
-	            if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
-	                List<RecipeBoardStepVO> steps = new ArrayList<>();
-	                for (int i = 0; i < stepDescriptions.size(); i++) {
-	                    RecipeBoardStepVO step = new RecipeBoardStepVO();
-	                    step.setRecipeBoardId(recipeBoard.getRecipeBoardId());
-	                    step.setStepDescription(stepDescriptions.get(i));
+				thumbnailPath = existingRecipe.getThumbnailPath();
+			}
+			recipe.setThumbnailPath(thumbnailPath);
+			recipe.setRecipeBoardId(id);
+			mapper.updateRecipeBoard(recipe);
+			   mapper.deleteRecipeIngredientsByRecipeId(id);
+		        addIngredientsToRecipe(id, ingredientIds);
+			mapper.deleteRecipeIngredientsByRecipeId(id);
+			addIngredientsToRecipe(id, ingredientIds);
+			mapper.deleteRecipeIngredientsDetailsByRecipeId(id);
+			if (ingredientDetails != null && !ingredientDetails.isEmpty()) {
+				addIngredientDetailsToRecipe(id, ingredientDetails);
+				  log.info("Updated ingredientDetails: " + ingredientDetails);
+			}
 
-	                    // 스텝 순서 설정 (stepOrders가 제공되면 사용, 아니면 기본 순서 사용)
-	                    if (stepOrders != null && i < stepOrders.size()) {
-	                        step.setStepOrder(stepOrders.get(i));
-	                    } else {
-	                        step.setStepOrder(i + 1);
-	                    }
+			updateHashtags(id, hashtags);
 
-	                    // 스텝 이미지 저장 및 URL 설정
-	                    if (stepImages != null && i < stepImages.size() && stepImages.get(i) != null && !stepImages.get(i).isEmpty()) {
-	                        String stepImageUrl = saveStepImage(stepImages.get(i)); // 스텝 이미지 저장 메서드
-	                        step.setStepImageUrl(stepImageUrl);
-	                    }
+			if (deleteStepIds != null && !deleteStepIds.isEmpty()) {
+				for (int stepId : deleteStepIds) {
+					mapper.deleteRecipeBoardStepByStepId(stepId);
+				}
+			}
+			if (steps != null && !steps.isEmpty()) {
+				saveRecipeSteps(id, steps);
+			}
 
-	                    steps.add(step);
-	                }
-	                saveRecipeSteps(recipeBoard.getRecipeBoardId(), steps); // 스텝 정보 저장 메서드 호출
-	            }
-
-	        }  catch (IOException e) {
-	            log.error("Failed to save thumbnail or step image: " + e.getMessage(), e);
-	            throw new RuntimeException("Failed to update recipe due to file processing", e);
-	        } catch (Exception e) {
-	            log.error("updateRecipe failed: " + e.getMessage(), e);
-	            throw new RuntimeException("Failed to update recipe", e);
-	        }
-	    }
-
+		} catch (IllegalArgumentException e) {
+			throw e;
+		} catch (Exception e) {
+			// 그 외 예외 발생 시
+			throw new RuntimeException("Failed to update recipe with hashtags", e);
+		}
+	}
 
     private void updateHashtags(int recipeBoardId, String hashtags) {
         // 기존 해시태그 가져오기

@@ -7,7 +7,6 @@
 <html>
 <head>
     <title>Update Recipe</title>
-    <!-- 스타일 및 메타 정보는 이전과 동일하게 유지 -->
     <meta name="_csrf" content="${_csrf.token}"/>
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -380,10 +379,10 @@
         <div id="ingredientInputs">
             <c:forEach var="ingredientDetail" items="${ingredientDetails}" varStatus="status">
                 <div class="ingredient-row">
-                    <input type="text" name="ingredientName[${status.index}]" value="${ingredientDetail.ingredientName}" required>
-                    <input type="text" name="ingredientAmount[${status.index}]" value="${ingredientDetail.ingredientAmount}" required>
-                    <input type="text" name="ingredientUnit[${status.index}]" value="${ingredientDetail.ingredientUnit}" required>
-                    <input type="text" name="ingredientNote[${status.index}]" value="${ingredientDetail.ingredientNote}">
+                    <input type="text" name="ingredientDetails[${status.index}].ingredientName" value="${ingredientDetail.ingredientName}" required>
+                    <input type="text" name="ingredientDetails[${status.index}].ingredientAmount" value="${ingredientDetail.ingredientAmount}" required>
+                    <input type="text" name="ingredientDetails[${status.index}].ingredientUnit" value="${ingredientDetail.ingredientUnit}" required>
+                    <input type="text" name="ingredientDetails[${status.index}].ingredientNote" value="${ingredientDetail.ingredientNote}">
                     <button type="button" class="recipe-button delete remove-ingredient">삭제</button>
 
                 </div>
@@ -522,7 +521,7 @@ $(document).ready(function () {
             <div class="input-group mb-1">
                 <input type="text" class="form-control" name="hashtags[${hashtagIndex}].hashtagName" value="${hashtagName}" />
                 <div class="input-group-append">
-                    <button class="btn btn-outline-danger remove-hashtag" type="button">삭제</button>
+                    <button class="recipe-button delete remove-hashtag" type="button">삭제</button>
                 </div>
             </div>
         `;
@@ -539,23 +538,8 @@ $(document).ready(function () {
         event.preventDefault();
         $(this).closest('.input-group').remove();
     });
-            // 해시태그 입력 필드에서 엔터 키 입력 시 해시태그 추가
-    hashtagInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") {
-            e.preventDefault(); // 폼 제출 방지
-            const value = hashtagInput.value.trim(); // 입력 값에서 공백 제거
-
-            if (value) {
-                // 새 해시태그 입력 필드 추가
-                addHashtagInput(value);
-
-                // 입력 필드 초기화
-                hashtagInput.value = "";
-            }
-        }
-    });
-
-  // 재료 관련 JavaScript (수정된 부분)
+        
+    // 재료 관련 JavaScript (수정된 부분)
     const ingredientInputs = document.getElementById("ingredientInputs");
     const addIngredientButton = $("#addIngredient");
 
@@ -569,7 +553,7 @@ $(document).ready(function () {
             <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientAmount" value="${ingredient.ingredientAmount || ''}" required>
             <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientUnit" value="${ingredient.ingredientUnit || ''}" required>
             <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientNote" value="${ingredient.ingredientNote || ''}">
-            <button type="button" class="remove-ingredient">삭제</button>
+            <button type="button" class="recipe-button delete remove-ingredient">삭제</button>
         `;
         $(ingredientInputs).append(newRow);
     }
@@ -609,35 +593,30 @@ $(document).ready(function () {
             <textarea name="stepDescription[${stepIndex}]" required>${step.stepDescription || ''}</textarea>
             <input type="file" name="stepImage[${stepIndex}]" accept="image/*">
             <input type="number" name="stepOrder[${stepIndex}]" value="${step.stepOrder || (stepIndex + 1)}" style="width: 80px;">
-            <button type="button" class="remove-step">삭제</button>
+            <button type="button" class="recipe-button delete remove-step">삭제</button>
             <div class="step-preview">
                 <img src="${step.stepImageUrl ? step.stepImageUrl : '#'}" alt="Step Preview" style="display: ${step.stepImageUrl ? 'block' : 'none'};">
             </div>
         `;
            $(stepInputs).append(newRow);
 
+        // 파일 입력 필드와 미리보기 이미지 요소 가져오기
         const fileInput = newRow.querySelector('input[type="file"]');
         const previewImage = newRow.querySelector('.step-preview img');
-
-        function previewImage(fileInput, previewImage) {
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                previewImage.src = "";
-                previewImage.style.display = 'none';
-            }
-        }
-/* 사랑중에*/
-        fileInput.addEventListener('change', function () {
-            previewImage(this, previewImage);
-        });
-
-        previewImage(fileInput, previewImage); // 초기 로드 시 미리보기 설정
+        // 파일 선택 시 미리보기 업데이트
+       fileInput.addEventListener('change', function() {
+	        if (this.files && this.files[0]) {
+	            const reader = new FileReader();
+	            reader.onload = function(e) {
+	                previewImage.src = e.target.result;
+	                previewImage.style.display = 'block';
+	            }
+	            reader.readAsDataURL(this.files[0]);
+	        } else {
+	            previewImage.src = ''; // 이미지 소스 초기화
+	            previewImage.style.display = 'none'; // 미리보기 숨기기
+	        }
+	    });
     }
 
     const initialSteps = ${JSON.stringify(steps)};
@@ -729,7 +708,7 @@ $(document).ready(function () {
             formData.append('thumbnail', thumbnailInput.files[0]);
         }
 
-        // FormData 내용 확인 (디버깅용)
+        // FormData 내용 확인 (디버깅
         for (let key of formData.keys()) {
             console.log(key, formData.get(key));
         }

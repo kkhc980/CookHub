@@ -344,15 +344,15 @@
     <h3>재료별</h3>
     <ul>
         <%-- 재료 목록을 반복하여 체크박스 생성 --%>
-        <c:forEach var="ingredient" items="${ingredientsList}">
-            <c:if test="${ingredient.ingredientId != 1}">
-                <li>
-                    <input type="checkbox" name="ingredientIds" value="${ingredient.ingredientId}"
-                            <c:if test="${recipeDetailVO.recipeBoard.ingredientIdsString != null and fn:contains(recipeDetailVO.recipeBoard.ingredientIdsString, ingredient.ingredientId.toString())}">checked</c:if>>
-                    ${ingredient.ingredientName}
-                </li>
-            </c:if>
-        </c:forEach>
+      <c:forEach var="ingredient" items="${ingredientsList}" varStatus="status">
+    <c:if test="${ingredient.ingredientId != 1}">
+        <li>
+            <input type="checkbox" name="ingredientIds" value="${ingredient.ingredientId}"
+                ${ingredientChecked[status.index] ? 'checked' : ''}>
+            ${ingredient.ingredientName}
+        </li>
+    </c:if>
+</c:forEach>
     </ul>
 </div>
 

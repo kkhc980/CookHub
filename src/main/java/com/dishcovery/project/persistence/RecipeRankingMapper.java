@@ -14,7 +14,7 @@ public interface RecipeRankingMapper {
      * @return 랭킹 데이터 리스트
      */
 	List<RecipeRankingVO> getRankings(@Param("rankType") String rankType);
-	
+	List<RecipeRankingVO> getTotalRankings(@Param("rankType") String rankType);
     /**
      * 랭킹 데이터를 삽입
      * @param rankings 랭킹 데이터 리스트

@@ -288,7 +288,8 @@
 	    카테고리 닫기 ▲
 	</div>
 	<!-- 정렬 버튼 추가 -->
-	<p>총 <span style="color: green; font-size: 32px;">${totalRecipeBoards}</span> 개의 레시피가 있습니다.</p>
+	<p>총 <span id="totalRecipeBoards" style="color: green; font-size: 32px;">${pageMaker.totalCount}</span> 개의 레시피가 있습니다.</p>
+
 
 	<div class="sort-container">
 	    <button type="button" class="sort-button ${empty param.sort || param.sort == 'latest' ? 'active' : ''}" 
@@ -342,27 +343,28 @@
 	</div>
 
 
-    <!-- Pagination Section -->
+	<!-- Pagination Section -->
 	<div class="pagination-container">
 	    <c:if test="${pageMaker.prev}">
 	        <a class="pagination-link" 
-	           href="?pageNum=${pageMaker.startNum - 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	           href="?pageNum=${pageMaker.startNum - 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&sort=${param.sort}&hashtag=${fn:escapeXml(param.hashtag)}">
 	            이전
 	        </a>
 	    </c:if>
 	    <c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
 	        <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}" 
-	           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&sort=${param.sort}&hashtag=${fn:escapeXml(param.hashtag)}">
 	            ${pageNum}
 	        </a>
 	    </c:forEach>
 	    <c:if test="${pageMaker.next}">
 	        <a class="pagination-link" 
-	           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&hashtag=${fn:escapeXml(param.hashtag)}">
+	           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&sort=${param.sort}&hashtag=${fn:escapeXml(param.hashtag)}">
 	            다음
 	        </a>
 	    </c:if>
 	</div>
+
 
     <script>
 	    function redirectToLogin() {
@@ -385,6 +387,16 @@
             urlParams.delete("hashtag");
             window.location.search = urlParams.toString();
         }
+    	
+    	function updateTotalRecipeCount() {
+    	    const totalRecipes = ${pageMaker.totalCount}; // 서버에서 받아온 전체 게시글 수
+    	    document.getElementById("totalRecipeBoards").textContent = totalRecipes;
+    	}
+
+    	// 페이지 로드 시 전체 게시글 수 업데이트
+    	document.addEventListener("DOMContentLoaded", function () {
+    	    updateTotalRecipeCount();
+    	});
     	
         document.addEventListener("DOMContentLoaded", function () {
             const ingredientButtons = document.querySelectorAll(".ingredient-button");

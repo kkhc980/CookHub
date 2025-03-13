@@ -223,7 +223,7 @@
                     totalCartPrice += totalPrice;
                 }
             });
-            $("#total-price-value").text(totalCartPrice.toLocaleString() + " 원");
+            $("#total-price-value").text(totalCartPrice.toLocaleString());
         }
 
         function initialize() {

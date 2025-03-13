@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import com.dishcovery.project.domain.*;
+import com.dishcovery.project.persistence.ProductMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,9 +18,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.dishcovery.project.domain.KakaoPayApproveVO;
-import com.dishcovery.project.domain.KakaoPayRequestVO;
-import com.dishcovery.project.domain.KakaoPayResponseVO;
 import com.dishcovery.project.persistence.OrderMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,11 @@ public class KakaoPayService {
     private static final String SECRET_KEY = "DEV05190B5E41C1DFA247F81544067A6C7E53CFE"; // ✅ 카카오페이 API Key
     private static final String KAKAO_PAY_READY_URL = "https://open-api.kakaopay.com/online/v1/payment/ready";
     private static final String KAKAO_PAY_APPROVE_URL = "https://open-api.kakaopay.com/online/v1/payment/approve";
-    
-    private final OrderMapper orderMapper; // ✅ 주문 정보를 저장할 Mapper
 
-    public KakaoPayResponseVO readyToPay(int productId, String productName, int totalPrice, int productCount, Integer memberId, HttpSession session) {
+    private final OrderMapper orderMapper; // ✅ 주문 정보를 저장할 Mapper
+    private final ProductMapper productMapper;
+
+    public KakaoPayResponseVO readyToPay(OrderPageDTO orderPageDTO, int totalPrice, Integer memberId, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
 
         if (memberId == null) {
@@ -41,13 +41,17 @@ public class KakaoPayService {
 
         String partnerOrderId = "ORDER_" + System.currentTimeMillis(); // ✅ 주문 ID 생성
 
+        String rename = reNameProduct(orderPageDTO);
+        int productCount = 1;
+        int product_id = orderPageDTO.getOrders().get(0).getProductId();
+
         KakaoPayRequestVO request = new KakaoPayRequestVO();
         request.setCid("TC0ONETIME");
         request.setPartner_order_id(partnerOrderId);
         request.setPartner_user_id(memberId.toString());
-        request.setItem_name(productName);
-        request.setQuantity(productCount);
-        request.setTotal_amount(totalPrice);
+        request.setItem_name(rename); // 물품 이름 ~~외 몇 건
+        request.setQuantity(productCount); // 1로 고정
+        request.setTotal_amount(totalPrice); // 총가격
         request.setApproval_url("http://localhost:8080/project/store/approve");
         request.setCancel_url("http://localhost:8080/project/store/cancel");
         request.setFail_url("http://localhost:8080/project/store/fail");
@@ -65,8 +69,8 @@ public class KakaoPayService {
                 session.setAttribute("tid", response.getBody().getTid());
                 session.setAttribute("member_id", memberId);
                 session.setAttribute("partner_order_id", partnerOrderId);
-                session.setAttribute("product_id", productId);
-                session.setAttribute("product_name", productName);  // ✅ 추가
+                session.setAttribute("product_id", product_id);
+                session.setAttribute("product_name", rename);  // ✅ 추가
                 session.setAttribute("product_count", productCount);
             }
             return response.getBody();
@@ -86,10 +90,10 @@ public class KakaoPayService {
         String tid = (String) session.getAttribute("tid");
         String partnerOrderId = (String) session.getAttribute("partner_order_id");
         Integer memberId = (Integer) session.getAttribute("member_id");
-        Integer productId = (Integer) session.getAttribute("product_id");  
+        Integer productId = (Integer) session.getAttribute("product_id");
         String productName = (String) session.getAttribute("product_name");  // ✅ 추가
         Integer productCount = (Integer) session.getAttribute("product_count");
-        
+
         if (tid == null || partnerOrderId == null || memberId == null || productId == null || productName == null || productCount == null) {
             throw new RuntimeException("❌ 결제 정보가 유효하지 않습니다.");
         }
@@ -128,6 +132,7 @@ public class KakaoPayService {
             // ✅ 결제 승인 성공 → DB에 주문 정보 저장
             orderMapper.insertOrder(memberId, partnerOrderId, approveVO.getAmount().getTotal(), productId, productName, productCount);
 
+
             System.out.println("✅ 결제 승인 성공: " + approveVO.getAid());
             return approveVO;
 
@@ -143,8 +148,6 @@ public class KakaoPayService {
             throw new RuntimeException("❌ 결제 승인 처리 중 오류가 발생했습니다.");
         }
     }
-
-
 
     public void cancelPayment(String tid, int cancelAmount, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
@@ -180,4 +183,15 @@ public class KakaoPayService {
             System.err.println("🚨 결제 취소 중 오류 발생: " + e.getMessage());
         }
     }
+
+    private String reNameProduct(OrderPageDTO orderPageDTO) {
+        String rename = orderPageDTO.getOrders().get(0).getProductName();
+
+        if (orderPageDTO.getOrders().size() > 1) {
+            rename += " 외 " + (orderPageDTO.getOrders().size() - 1 + "건");
+        }
+
+        return rename;
+    }
+
 }

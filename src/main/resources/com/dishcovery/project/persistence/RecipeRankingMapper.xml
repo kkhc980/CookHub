@@ -31,19 +31,11 @@
 	        rb.recipe_board_id, 
 	        rb.recipe_board_title, 
 	        rb.thumbnail_path, 
-	        CASE 
-	            WHEN #{rankType} = 'daily' THEN rvs.daily_view_count
-	            WHEN #{rankType} = 'weekly' THEN rvs.weekly_view_count
-	            ELSE rvs.monthly_view_count
-	        END AS viewCount,
+	        rr.view_count AS viewCount,  -- ✅ RECIPE_RANKINGS 테이블의 VIEW_COUNT 사용
 	        rb.avg_rating, 
 	        rb.like_count,
 	        COALESCE((
-	            (LN(1 + CASE 
-	                WHEN #{rankType} = 'daily' THEN rvs.daily_view_count
-	                WHEN #{rankType} = 'weekly' THEN rvs.weekly_view_count
-	                ELSE rvs.monthly_view_count
-	            END) * 
+	            (LN(1 + rr.view_count) * 
 	            CASE 
 	                WHEN #{rankType} = 'daily' THEN 2 
 	                WHEN #{rankType} = 'weekly' THEN 1.5 
@@ -53,11 +45,17 @@
 	            (LN(1 + rb.like_count) * 5)
 	        ), 0.0) AS total_score  -- ✅ NULL 값 방지 (COALESCE 사용)
 	    FROM recipe_board rb
-	    JOIN recipe_view_stats rvs ON rb.recipe_board_id = rvs.recipe_board_id
+	    JOIN recipe_rankings rr 
+	        ON rb.recipe_board_id = rr.recipe_board_id
+	        AND rr.rank_type = 
+	            CASE 
+	                WHEN #{rankType} = 'daily' THEN 'DAILY'
+	                WHEN #{rankType} = 'weekly' THEN 'WEEKLY'
+	                ELSE 'MONTHLY'
+	            END  -- ✅ rank_type 조건 추가
 	    ORDER BY total_score DESC
 	  ]]>
 	</select>
-
 
     <!-- 특정 유형의 기존 랭킹 데이터를 삭제 -->
     <delete id="deleteRankingsByType">
@@ -81,15 +79,16 @@
 
     <update id="reorderRankPositions">
         UPDATE recipe_rankings r
-        SET r.rank_position = (
-            SELECT new_rank_position
-            FROM (
-                SELECT 
-                    ROW_NUMBER() OVER (ORDER BY view_count DESC) AS new_rank_position,
-                    rank_id
-                FROM recipe_rankings
-            ) rd
-            WHERE rd.rank_id = r.rank_id
-        )
+	SET r.rank_position = (
+	    SELECT new_rank_position
+	    FROM (
+	        SELECT 
+	            ROW_NUMBER() OVER (ORDER BY view_count DESC) AS new_rank_position,
+	            rank_id
+	        FROM recipe_rankings
+	        WHERE rank_type = r.rank_type  -- ✅ rank_type 별로 정렬
+	    ) rd
+	    WHERE rd.rank_id = r.rank_id
+	)
     </update>
 </mapper>

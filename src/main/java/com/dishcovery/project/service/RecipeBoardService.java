@@ -14,9 +14,14 @@ public interface RecipeBoardService {
     // Recipe CRUD
     RecipeBoardVO getByRecipeBoardId(int recipeBoardId);
 
-    void createRecipe(RecipeRegisterRequest request);
+    //    void createRecipe(RecipeRegisterRequest request);
+    //    void updateRecipe( RecipeUpdateRequest request);
+	void createRecipe(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, String hashtags, MultipartFile thumbnail,
+			List<RecipeBoardStepVO> steps, List<RecipeIngredientsDetailVO> ingredientDetails);
 
-    void updateRecipe( RecipeUpdateRequest request);
+	void updateRecipe(int id, RecipeBoardVO recipe, List<Integer> ingredientIds, String hashtags,
+			MultipartFile thumbnail, List<RecipeBoardStepVO> steps, List<Integer> deleteStepIds,
+			List<RecipeIngredientsDetailVO> ingredientDetails);
 
     void deleteRecipe(int recipeBoardId);
 

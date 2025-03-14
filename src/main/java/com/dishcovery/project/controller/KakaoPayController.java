@@ -2,13 +2,12 @@ package com.dishcovery.project.controller;
 
 import javax.servlet.http.HttpSession;
 
+import com.dishcovery.project.domain.OrderPageDTO;
+import lombok.extern.log4j.Log4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -19,6 +18,7 @@ import com.dishcovery.project.service.KakaoPayService;
 
 @Controller
 @RequestMapping("/store")
+@Log4j
 public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
 
@@ -28,19 +28,19 @@ public class KakaoPayController {
 
     // ✅ 결제 요청 (카카오페이 결제창으로 리디렉트)
     @PostMapping("/purchase")
-    public RedirectView kakaoPayReady(@RequestParam("productId") int productId,
-                                      @RequestParam("productName") String productName,
-                                      @RequestParam("productPrice") int productPrice,
-                                      @RequestParam("productCount") int productCount,  // 추가
-                                      HttpSession session) {
+    public RedirectView kakaoPayReady(OrderPageDTO orderPageDTO, @RequestParam("totalPayment") int totalPayment, HttpSession session) {
         Integer memberId = getCurrentUserId();
         if (memberId == null) {
             throw new RuntimeException("로그인된 사용자 정보를 찾을 수 없습니다.");
         }
 
-        int totalPrice = productPrice * productCount; // 총 가격 계산
+        if (orderPageDTO == null || orderPageDTO.getOrders() == null || orderPageDTO.getOrders().isEmpty()) {
+            throw new IllegalArgumentException("주문 정보가 없습니다.");
+        }
 
-        KakaoPayResponseVO response = kakaoPayService.readyToPay(productId, productName, totalPrice, productCount, memberId, session);
+        log.info("orderPageDTO : " + orderPageDTO);
+
+        KakaoPayResponseVO response = kakaoPayService.readyToPay(orderPageDTO, totalPayment, memberId, session);
 
         if (response == null || response.getNext_redirect_pc_url() == null) {
             throw new RuntimeException("카카오페이 결제 요청 중 오류가 발생했습니다.");

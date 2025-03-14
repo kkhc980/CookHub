@@ -12,7 +12,7 @@ public interface RecipeRankingService {
      * @return 랭킹 데이터 리스트
      */
 	List<RecipeRankingVO> getRankings(String rankType);
-	
+	List<RecipeRankingVO> getTotalRankings(String rankType);
     /**
      * 특정 유형의 랭킹 데이터를 업데이트
      * @param type 랭킹 유형 (DAILY, WEEKLY, MONTHLY)

@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class MainController {
 
-    @GetMapping("/main")
+    @GetMapping("/main12321")
     public String mainPage(Model model) {
     	 model.addAttribute("pageContent", "main.jsp");
 

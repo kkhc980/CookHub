@@ -96,7 +96,7 @@ public class ProductController {
     // 장바구니에 상품 추가
     @PostMapping("/cart/add/{productId}")
     @ResponseBody
-    public ResponseEntity<Boolean> addToCart(@PathVariable int productId, @RequestParam("productCount") int productCount) {
+    public ResponseEntity<String> addToCart(@PathVariable int productId, @RequestParam("productCount") int productCount) {
         // 1. 상품 정보 가져오기
         ProductVO productVO = productService.getProduct(productId);
 
@@ -118,8 +118,8 @@ public class ProductController {
         // 4. 장바구니에 이미 동일한 상품이 있는지 확인
         for (OrderPageItemDTO item : cart) {
             if (item.getProductId() == productId) {
-                // 이미 존재하면 false 반환
-                return new ResponseEntity<>(false, HttpStatus.OK);
+                // 이미 존재하면 "duplicate" 반환
+                return new ResponseEntity<>("duplicate", HttpStatus.OK);
             }
         }
 
@@ -129,8 +129,8 @@ public class ProductController {
         // 6. 세션에 장바구니 목록 저장
         session.setAttribute("cart", cart);
 
-        // 7. 성공 시 true 반환
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        // 7. 성공 시 "ok" 반환
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
 

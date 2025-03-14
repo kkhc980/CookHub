@@ -103,6 +103,8 @@
     <p class="empty-message">선택된 상품이 없습니다.</p>
 </c:if>
 
+<div id="paymentResultArea"></div>
+
 <script>
     function submitOrder(totalPayment) {
         let form = document.createElement("form");
@@ -115,7 +117,7 @@
         let productPriceInput = null;
         let totalPriceInput = null;
 
-            <c:forEach var="order" items="${orderPageDTO.orders}" varStatus="status">
+        <c:forEach var="order" items="${orderPageDTO.orders}" varStatus="status">
         productIdInput = document.createElement("input");
         productIdInput.type = "hidden";
         productIdInput.name = "orders[${status.index}].productId";
@@ -153,9 +155,34 @@
         csrfInput.value = "${_csrf.token}";
         form.appendChild(csrfInput);
 
+        // 팝업 창 열기
+        let popupWidth = 500;
+        let popupHeight = 600;
+        let popupX = (window.screen.width / 2) - (popupWidth / 2);
+        let popupY = (window.screen.height / 2) - (popupHeight / 2);
+        // 팝업 창 열기 및 이름 저장
+        let popup = window.open("", "kakaopayPopup", "width=" + popupWidth + ", height=" + popupHeight + ", left=" + popupX + ", top=" + popupY);
+
+        // 폼 전송 대상 설정
+        form.target = "kakaopayPopup";
+
+        // 폼을 body에 추가하고 전송
         document.body.appendChild(form);
         form.submit();
     }
+
+    // 결제 결과를 받아 처리하는 함수
+    window.addEventListener("message", function(event) {
+        if (event.origin === "${pageContext.request.contextPath}") {
+            let result = event.data;
+            if (result.success) {
+                // 결제 성공 시 paymentResult.jsp 로 이동
+                window.location.href = "${pageContext.request.contextPath}/store/paymentResult";
+            } else {
+                document.getElementById("paymentResultArea").innerHTML = "❌ 결제가 실패하였습니다. 다시 시도해주세요.";
+            }
+        }
+    });
 </script>
 
 </body>

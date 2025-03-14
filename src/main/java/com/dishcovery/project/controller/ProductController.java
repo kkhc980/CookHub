@@ -133,7 +133,6 @@ public class ProductController {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
-
     // 장바구니 페이지 보여주기
     @GetMapping("/cart")
     public String showCart(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -210,5 +209,15 @@ public class ProductController {
         model.addAttribute("pageContent", "store/order.jsp");
 
         return "layout";
+    }
+
+    @GetMapping("/success")
+    public String showSuccessPage() {
+        return "store/success"; // success.jsp 호출
+    }
+
+    @GetMapping("paymentResult")
+    public String showPaymentResultPage() {
+        return "paymentResult";
     }
 }

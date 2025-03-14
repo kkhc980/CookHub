@@ -1,0 +1,150 @@
+ body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .detail-container > div {
+            margin-bottom: 20px;
+        }
+        .detail-container .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #343a40;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        .detail-container .info-item {
+            margin-bottom: 5px;
+            color: #495057;
+            display: flex;
+            align-items: center;
+        }
+        .detail-container .info-item .label {
+            font-weight: bold;
+            margin-right: 5px;
+            min-width: 60px;
+        }
+        .detail-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-top: 5px;
+            resize: vertical;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #495057;
+            outline: none;
+        }
+        .detail-container ul {
+            list-style: none;
+            padding: 0;
+        }
+       .detail-container ul li {
+            margin-bottom: 0px;
+            color: #495057;
+        }
+        .detail-container img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin: 10px auto;
+        }
+        .hashtags {
+            margin-top: 20px;
+        }
+        .hashtags span {
+            display: inline-block;
+            background-color: #f1f1f1;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+        .step-row {
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .step-row .step-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            display: block;
+        }
+        .step-row textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #495057;
+            outline: none;
+        }
+        .step-row img {
+            max-width: 100%;
+            max-height: 100px;
+            display: block;
+            margin: 10px auto;
+        }
+        .ingredient-detail-row {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .ingredient-detail-row .label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .ingredient-detail-row span {
+            color: #495057;
+        }
+        /* 카테고리 및 요리 정보 컨테이너 */
+        .info-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .info-container .category-section,
+        .info-container .recipe-info-section {
+            width: 48%; /* 좌우로 나뉘도록 */
+            margin-bottom: 15px;
+            box-sizing: border-box; /* 패딩, 테두리 포함 너비 */
+            padding: 10px;
+        }
+         .info-container .category-section ul,
+        .info-container .category-section ul li {
+            margin-bottom: 0px;
+            margin-left: 0px;
+            padding-left: 0px;
+        }
+        .info-container .category-section:last-child,
+        .info-container .recipe-info-section:last-child{
+            margin-right: 0;
+        }
+        @media (max-width: 768px) {
+            .info-container .category-section,
+            .info-container .recipe-info-section {
+                width: 100%;
+            }
+        }

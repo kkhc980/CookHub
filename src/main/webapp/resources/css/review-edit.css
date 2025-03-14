@@ -1,0 +1,279 @@
+/* 전체 리뷰 섹션 스타일 */
+.review-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.review-section h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* 리뷰 헤더 (별점) 스타일 */
+.review-header {
+    margin-bottom: 10px;
+    display: flex; /* Flexbox 레이아웃 사용 */
+    align-items: center; /* 수직 정렬 */
+}
+
+/* 별점 스타일 */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 30px;
+    color: #ddd;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: gold;
+}
+
+/* 리뷰 입력 영역 스타일 */
+.review-input-area {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.review-input-area textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    resize: vertical;
+    min-height: 100px;
+    font-size: 14px;
+}
+
+/* drag - image 영역 스타일*/
+.review-input-area .image-drop {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* 리뷰 이미지 미리보기 영역 스타일*/
+.review-input-area .reviewAttachDTOImg-list {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 10px;
+}
+
+.review-input-area .reviewAttachDTOImg-list img {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 5px;
+    object-fit: cover;
+}
+
+.review-add-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.review-add-button:hover {
+    background-color: #3e8e41;
+}
+
+/* 리뷰 목록 스타일 */
+#reviews {
+    margin-bottom: 20px;
+}
+
+.review_item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+
+/* 이미지 영역 스타일 */
+.image_item {
+    width: 50px; /* 이미지 크기 조정 */
+    height: 50px; /* 이미지 크기 조정 */
+    margin-left: 10px; /* 이미지와 아이디 간 간격 */
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.image_item pre {
+    margin: 0; /* pre 태그의 기본 margin 제거 */
+}
+
+.image_item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 리뷰 내용 스타일 */
+.recipeReviewContentDisplay {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* 별점 표시 스타일 */
+.starRatingDisplay {
+    color: gold;
+    font-size: 16px;
+}
+
+/* 수정/삭제 버튼 스타일 */
+.btn_review_update,
+.btn_review_delete {
+    background-color: #eee;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn_review_update:hover,
+.btn_review_delete:hover {
+    background-color: #ddd;
+}
+
+/* 구분선 스타일 */
+.custom-hr {
+    border-top: 1px solid #eee;
+    margin: 20px 0;
+}
+
+/* 페이지네이션 스타일 (필요한 경우) */
+#reviewPagination {
+    text-align: center;
+}
+
+#reviewPagination a {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    text-decoration: none;
+    color: #333;
+}
+
+#reviewPagination a:hover {
+    background-color: #eee;
+}
+
+/* 리뷰 수정 모달 스타일 */
+.editReviewModal.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000;
+}
+
+.editReviewModal .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%; /* Adjust as needed */
+    max-width: 600px; /* Maximum width */
+}
+
+.editReviewModal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.editReviewModal textarea.editReviewContent {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 100px;
+}
+
+/* 이미지 Drag & Drop 업로드 영역 추가 */
+.update-input-area {
+  /* 필요한 스타일 추가 */
+}
+
+.update-input-area .image-upload {
+  /* 필요한 스타일 추가 */
+}
+
+/* 업로드된 이미지를 출력하는 영역에 대한 스타일 */
+.image-list {
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 5px;
+  margin-bottom: 20px;
+  height: 120px;
+  width: 120px; /* 명시적인 너비 설정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 업로드된 이미지에 대한 스타일 */
+.image_item {
+  width: 100px; /* 이미지 아이템 가로 크기 지정 */
+  height: 100px; /* 이미지 아이템 세로 크기 지정 */
+  margin-left: 0; /* 왼쪽 여백 제거 */
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+}
+
+/* image_item 내의 img 태그 스타일 */
+.image_item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* contain으로 변경 */
+  vertical-align: top;
+}

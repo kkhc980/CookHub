@@ -14,7 +14,7 @@ $(document).ready(function() {
         // submitNestedReply();
 	var nestedReplyContent = $(this).siblings('#nestedReplyContent').val();
     var replyId = $(this).siblings('#parentReplyId').val();
-    var modal = document.getElementById("nestedReplyModal");
+    var nestedModal = document.getElementById("nestedReplyModal");
 
     // Get memberId from hidden input
     var memberId = $(this).siblings('#nestedReplyMemberId').val();
@@ -41,7 +41,7 @@ $(document).ready(function() {
         }),
         success: function(response) {
             alert("답글이 작성되었습니다.");
-            modal.style.display = "none";
+            nestedModal.style.display = "none";
             window.getAllReply(); // ✅ 전역 함수로 호출
         },
         error: function(xhr, status, error) {
@@ -55,27 +55,27 @@ $(document).ready(function() {
     $(document).on('click', '#nestedReplyModal .close', function() {
         console.log("✅ 모달 닫기 버튼 클릭됨!"); // ✅ 디버깅용 로그 출력
 
-        var modal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
-        console.log("🔹 닫힐 모달 요소:", modal);
+        var nestedModal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
+        console.log("🔹 닫힐 모달 요소:", nestedModal);
 
-        if (modal.length === 0) {
+        if (nestedModal.length === 0) {
             alert("❌ 닫을 모달을 찾을 수 없습니다.");
             return;
         }
 
-        modal.hide(); // ✅ 모달 닫기
+        nestedModal.hide(); // ✅ 모달 닫기
     });$(document).on('click', '#nestedReplyModal .close', function() {
         console.log("✅ 모달 닫기 버튼 클릭됨!"); // ✅ 디버깅용 로그 출력
 
-        var modal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
-        console.log("🔹 닫힐 모달 요소:", modal);
+        var nestedModal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
+        console.log("🔹 닫힐 모달 요소:", nestedModal);
 
-        if (modal.length === 0) {
+        if (nestedModal.length === 0) {
             alert("❌ 닫을 모달을 찾을 수 없습니다.");
             return;
         }
 
-        modal.hide(); // ✅ 모달 닫기
+        nestedModal.hide(); // ✅ 모달 닫기
     });
 });
 
@@ -203,34 +203,34 @@ function getAllNestedReply(replyId) {
 function openNestedReplyModal(element) {
     var replyId = $(element).data('reply-id');
     
-     let modal = document.getElementById("nestedReplyModal");
-	    if (!modal) {
-	        console.error("Modal element with ID 'nestedReplyModal' not found.");
+     let nestedModal = document.getElementById("nestedReplyModal");
+	    if (!nestedModal) {
+	        console.error("nestedModal element with ID 'nestedReplyModal' not found.");
 	        return;
 	    }
-   // var modal = document.getElementById("nestedReplyModal");
+   // var nestedModal = document.getElementById("nestedReplyModal");
 
     // Set the parent reply ID
     $("#parentReplyId").val(replyId);
 
-    // Display the modal
-    modal.style.display = "block";
+    // Display the nestedModal
+    nestedModal.style.display = "block";
 
     // Close button functionality
     var closeBtn = document.getElementsByClassName("close")[0];
     closeBtn.onclick = function() {
-      let modal = document.getElementById("nestedReplyModal");
-      if (modal) {
-            modal.style.display = "none";
+      let nestedModal = document.getElementById("nestedReplyModal");
+      if (nestedModal) {
+            nestedModal.style.display = "none";
        } else {
-           console.log("Modal element not found!");
+           console.log("nestedModal element not found!");
        }
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+        if (event.target == nestedModal) {
+            nestedModal.style.display = "none";
         }
     }
 }
@@ -239,7 +239,7 @@ function openNestedReplyModal(element) {
 function submitNestedReply() {
     var nestedReplyContent = $('#nestedReplyContent').val();
     var replyId = $('#parentReplyId').val();
-    var modal = document.getElementById("nestedReplyModal");
+    var nestedModal = document.getElementById("nestedReplyModal");
 
     // Get memberId from hidden input
     var memberId = $('#nestedReplyMemberId').val();

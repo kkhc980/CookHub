@@ -104,7 +104,7 @@
                 <li><a href="${pageContext.request.contextPath}/noticeboard/list"><i class="fas fa-bullhorn"></i> 공지사항</a></li>
                 <li><a href="${pageContext.request.contextPath}/recipeboard/list"><i class="fas fa-utensils"></i> 레시피</a></li>
                 <li><a href="${pageContext.request.contextPath}/store/list"><i class="fas fa-store"></i> 스토어</a></li>
-                <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+<%--                 <li><a href="${pageContext.request.contextPath}/noticeboard/list"><i class="fas fa-question-circle"></i> FAQ</a></li> --%>
                 <li><a href="#"><i class="fas fa-envelope"></i> 문의하기</a></li>
             </ul>
         </div>
@@ -115,6 +115,7 @@
                 <li><a href="#" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
                 <li><a href="#" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
                 <li><a href="#" target="_blank"><i class="fab fa-twitter"></i> Twitter</a></li>
+                <li><a href="https://www.notion.so/CookHub-2025-02-21-1a1be2b5006c80c7a371c7e3a094f357" target="_blank"><i class="fas fa-book"></i> Notion</a></li>
             </ul>
         </div>
 

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
@@ -25,7 +26,7 @@
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: left;
+            text-align: center; /* 가운데 정렬 추가 */
         }
 
         th {
@@ -69,7 +70,7 @@
             <th>상품명</th>
             <th>수량</th>
             <th>가격</th>
-            <th>총 가격</th>
+            <th>합계</th>
         </tr>
         </thead>
         <tbody>
@@ -77,8 +78,8 @@
             <tr>
                 <td>${order.productName}</td>
                 <td>${order.productCount}</td>
-                <td>${order.productPrice}</td>
-                <td>${order.totalPrice}</td>
+                <td><fmt:formatNumber value="${order.productPrice}" pattern="#,### 원"/></td>
+                <td><fmt:formatNumber value="${order.totalPrice}" pattern="#,### 원"/></td>
             </tr>
         </c:forEach>
         </tbody>
@@ -90,11 +91,11 @@
         <c:forEach var="order" items="${orderPageDTO.orders}">
             <c:set var="totalPayment" value="${totalPayment + order.totalPrice}"/>
         </c:forEach>
-            ${totalPayment} 원
+        <fmt:formatNumber value="${totalPayment}" pattern="#,### 원"/>
     </div>
 
     <div>
-        <button class="purchase-button" onclick="purchaseProduct()">구매하기</button>
+        <button class="purchase-button" onclick="submitOrder(${totalPayment})">구매하기</button>
     </div>
 </c:if>
 
@@ -103,42 +104,54 @@
 </c:if>
 
 <script>
-    function purchaseProduct() {
+    function submitOrder(totalPayment) {
         let form = document.createElement("form");
         form.method = "POST";
-        form.action = '${pageContext.request.contextPath}/store/purchase';
+        form.action = "${pageContext.request.contextPath}/store/purchase?totalPayment=" + totalPayment;
+
+        let productIdInput = null;
+        let productCountInput = null;
+        let productNameInput = null;
+        let productPriceInput = null;
+        let totalPriceInput = null;
+
+            <c:forEach var="order" items="${orderPageDTO.orders}" varStatus="status">
+        productIdInput = document.createElement("input");
+        productIdInput.type = "hidden";
+        productIdInput.name = "orders[${status.index}].productId";
+        productIdInput.value = "${order.productId}";
+        form.appendChild(productIdInput);
+
+        productCountInput = document.createElement("input");
+        productCountInput.type = "hidden";
+        productCountInput.name = "orders[${status.index}].productCount";
+        productCountInput.value = "${order.productCount}";
+        form.appendChild(productCountInput);
+
+        productNameInput = document.createElement("input");
+        productNameInput.type = "hidden";
+        productNameInput.name = "orders[${status.index}].productName";
+        productNameInput.value = "${order.productName}";
+        form.appendChild(productNameInput);
+
+        productPriceInput = document.createElement("input");
+        productPriceInput.type = "hidden";
+        productPriceInput.name = "orders[${status.index}].productPrice";
+        productPriceInput.value = "${order.productPrice}";
+        form.appendChild(productPriceInput);
+
+        totalPriceInput = document.createElement("input");
+        totalPriceInput.type = "hidden";
+        totalPriceInput.name = "orders[${status.index}].totalPrice";
+        totalPriceInput.value = "${order.totalPrice}";
+        form.appendChild(totalPriceInput);
+        </c:forEach>
 
         let csrfInput = document.createElement("input");
         csrfInput.type = "hidden";
         csrfInput.name = "${_csrf.parameterName}";
         csrfInput.value = "${_csrf.token}";
         form.appendChild(csrfInput);
-
-        <c:forEach var="order" items="${orderPageDTO.orders}" varStatus="status">
-        let productIdInput = document.createElement("input");
-        productIdInput.type = "hidden";
-        productIdInput.name = "orders[" + ${status.index} + "].productId";
-        productIdInput.value = "${order.productId}";
-        form.appendChild(productIdInput);
-
-        let productCountInput = document.createElement("input");
-        productCountInput.type = "hidden";
-        productCountInput.name = "orders[" + ${status.index} + "].productCount";
-        productIdInput.value = "${order.productCount}";
-        form.appendChild(productCountInput);
-
-        let productNameInput = document.createElement("input");
-        productNameInput.type = "hidden";
-        productNameInput.name = "orders[" + ${status.index} + "].productName";
-        productNameInput.value = "${order.productName}";
-        form.appendChild(productNameInput);
-
-        let productPriceInput = document.createElement("input");
-        productPriceInput.type = "hidden";
-        productPriceInput.name = "orders[" + ${status.index} + "].productPrice";
-        productPriceInput.value = "${order.productPrice}";
-        form.appendChild(productPriceInput);
-        </c:forEach>
 
         document.body.appendChild(form);
         form.submit();

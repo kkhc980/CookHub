@@ -77,7 +77,7 @@
      class="product-image">
 <div class="product-info">
     <p>상품명 : ${product.productName}</p>
-    <p>가격 : ${product.productPrice}원</p>
+    <p>가격 : <span id="product-price">${product.productPrice}</span>원</p>
     <p>총 가격 : <span id="total-price">${product.productPrice}</span>원</p>
     <p>재고 : ${product.stock}개</p>
 </div>
@@ -93,7 +93,7 @@
       </span>
     </div>
     <div class="button_set">
-        <button class="btn_cart">장바구니</button>
+        <button class="btn_cart">장바구니 추가</button>
         <button class="purchase-button"
                 onclick="purchaseProduct('${product.productId}', '${product.productName}', ${product.productPrice})">
             구매하기
@@ -102,11 +102,25 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script>
-    //초기 가격 설정
+    // 초기 가격 설정
     let stock = ${product.stock};
     let productPrice = ${product.productPrice};
     let quantity = $(".quantity_input").val();
     updateTotalPrice();
+    updateProductPrice();
+
+    // 상품 가격 업데이트 함수
+    function updateProductPrice() {
+        let formattedPrice = productPrice.toLocaleString();
+        $("#product-price").text(formattedPrice);
+    }
+
+    // 총 가격 업데이트 함수
+    function updateTotalPrice() {
+        let totalPrice = productPrice * quantity;
+        let formattedTotalPrice = totalPrice.toLocaleString();
+        $("#total-price").text(formattedTotalPrice);
+    }
 
     // 수량 증가 버튼
     $(".plus_btn").on("click", function () {
@@ -147,12 +161,6 @@
         updateTotalPrice();
     });
 
-    // 총 가격 업데이트 함수
-    function updateTotalPrice() {
-        let totalPrice = productPrice * quantity;
-        $("#total-price").text(totalPrice);
-    }
-
     // 장바구니 버튼
     $(".btn_cart").on("click", function () {
         let productCount = $(".quantity_input").val();
@@ -167,12 +175,13 @@
             url: "../cart/add/${product.productId}",
             data: {productCount: productCount},
             success: function (response) {
-                // response.body를 사용하여 true/false 값 확인
-                if (response.body) {
+                if (response === "ok") {
                     alert("장바구니에 추가되었습니다!");
                     window.location.href = "../cart";
-                } else {
+                } else if (response === "duplicate") {
                     alert("이미 장바구니에 있는 상품입니다.");
+                } else {
+                    alert("오류가 발생했습니다.");
                 }
             },
             error: function (error) {

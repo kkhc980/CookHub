@@ -20,8 +20,17 @@
    <link rel="stylesheet"
       href="${pageContext.request.contextPath }/resources/css/image.css">
    
-  <link rel="stylesheet" 
+   <link rel="stylesheet" 
   		href="${pageContext.request.contextPath }/resources/css/nestedreply.css"> <!-- CSS 링크 추가 -->
+  		
+   <link rel="stylesheet"
+        href="${pageContext.request.contextPath }/resources/css/recipedetail.css">
+   
+   <link rel="stylesheet"
+        href="${pageContext.request.contextPath }/resources/css/reviews.css">   
+        
+   <link rel="stylesheet"
+        href="${pageContext.request.contextPath }/resources/css/review-edit.css">       		
    
    <!-- CSRF 토큰 추가 -->
    <meta name="_csrf" content="${_csrf.token}" />
@@ -116,6 +125,8 @@
 
 </head>
 <body>
+
+<div class="container">
    <h2>글 보기</h2>
 
    <div>
@@ -159,6 +170,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- jQuery 및 Bootstrap JS 로드 -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -414,118 +426,99 @@ $(document).ready(function() {
                   }); // end document
    </script>
    
+   
    <input type="hidden" id="recipeBoardId"
-      value="${recipeBoard.recipeBoardId }">
+      value="${recipeBoard.recipeBoardId }">   
+<div class="comment-review-container">
 
-   <h2>댓글 (<span id="replyTotalCount">0</span>)</h2>
-<sec:authorize access="isAuthenticated()">   
-   <div style="text-align: left;">
+  <h2>댓글 (<span id="replyTotalCount">0</span>)</h2>
+
+  <sec:authorize access="isAuthenticated()">
+    <div>
       <sec:authentication var="customUser" property="principal" />
-      <c:set var="loggedInMemberId" value="${customUser.memberVO.memberId}" />   
-   </div>
-</sec:authorize>   
+      <c:set var="loggedInMemberId" value="${customUser.memberVO.memberId}" />
+    </div>
+  </sec:authorize>
+
+  <c:if test="${not empty loggedInMemberId}">
+    <div class="input-area">
+      <span id="loggedInMemberId"></span>
+      <input type="hidden" id="memberId" value="${loggedInMemberId}">
+      <textarea id="replyContent" maxlength="150" placeholder="댓글을 입력하세요"></textarea>
+      <button id="btnAdd" class="add-button">등록</button>
+    </div>
+  </c:if>
+
+  <hr>
+  <div id="replies"></div>
+  <div id="pagination"></div>
+  <hr>
+
+  <!-- Modal Structure -->
+  <sec:authorize access="isAuthenticated()">
+    <div id="nestedReplyModal" class="modal-nested">
+      <div class="modal-nested-content">
+        <span class="close">×</span>
+        <h5>답글</h5>
+        <textarea id="nestedReplyContent" class="form-control" placeholder="답글 내용을 입력하세요."></textarea>
+        <input type="hidden" id="parentReplyId">
+        <input type="hidden" id="nestedReplyMemberId" value="${loggedInMemberId}">
+        <button type="button" id="submitNestedReply">등록</button>
+      </div>
+    </div>
+  </sec:authorize>
+  
+  <h2>리뷰 (<span id="reviewTotalCount">0</span>)</h2>
 
 <c:if test="${not empty loggedInMemberId}">
-<div style="text-align: left;">
-      <!-- memberId를 입력하는 대신 span 태그로 표시 -->
-      <span id="loggedInMemberId">${loggedInMemberId}</span>
-      <!-- hidden 필드로 memberId 전송 -->
-      <input type="hidden" id="memberId" value="${loggedInMemberId}">
-      
-      <input type="text" id="replyContent" maxlength="150" placeholder="댓글을 입력하세요">
-<button id="btnAdd">댓글 작성</button>
+ <div class="review-header">
+
+  <span class="star-rating">
+        <input type="radio" name="reviewRating" id="star1" value="1"><label for="star1"></label>
+        <input type="radio" name="reviewRating" id="star2" value="2"><label for="star2"></label>
+        <input type="radio" name="reviewRating" id="star3" value="3"><label for="star3"></label>
+        <input type="radio" name="reviewRating" id="star4" value="4"><label for="star4"></label>
+        <input type="radio" name="reviewRating" id="star5" value="5"><label for="star5"></label>
+  </span>
+ </div> 
+
+  
+    <div class="review-input-area">
+    <div class="image-drop">drag - image</div>
+    <div class="reviewAttachDTOImg-list"></div>
+      <span id="loggedInReviewMemberId"></span>
+      <input type="hidden" id="reviewMemberId" value="${loggedInMemberId}">
+      <textarea id="recipeReviewContent" placeholder="리뷰 내용을 입력하세요"></textarea>
+
+      <button id="btnReviewAdd" class="review-add-button">등록</button>
+    </div>
+  </c:if>
+
+  <hr>
+  <div id="reviews">
+    <c:forEach var="review" items="${reviews}">
+      <div class="recipeReview_item" data-review-id="${review.recipeReviewId}">
+        <p class="recipeReviewContentDisplay">${review.recipeReviewContent}</p>
+        <span class="starRatingDisplay">
+          <c:forEach begin="1" end="${review.reviewRating}">
+            <span style="color:gold;">⭐</span>
+          </c:forEach>
+        </span>
+        <button class="btn_review_update" data-review-id="${review.recipeReviewId}">수정</button>
+        <button class="btn_review_delete" data-review-id="${review.recipeReviewId}">삭제</button>
+      </div>
+    </c:forEach>
+  </div>
+
+  <script src="${pageContext.request.contextPath}/resources/js/image.js"></script>
+  <div>
+    <div id="reviewPagination"></div>
+  </div>
+
+  <hr>
+  </div>
+ 
 </div>
-</c:if>
-      
-   <hr> 
-      <div id="replies"></div>
-      
-      <div id="pagination"></div>
-    <!-- 페이징 UI가 여기에 표시됩니다. -->
-   <hr>
-   
-    <!-- Modal Structure -->
-    <sec:authorize access="isAuthenticated()">
-  
-    
-    <div id="nestedReplyModal" class="modal">
-        <div class="modal-content">
-            <span class="close">×</span>
-            <h5>답글 작성</h5>
-            <textarea id="nestedReplyContent" class="form-control" placeholder="답글 내용을 입력하세요."></textarea>
-            <input type="hidden" id="parentReplyId">
-            <input type="hidden" id="nestedReplyMemberId" value="${loggedInMemberId}"> <!-- memberId 추가 -->
-            <button type="button" id="submitNestedReply">답글 작성</button>
-        </div>
-    </div>
-   </sec:authorize>   
-   
-   
-   
-   
-      <h2>리뷰 (<span id="reviewTotalCount">0</span>)</h2>   
-   
-  <c:if test="${not empty loggedInMemberId}">
-   <div style="text-align: left;">
-         <span id="loggedInReviewMemberId">${loggedInMemberId}</span>
-        <input type="hidden" id="reviewMemberId" value="${loggedInMemberId}">
-   <input type="text" id="recipeReviewContent" placeholder="리뷰 내용을 입력하세요">     
-      
-      <span class="star-rating"> <input
-         type="radio" name="reviewRating" id="star1" value="1"><label
-         for="star1"></label> <input type="radio" name="reviewRating"
-         id="star2" value="2"><label for="star2"></label> <input
-         type="radio" name="reviewRating" id="star3" value="3"><label
-         for="star3"></label> <input type="radio" name="reviewRating"
-         id="star4" value="4"><label for="star4"></label> <input
-         type="radio" name="reviewRating" id="star5" value="5"><label
-         for="star5"></label>
-      </span>
-      
-      <div class="image-upload">
-      
-    </div>
-  
-      <div class="image-drop">drag - image</div>
-      
-     </div>
-
-      <div class="reviewAttachDTOImg-list">
-     </div>
-      
-      <button id="btnReviewAdd">리뷰 작성</button>
-   </c:if>  
-   
-      <hr>
-       
-         <div id="reviews">
-         
-         
-         
-         <c:forEach var="review" items="${reviews}">
-        <div class="recipeReview_item" data-review-id="${review.recipeReviewId}">
-            <p class="recipeReviewContentDisplay">${review.recipeReviewContent}</p>
-            <span class="starRatingDisplay">
-                <c:forEach begin="1" end="${review.reviewRating}">
-                    <span style="color:gold;">⭐</span>
-                </c:forEach>
-            </span>
-            <button class="btn_review_update" data-review-id="${review.recipeReviewId}">수정</button>
-            <button class="btn_review_delete" data-review-id="${review.recipeReviewId}">삭제</button>
-        </div>
-       </c:forEach>
-         
-         </div>
-              
-      <script src="${pageContext.request.contextPath }/resources/js/image.js"></script>
-
-   
-   <div style="text-align: left;">
-      <div id="reviews"></div>
-      <div id="reviewPagination"></div>
-   </div>
-  
-    <hr>
   
    <script type="text/javascript">
    
@@ -761,6 +754,7 @@ $(document).ready(function() {
                                      '  ' +
                                      '<button class="btn_reply" data-reply-id="' + this.replyId + '">답글</button>' + // "답글" 버튼 추가
                                      '</pre>' +
+                                     '<hr>' +  
                                      '<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + // 대댓글 영역 추가
                                      '</div>';
                                      
@@ -979,7 +973,10 @@ $(document).ready(function() {
                                                       list += '<div class="review_item" data-recipeReview-id="' + this.recipeReviewId + '">'
                                                       + '<pre>'
                                                       + '<input type="hidden" id="recipeReviewId" value="' + this.recipeReviewId + '">'
+                                                      + '<div class="review_header">'
                                                       + '<span class="memberId">' + this. memberId + '</span>&nbsp;&nbsp;'
+                                                      + imageHTML // 이미지 HTML 코드 삽입
+                                                      + '</div>'
                                                       +   '<span class="recipeReviewContentDisplay" data-recipeReview-id="' + this.recipeReviewId + '">' + this.recipeReviewContent + '</span>'
                                                       + '<br>'
                                                       + '<span class="starRatingDisplay" data-recipeReview-id="' + this.recipeReviewId + '">' + starRatingHTML + '</span>'
@@ -990,20 +987,32 @@ $(document).ready(function() {
                                                       + '&nbsp;&nbsp;'
                                                       + '<button class="btn_review_update" data-review-id="' + this.recipeReviewId + '">수정</button>'
                                                       + '<button class="btn_review_delete" >삭제</button>'
-                                                                                                      
+                                                      + '</pre>'                                                      
+                                                      + '</div>';
+                                                                                         
                                                       // 이미지가 있는 경우만 추가
-                                                      if (imageHTML !== '') {
-                                                          list += '<div class="review_images show-image-list">' + imageHTML + '</div>';
-                                                      }
+                                                  //    if (imageHTML !== '') {
+                                                  //        list += '<div class="review_images show-image-list">' + imageHTML + '</div>';
+                                                  //    }
                                                       
                                                    // ✅ 리뷰 수정 모달 추가 (초기 숨김 상태)
                                                       list += '<div class="editReviewModal modal" id="editReviewModal_' + this.recipeReviewId + '" style="display: none;">'
                                                             + '<div class="modal-content">'
                                                             + '<span class="close">&times;</span>'
                                                             + '<h2>리뷰 수정</h2>'
+                                                            
+                                                            + '<div class="edit-content-area">'
+                                                            + '<div class="image-upload">'
+                                                            + '<div class="image-drop">drag - image</div>'
+                                                            + '<div class="show-image-list" id="imageList_' + this.recipeReviewId + '"></div>'
+                                                            + '<div class="reviewAttachDTOImg-list" id="reviewAttachDTOImgList_' + this.recipeReviewId + '"></div>'
+                                                            + '</div>'
+                                                            
                                                             // ✅ 수정할 리뷰 내용 입력란 (id 추가)
                                                             + '<textarea id="editReviewContent_' + this.recipeReviewId + '" class="editReviewContent">'
                                                             + this.recipeReviewContent + '</textarea>'
+                                                            + '<button class="btnEditComplete" data-review-id="' + this.recipeReviewId + '">수정</button>'
+                                                            + '</div>'
                                                            
                                                             + '<div class="star-rating">'
                                                             + '<input type="radio" name="reviewRating_' + this.recipeReviewId + '" id="star5_' + this.recipeReviewId + '" value="5"><label for="star5_' + this.recipeReviewId + '"></label>'
@@ -1012,18 +1021,8 @@ $(document).ready(function() {
                                                             + '<input type="radio" name="reviewRating_' + this.recipeReviewId + '" id="star2_' + this.recipeReviewId + '" value="2"><label for="star2_' + this.recipeReviewId + '"></label>'
                                                             + '<input type="radio" name="reviewRating_' + this.recipeReviewId + '" id="star1_' + this.recipeReviewId + '" value="1"><label for="star1_' + this.recipeReviewId + '"></label>'
                                                             + '</div>'
-                                                            
-                                                            // ✅ 이미지 Drag & Drop 업로드 영역 추가
-                                                          list += '</div>'
-											                + '<div class="image-upload">'
-											                + '<div class="image-drop">drag - image</div>'
-											                + '<div class="show-image-list" id="imageList_' + this.recipeReviewId + '"></div>'
-											                + '<div class="reviewAttachDTOImg-list" id="reviewAttachDTOImgList_' + this.recipeReviewId + '"></div>'
-											                + '</div>'
-											                + '<button class="btnEditComplete" data-review-id="' + this.recipeReviewId + '">수정 완료</button>'
-											                + '</div></div>';
-                                                      
-
+                                                            + '</div></div>';
+                                                           
                                                       list += '</pre></div>';    
                                                    });
                                            
@@ -1110,18 +1109,21 @@ $(document).ready(function() {
                                                  
                                                 
                                                 // 기존 값 모달에 채우기
-                                                 $('#editReviewContent').val(currentContent);
-                                                 $('input[name="reviewRating"]').prop('checked', false); // 초기화
-                                                 $('input[name="reviewRating"][value="' + currentRating + '"]').prop('checked', true);
+                                                 $('#editReviewContent_' + selectedReviewId).val(currentContent);
+                                                 $('input[name="reviewRating_' + selectedReviewId + '"]').prop('checked', false); // 초기화
+                                                 $('input[name="reviewRating_' + selectedReviewId + '"][value="' + currentRating + '"]').prop('checked', true);
                                                                                     
                                                    // 기존 이미지 미리보기 초기화
                                                  $('#imagePreview').empty();
                                                  selectedFiles = []; // 선택한 파일 목록 초기화
+                                           
                                                  
-                                                   // 해당 리뷰 아래로 모달 이동 후 표시
-                                                 reviewItem.after($('#editReviewModal'));
-                                                 $('#editReviewModal').show();
-                                                 modal.css("display", "block"); // ✅ 강제 표시
+                                              // 해당 리뷰 아래로 모달 이동 후 표시
+                                                 reviewItem.after(modal);
+                                                 modal.show();
+                                                 modal.css("display", "block");
+                                                 
+                                                  
                                              });
                                              
                                              // 모달 닫기 버튼

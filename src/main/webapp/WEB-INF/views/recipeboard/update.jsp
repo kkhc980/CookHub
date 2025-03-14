@@ -290,21 +290,21 @@
     </div>
 
     <div class="form-group">
-        <label for="thumbnail">썸네일 이미지</label>
-        <input type="file" id="thumbnail" name="thumbnail" accept="image/*" onchange="validateAndPreviewThumbnail(this)">
-        <div class="thumbnail-preview">
-            <img id="thumbnailPreview" src="
-            <c:choose>
-                <c:when test="${not empty recipeBoard.thumbnailPath}">
-                    <c:url value="/upload/${recipeBoard.thumbnailPath}"/>
-                </c:when>
-                <c:otherwise>#</c:otherwise>
-            </c:choose>" alt="Thumbnail Preview" style="display: ${not empty recipeBoard.thumbnailPath ? 'block' : 'none'};">
-        </div>
-        <p id="noThumbnailMessage" class="noThumbnailMessage" style="display: ${recipeBoard.thumbnailPath != null ? 'none' : 'block'}">
-            No thumbnail selected.
-        </p>
-    </div>
+        <label for="thumbnail">Thumbnail:</label>
+		<div class="thumbnail-preview">
+		    <!-- 기존 썸네일 표시 -->
+		    <img id="thumbnailPreview" 
+		         src="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}" 
+		         alt="Current Thumbnail" 
+		         style="max-width: 200px; max-height: 200px;">
+		</div>
+		<br>
+		<!-- 파일 입력 -->
+		<input type="file" id="thumbnail" name="thumbnail" accept="image/*" onchange="previewThumbnail(this)">
+		<input type="hidden" id="currentThumbnailPath" name="currentThumbnailPath" 
+		       value="${pageContext.request.contextPath}/recipeboard/thumbnail/${recipeBoard.recipeBoardId}">
+		<br><br>
+		</div>
 
     <div class="selection-container">
         <h3>종류별</h3>
@@ -357,22 +357,21 @@
 
    <div class="form-group">
         <label for="hashtags">해시태그</label>
-        <div id="hashtagInputs">
-            <c:forEach var="hashtag" items="${recipeBoard.hashtags}" varStatus="status">
-                <div class="input-group mb-1">
-                    <input type="text" class="form-control" name="hashtags[${status.index}].hashtagName"
-                           value="${hashtag.hashtagName}"/>
-					<div class="input-group-append">
-					    <button class="recipe-button delete remove-hashtag" type="button">삭제</button>
-					</div>
-
-                </div>
-            </c:forEach>
-             <input type="text" id="hashtagInput" placeholder="해시태그를 입력하세요. (엔터로 추가)">
-        </div>
-        <button id="addHashtag" class="recipe-button" type="button">해시태그 추가</button>
-
-    </div>
+<!-- 입력 필드 -->
+		    <input type="text" id="hashtagInput" placeholder="Enter hashtag and press Enter(max 20 chars) and press Enter" maxlength="20" />
+		    <!-- 해시태그 목록 -->
+		    <div id="hashtagList" class="hashtag-container">
+			    <c:forEach var="hashtag" items="${hashtags}">
+			        <div class="hashtag">
+			            #${fn:toLowerCase(hashtag.hashtagName)} <!-- 소문자로 출력 -->
+			            <span class="remove-hashtag" onclick="removeHashtag('${fn:toLowerCase(hashtag.hashtagName)}', this)">x</span>
+			        </div>
+			    </c:forEach>
+			</div>
+		    <!-- Hidden input to store hashtags as comma-separated values -->
+		    <input type="hidden" id="hashtagsHiddenInput" name="hashtags" 
+		           value="<c:forEach var='hashtag' items='${hashtags}'>${fn:toLowerCase(hashtag.hashtagName)},</c:forEach>">
+		</div>
 
     <div class="selection-container">
         <h3>재료 입력</h3>
@@ -459,282 +458,202 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function () {
-    // 썸네일 미리보기
-    function validateAndPreviewThumbnail(input) {
-        const previewImage = document.getElementById('thumbnailPreview');
-        const noThumbnailMessage = document.getElementById('noThumbnailMessage');
-        const allowedExtensions = ['jpeg', 'jpg', 'png', 'gif'];
+document.addEventListener("DOMContentLoaded", function () {
+    const hashtagInput = document.getElementById("hashtagInput");
+    const hashtagList = document.getElementById("hashtagList");
+    const hashtagsHiddenInput = document.getElementById("hashtagsHiddenInput");
 
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const fileName = file.name.toLowerCase();
-            const fileExtension = fileName.split('.').pop();
+    // 해시태그 초기화 (히든 필드 값 가져오기)
+    let hashtags = hashtagsHiddenInput.value.split(',').filter(tag => tag.trim() !== "");
 
-            if (!allowedExtensions.includes(fileExtension)) {
-                alert('Invalid file type. Please upload an image (JPEG, PNG, GIF).');
-                input.value = '';
-                previewImage.style.display = 'none';
-                noThumbnailMessage.style.display = 'block';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewImage.src = e.target.result;
-                previewImage.style.display = 'block';
-                noThumbnailMessage.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            const existingThumbnail = "${recipeBoard.thumbnailPath}";
-            if (existingThumbnail && existingThumbnail !== "") {
-                previewImage.src = "${pageContext.request.contextPath}/upload/" + existingThumbnail;
-                previewImage.style.display = 'block';
-                noThumbnailMessage.style.display = 'none';
-            } else {
-                previewImage.style.display = 'none';
-                noThumbnailMessage.style.display = 'block';
+    // 해시태그 추가 처리
+    hashtagInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const value = hashtagInput.value.trim().toLowerCase(); // 소문자로 변환
+            if (value && !hashtags.includes(value)) {
+                addHashtag(value);
+                hashtagInput.value = ""; // 입력 필드 초기화
+            } else if (hashtags.includes(value)) {
+                alert("This hashtag is already added.");
             }
         }
-    }
+    });
 
-    // 초기 썸네일 미리보기 설정
-    const thumbnailInput = document.getElementById('thumbnail');
-    validateAndPreviewThumbnail(thumbnailInput);
+    // 해시태그 추가 함수
+    function addHashtag(value) {
+        hashtags.push(value);
+        const hashtagElement = document.createElement("div");
+        hashtagElement.className = "hashtag";
+        const hashtagText = document.createTextNode("#" + value);
+        hashtagElement.appendChild(hashtagText);
 
-    // 해시태그 관련 JavaScript (수정된 부분)
-    const hashtagInput = document.getElementById("hashtagInput");
-    const hashtagInputsContainer = document.getElementById("hashtagInputs");
-
-    // 초기 해시태그 표시
-    const initialHashtags = ${JSON.stringify(recipeBoard.hashtags)};
-    if (initialHashtags && initialHashtags.length > 0) {
-        initialHashtags.forEach((hashtag, index) => {
-            addHashtagInput(hashtag.hashtagName, index);
+        const removeButton = document.createElement("span");
+        removeButton.className = "remove-hashtag";
+        removeButton.textContent = "x";
+        removeButton.addEventListener("click", function () {
+            removeHashtag(value, hashtagElement);
         });
+
+        hashtagElement.appendChild(removeButton);
+        hashtagList.appendChild(hashtagElement);
+
+        updateHiddenInput();
     }
 
-    function addHashtagInput(hashtagName = "", index = null) {
-        const hashtagIndex = index !== null ? index : $("#hashtagInputs .input-group").length;
-        const newHashtagInput = `
-            <div class="input-group mb-1">
-                <input type="text" class="form-control" name="hashtags[${hashtagIndex}].hashtagName" value="${hashtagName}" />
-                <div class="input-group-append">
-                    <button class="recipe-button delete remove-hashtag" type="button">삭제</button>
-                </div>
-            </div>
-        `;
-        $("#hashtagInputs").append(newHashtagInput);
+    // 해시태그 제거 함수
+	window.removeHashtag = function (value, element) {
+	    // 배열에서 해시태그 제거
+	    hashtags = hashtags.filter(tag => tag !== value);
+	
+	    // HTML에서 해당 해시태그 요소 제거
+	    const parentElement = element.parentNode; // "hashtag" div
+	    hashtagList.removeChild(parentElement);
+	
+	    // 히든 필드 업데이트
+	    updateHiddenInput();
+	};
+
+
+    // 히든 필드 업데이트
+    function updateHiddenInput() {
+        hashtagsHiddenInput.value = hashtags.join(",");
     }
+});
 
-    // 해시태그 추가 버튼 클릭 이벤트
-    $("#addHashtag").click(function () {
-        addHashtagInput();
-    });
+// 파일 선택 시 썸네일 미리보기
+function previewThumbnail(input) {
+    const previewImage = document.getElementById('thumbnailPreview');
+    const defaultThumbnail = document.getElementById('currentThumbnailPath').value; // 기존 썸네일 경로
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // 허용할 이미지 확장자
 
-    // 해시태그 삭제 버튼 클릭 이벤트 (동적 생성 요소에 대한 이벤트 위임)
-    $(document).on('click', '#hashtagInputs .remove-hashtag', function (event) {
-        event.preventDefault();
-        $(this).closest('.input-group').remove();
-    });
-        
-    // 재료 관련 JavaScript (수정된 부분)
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileName = file.name.toLowerCase();
+        const fileExtension = fileName.split('.').pop(); // 파일 확장자 추출
+
+        if (!allowedExtensions.includes(fileExtension)) {
+            alert("이미지 파일(jpg, jpeg, png, gif)만 업로드 가능합니다.");
+            input.value = ""; // 파일 입력 초기화
+            previewImage.src = defaultThumbnail; // 기존 썸네일 복원
+            return;
+        }
+
+        // 파일 미리보기
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewImage.src = e.target.result; // 선택된 파일 표시
+        };
+        reader.readAsDataURL(file);
+    } else {
+        // 파일 선택 취소 시 기존 썸네일 복원
+        previewImage.src = defaultThumbnail;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    // 재료 입력 관련 요소
     const ingredientInputs = document.getElementById("ingredientInputs");
-    const addIngredientButton = $("#addIngredient");
+    const addIngredientButton = document.getElementById("addIngredient");
+    let ingredientCounter = ingredientInputs.querySelectorAll('.ingredient-row').length;
 
-    function addIngredientRow(ingredient = {}, index = null) {
-        const ingredientIndex = index !== null ? index : (ingredientInputs ? ingredientInputs.querySelectorAll('.ingredient-row').length : 0);
+    // 재료 추가 함수
+    function addIngredientRow() {
         const newRow = document.createElement("div");
         newRow.className = "ingredient-row";
-
+        const index = ingredientInputs.querySelectorAll('.ingredient-row').length;
         newRow.innerHTML = `
-            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientName" value="${ingredient.ingredientName || ''}" required>
-            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientAmount" value="${ingredient.ingredientAmount || ''}" required>
-            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientUnit" value="${ingredient.ingredientUnit || ''}" required>
-            <input type="text" name="ingredientDetails[${ingredientIndex}].ingredientNote" value="${ingredient.ingredientNote || ''}">
-            <button type="button" class="recipe-button delete remove-ingredient">삭제</button>
+            <input type="text" name="ingredientName[${index}]" placeholder="예) 돼지고기" required>
+            <input type="text" name="ingredientAmount[${index}]" placeholder="예) 10(수량)" required>
+            <input type="text" name="ingredientUnit[${index}]" placeholder="예) g,ml(단위)" required>
+            <input type="text" name="ingredientNote[${index}]" placeholder="예) (비고)">
+            <button type="button" class="remove-ingredient">삭제</button>
         `;
-        $(ingredientInputs).append(newRow);
+        ingredientInputs.appendChild(newRow);
     }
 
-    // 초기 재료 정보 표시
-    const initialIngredientDetails = ${JSON.stringify(ingredientDetails)};
-    if (initialIngredientDetails && initialIngredientDetails.length > 0) {
-        initialIngredientDetails.forEach((ingredient, index) => {
-            addIngredientRow(ingredient, index);
-        });
-    } else {
-        addIngredientRow(); // 초기 데이터가 없으면 빈 행 추가
-    }
-
-    // 동적으로 생성된 삭제 버튼 처리 (이벤트 위임)
-    $(document).on('click', '#ingredientInputs .remove-ingredient', function (event) {
-        event.preventDefault();
-        $(this).closest('.ingredient-row').remove();
+    // 이벤트 위임: 삭제 버튼
+    ingredientInputs.addEventListener('click', function (event) {
+        if (event.target.classList.contains('remove-ingredient')) {
+            event.target.closest('.ingredient-row').remove();
+        }
     });
 
     // 재료 추가 버튼 클릭 이벤트
-    addIngredientButton.on("click", function() {
-        addIngredientRow();
-    });
+    addIngredientButton.addEventListener("click", addIngredientRow);
+});
 
-    // 조리 순서 관련 JavaScript
+document.addEventListener("DOMContentLoaded", function () {
+    // 조리 순서 입력 관련 요소
     const stepInputs = document.getElementById("stepInputs");
-    const addStepButton = $("#addStep");
+    const addStepButton = document.getElementById("addStep");
+    let stepCounter = 2;
 
-    function addStepRow(step = {}, index = null) {
-        const stepIndex = index !== null ? index : stepInputs.querySelectorAll('.step-row').length;
+    // 조리 순서 추가 버튼 클릭 이벤트 핸들러
+    addStepButton.addEventListener("click", function () {
         const newRow = document.createElement("div");
         newRow.className = "step-row";
-
         newRow.innerHTML = `
-            <label>Step ${stepIndex + 1}</label>
-            <textarea name="stepDescription[${stepIndex}]" required>${step.stepDescription || ''}</textarea>
-            <input type="file" name="stepImage[${stepIndex}]" accept="image/*">
-            <input type="number" name="stepOrder[${stepIndex}]" value="${step.stepOrder || (stepIndex + 1)}" style="width: 80px;">
-            <button type="button" class="recipe-button delete remove-step">삭제</button>
+            <label>Step ${stepCounter}</label>
+            <textarea name="stepDescription" placeholder="예) 소고기는 기름기를 떼어내고 적당한 크기로 썰어주세요." required></textarea>
+            <input type="file" name="stepImage" accept="image/*" >
+            <input type="number" name="stepOrder" value="${stepCounter}" style="width: 80px;">
+            <button type="button" class="remove-step">삭제</button>
             <div class="step-preview">
-                <img src="${step.stepImageUrl ? step.stepImageUrl : '#'}" alt="Step Preview" style="display: ${step.stepImageUrl ? 'block' : 'none'};">
+                <img src="#" alt="Step Preview" style="display: none;">
             </div>
         `;
-           $(stepInputs).append(newRow);
 
-        // 파일 입력 필드와 미리보기 이미지 요소 가져오기
+        stepInputs.appendChild(newRow);
+
+        // 이미지 미리보기
         const fileInput = newRow.querySelector('input[type="file"]');
         const previewImage = newRow.querySelector('.step-preview img');
-        // 파일 선택 시 미리보기 업데이트
-       fileInput.addEventListener('change', function() {
-	        if (this.files && this.files[0]) {
-	            const reader = new FileReader();
-	            reader.onload = function(e) {
-	                previewImage.src = e.target.result;
-	                previewImage.style.display = 'block';
-	            }
-	            reader.readAsDataURL(this.files[0]);
-	        } else {
-	            previewImage.src = ''; // 이미지 소스 초기화
-	            previewImage.style.display = 'none'; // 미리보기 숨기기
-	        }
-	    });
-    }
 
-    const initialSteps = ${JSON.stringify(steps)};
-    initialSteps.forEach((step, index) => {
-        addStepRow(step, index);
-    });
-
-    function updateStepNumbers() {
-        const stepRows = $(stepInputs).find('.step-row');
-        stepRows.forEach((row, index) => {
-            row.querySelector('label').textContent = `Step ${index + 1}`;
-            row.querySelector('input[name^="stepOrder"]').value = index + 1;
-        });
-    }
-
-    // 동적으로 생성된 삭제 버튼 처리 (이벤트 위임)
-    $(document).on('click', '#stepInputs .remove-step', function (event) {
-        event.preventDefault();
-        $(this).closest('.step-row').remove();
-        updateStepNumbers();
-    });
-
-    // 추가 버튼에 이벤트 리스너 추가
-    addStepButton.on("click", function() {
-        addStepRow();
-        updateStepNumbers();
-    });
-
-    // 폼 제출 처리
-    document.querySelector("form").addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const form = this;
-        const formData = new FormData(form);
-
-        // 폼 데이터 추가
-        formData.append('recipeBoardId', document.querySelector("input[name='recipeBoardId']").value);
-        formData.append('recipeBoardTitle', document.querySelector("input[name='recipeBoardTitle']").value);
-        formData.append('recipeBoardContent', document.querySelector("textarea[name='recipeBoardContent']").value);
-        formData.append('recipeTip', document.querySelector("textarea[name='recipeTip']").value);
-        formData.append('typeId', document.querySelector("select[name='typeId']").value);
-        formData.append('situationId', document.querySelector("select[name='situationId']").value);
-        formData.append('methodId', document.querySelector("select[name='methodId']").value);
-        formData.append('servings', document.querySelector("select[name='servings']").value);
-        formData.append('time', document.querySelector("select[name='time']").value);
-        formData.append('difficulty', document.querySelector("select[name='difficulty']").value);
-
-        // 선택된 재료 ID를 FormData에 추가
-        const ingredientCheckboxes = document.querySelectorAll('input[name="ingredientIds"]:checked');
-        ingredientCheckboxes.forEach(checkbox => {
-            formData.append('ingredientIds', checkbox.value);
-        });
-
-        // 해시태그 필드 값 설정
-        const hashtagRows = document.querySelectorAll("#hashtagInputs .input-group");
-        hashtagRows.forEach((row, index) => {
-            const hashtagName = row.querySelector("input[type='text']").value;
-            formData.append('hashtags', hashtagName);
-        });
-
-        // 조리 순서 설명 추가
-        const stepTextareas = document.querySelectorAll("#stepInputs .step-row textarea[name^='stepDescription']");
-        stepTextareas.forEach((textarea, index) => {
-            formData.append('stepDescription', textarea.value);
-        });
-
-        // 재료 상세 정보
-        const ingredientDetails = [];
-        const ingredientRows = document.querySelectorAll("#ingredientInputs .ingredient-row");
-        ingredientRows.forEach((row, index) => {
-            const ingredientName = row.querySelector("input[name^='ingredientDetails[${index}].ingredientName']").value;
-            const ingredientAmount = row.querySelector("input[name^='ingredientDetails[${index}].ingredientAmount']").value;
-            const ingredientUnit = row.querySelector("input[name^='ingredientDetails[${index}].ingredientUnit']").value;
-            const ingredientNote = row.querySelector("input[name^='ingredientDetails[${index}].ingredientNote']").value;
-
-            ingredientDetails.push({
-                ingredientName: ingredientName,
-                ingredientAmount: ingredientAmount,
-                ingredientUnit: ingredientUnit,
-                ingredientNote: ingredientNote
-            });
-        });
-
-        formData.append('recipeIngredientsJson', JSON.stringify(ingredientDetails));
-
-        // 썸네일 이미지 추가
-        const thumbnailInput = document.querySelector('input[type="file"][name="thumbnail"]');
-        if (thumbnailInput.files.length > 0) {
-            formData.append('thumbnail', thumbnailInput.files[0]);
-        }
-
-        // FormData 내용 확인 (디버깅
-        for (let key of formData.keys()) {
-            console.log(key, formData.get(key));
-        }
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", form.action, true);
-
-        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-        xhr.setRequestHeader(csrfHeader, csrfToken);
-
-        xhr.onload = function () {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                console.log('Form successfully submitted');
-                window.location.href = "${pageContext.request.contextPath}/recipeboard/detail/${recipeBoard.recipeBoardId}";
+        fileInput.addEventListener('change', function () {
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
             } else {
-                console.error('Form submission failed with status:', xhr.status);
+                previewImage.src = '';
+                previewImage.style.display = 'none';
             }
-        };
 
-        xhr.onerror = function () {
-            console.error('Form submission failed');
-        };
-
-        // 폼 데이터 전송
-        xhr.send(formData);
+        });
+        // 삭제 버튼에 이벤트 리스너 추가
+        const removeButton = newRow.querySelector('.remove-step');
+        removeButton.addEventListener('click', function () {
+            newRow.remove();
+        });
+        stepCounter++;
+    });
+    // 이벤트 위임: 삭제 버튼
+    stepInputs.addEventListener('click', function (event) {
+        if (event.target.classList.contains('remove-step')) {
+            event.target.closest('.step-row').remove();
+        }
+    });
+    // 파일 변경 시 미리보기 업데이트 이벤트
+    stepInputs.addEventListener('change', function (event) {
+        if (event.target.matches('input[type="file"]')) {
+            const fileInput = event.target;
+            const previewImage = fileInput.closest('.step-row').querySelector('.step-preview img');
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+            }
+        }
     });
 });
 </script>

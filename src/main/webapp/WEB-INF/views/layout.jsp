@@ -280,7 +280,7 @@
 
     </div>
     <div class="center-logo">
-        <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
+        <a href="${pageContext.request.contextPath}/main" style="text-decoration: none; color: #ff9900;">CookHub</a>
     </div>
 
     <div class="user-notification-container">

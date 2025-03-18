@@ -20,4 +20,6 @@ public interface NoticeBoardService {
 
     // 공지사항을 삭제하는 메서드
     void deleteNoticeBoard(int noticeBoardId);
+    
+    List<NoticeBoardVO> getLatestNotices(int limit);
 }

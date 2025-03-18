@@ -552,5 +552,27 @@
 	<select id="getTotalRecipeBoardCount" resultType="int">
 	    SELECT COUNT(*) FROM recipe_board  <!-- 레시피 보드의 총 개수 조회 -->
 	</select>
+	
+	<select id="getTopPosts" resultType="com.dishcovery.project.domain.RecipeBoardVO">
+	    <![CDATA[
+	    SELECT *
+	    FROM (
+	        SELECT ranked.*, 
+	               ROWNUM AS rnum
+	        FROM (
+	            SELECT RECIPE_BOARD_ID, RECIPE_BOARD_TITLE, MEMBER_ID, 
+	                   VIEW_COUNT, AVG_RATING, RECIPE_REVIEW_COUNT, LIKE_COUNT, THUMBNAIL_PATH,
+	                   RANK() OVER (ORDER BY VIEW_COUNT DESC) AS view_rank,
+	                   RANK() OVER (ORDER BY AVG_RATING DESC) AS rating_rank,
+	                   (RANK() OVER (ORDER BY VIEW_COUNT DESC) + 
+	                    RANK() OVER (ORDER BY AVG_RATING DESC)) AS total_rank
+	            FROM RECIPE_BOARD
+	        ) ranked
+	        ORDER BY total_rank ASC
+	    ) 
+	    WHERE rnum <= 10
+	    ]]>
+	</select>
+
 
 </mapper>

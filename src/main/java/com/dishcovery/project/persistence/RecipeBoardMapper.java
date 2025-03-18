@@ -102,4 +102,6 @@ public interface RecipeBoardMapper {
 
 
 	int getTotalRecipeBoardCount();
+	
+	List<RecipeBoardVO> getTopPosts();
 }

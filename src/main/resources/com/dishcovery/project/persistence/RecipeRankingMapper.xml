@@ -78,17 +78,17 @@
     </insert>
 
     <update id="reorderRankPositions">
-        UPDATE recipe_rankings r
-	SET r.rank_position = (
-	    SELECT new_rank_position
-	    FROM (
-	        SELECT 
-	            ROW_NUMBER() OVER (ORDER BY view_count DESC) AS new_rank_position,
-	            rank_id
-	        FROM recipe_rankings
-	        WHERE rank_type = r.rank_type  -- ✅ rank_type 별로 정렬
-	    ) rd
-	    WHERE rd.rank_id = r.rank_id
-	)
+UPDATE recipe_rankings r
+SET r.rank_position = (
+    SELECT new_rank_position
+    FROM (
+        SELECT 
+            ROW_NUMBER() OVER (PARTITION BY rank_type ORDER BY view_count DESC) AS new_rank_position,
+            rank_id,
+            rank_type  -- ✅ `rank_type`을 서브쿼리에서 포함
+        FROM recipe_rankings
+    ) rd
+    WHERE rd.rank_id = r.rank_id AND rd.rank_type = r.rank_type -- ✅ rank_type 조건 추가
+)
     </update>
 </mapper>

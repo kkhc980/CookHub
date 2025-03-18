@@ -1,9 +1,11 @@
 package com.dishcovery.project.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.dishcovery.project.domain.OrderPageDTO;
 import lombok.extern.log4j.Log4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -28,7 +30,7 @@ public class KakaoPayController {
 
     // ✅ 결제 요청 (카카오페이 결제창으로 리디렉트)
     @PostMapping("/purchase")
-    public RedirectView kakaoPayReady(OrderPageDTO orderPageDTO, @RequestParam("totalPayment") int totalPayment, HttpSession session) {
+    public RedirectView kakaoPayReady(OrderPageDTO orderPageDTO, @RequestParam("totalPayment") int totalPayment, HttpSession session, HttpServletRequest request) {
         Integer memberId = getCurrentUserId();
         if (memberId == null) {
             throw new RuntimeException("로그인된 사용자 정보를 찾을 수 없습니다.");
@@ -38,7 +40,8 @@ public class KakaoPayController {
             throw new IllegalArgumentException("주문 정보가 없습니다.");
         }
 
-        log.info("orderPageDTO : " + orderPageDTO);
+        // ✅ 리디렉션 URL을 세션에 저장 (보안을 위해)
+        session.setAttribute("redirectUrl", request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()));
 
         KakaoPayResponseVO response = kakaoPayService.readyToPay(orderPageDTO, totalPayment, memberId, session);
 
@@ -51,27 +54,28 @@ public class KakaoPayController {
 
     // ✅ 결제 승인 (카카오페이에서 GET 요청으로 호출)
     @GetMapping("/approve")
-    public ModelAndView approvePayment(@RequestParam("pg_token") String pg_token, HttpSession session) {
+    public String approvePayment(@RequestParam("pg_token") String pg_token, HttpSession session) {
         KakaoPayApproveVO approveResponse = kakaoPayService.approvePayment(pg_token, session);
 
-        ModelAndView mv = new ModelAndView("paymentResult");
+        // 세션에 결제 결과 저장
+        session.setAttribute("approveResponse", approveResponse);
 
-        if (approveResponse != null && approveResponse.getAid() != null) {
-            mv.addObject("message", "✅ 결제가 성공적으로 완료되었습니다.");
-            mv.addObject("result", approveResponse);
-        } else {
-            mv.addObject("message", "❌ 결제가 실패하였습니다. 다시 시도해주세요.");
-            mv.addObject("result", null);
-        }
-
-        // ✅ 세션 정리
+        // 세션 정리
         session.removeAttribute("tid");
         session.removeAttribute("member_id");
         session.removeAttribute("partner_order_id");
         session.removeAttribute("product_id");
-        session.removeAttribute("product_name");  // ✅ 추가
+        session.removeAttribute("product_name");
         session.removeAttribute("product_count");
-        return mv;
+        session.removeAttribute("cart");
+
+        return "redirect:/store/success";
+    }
+
+    @PostMapping("/clearSession")
+    public ResponseEntity<String> clearSession(HttpSession session) {
+        session.removeAttribute("approveResponse");
+        return ResponseEntity.ok("세션 삭제 성공");
     }
 
     // ✅ 결제 취소 시 처리

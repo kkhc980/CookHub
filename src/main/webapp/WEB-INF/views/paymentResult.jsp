@@ -12,27 +12,40 @@
     </style>
 </head>
 <body>
+<div class="container">
+    <h2 class="${approveResponse != null ? 'success' : 'fail'}">${approveResponse != null ? "결제 성공" : "결제 실패"}</h2>
 
-    <div class="container">
-        <h2 class="${not empty result ? 'success' : 'fail'}">${message}</h2>
+    <c:if test="${approveResponse != null}">
+        <p><strong>🛍 상품명:</strong> ${approveResponse.item_name}</p>
+        <p><strong>📦 수량:</strong> ${approveResponse.quantity}개</p>
+        <p><strong>✅ 결제 승인 번호:</strong> ${approveResponse.aid}</p>
+        <p><strong>💰 결제 금액:</strong> ${approveResponse.amount.total}원</p>
+        <p><strong>💳 결제 수단:</strong> ${approveResponse.payment_method_type}</p>
+        <p><strong>📅 결제 일시:</strong> ${approveResponse.approved_at}</p>
+        <br>
+        <a href="/project/store/list" onclick="clearSession()">🔙 돌아가기</a>
+    </c:if>
 
-		<c:if test="${not empty result}">
-		    <p><strong>🛍 상품명:</strong> ${result.item_name}</p>
-		    <p><strong>📦 수량:</strong> ${result.quantity}개</p>
-		    <p><strong>✅ 결제 승인 번호:</strong> ${result.aid}</p>
-		    <p><strong>💰 결제 금액:</strong> ${result.amount.total}원</p>
-		    <p><strong>💳 결제 수단:</strong> ${result.payment_method_type}</p>
-		    <p><strong>📅 결제 일시:</strong> ${result.approved_at}</p>
-		    <br>
-		    <a href="/project/store/list">🔙 돌아가기</a>
-		</c:if>
+    <c:if test="${approveResponse == null}">
+        <p>❌ 결제가 실패하였습니다. 다시 시도해주세요.</p>
+        <br>
+        <a href="/project/store/list">🔙 돌아가기</a>
+    </c:if>
+</div>
 
-        <c:if test="${empty result}">
-            <p>❌ 결제가 실패하였습니다. 다시 시도해주세요.</p>
-            <br>
-            <a href="/project/store/list">🔙 돌아가기</a>
-        </c:if>
-    </div>
+<script>
+    function clearSession() {
+        fetch('/project/store/clearSession', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/project/store/list'; // 세션 삭제 후 페이지 이동
+                } else {
+                    console.error('세션 삭제 실패');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
 
 </body>
 </html>

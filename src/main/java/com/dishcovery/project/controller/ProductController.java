@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/store")
@@ -133,7 +134,6 @@ public class ProductController {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
-
     // 장바구니 페이지 보여주기
     @GetMapping("/cart")
     public String showCart(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -208,6 +208,29 @@ public class ProductController {
         model.addAttribute("orderPageDTO", orderPageDTO);
         model.addAttribute("memberDTO", memberDTO);
         model.addAttribute("pageContent", "store/order.jsp");
+
+        return "layout";
+    }
+
+    @GetMapping("/success")
+    public String showSuccessPage() {
+        return "store/success"; // success.jsp 호출
+    }
+
+    @GetMapping("/paymentResult")
+    public String showPaymentResultPage() {
+        return "paymentResult";
+    }
+
+    @GetMapping("/orderdetail")
+    public String showOrderDetailPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String email = userDetails.getUsername();
+        MemberDTO memberDTO = memberService.getMemberByEmail(email);
+
+        List<Map<String, Object>> list = productService.getOrderDetail(memberDTO.getMemberId());
+
+        model.addAttribute("list", list);
+        model.addAttribute("pageContent", "store/history.jsp");
 
         return "layout";
     }

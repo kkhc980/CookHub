@@ -1,6 +1,7 @@
 package com.dishcovery.project.service;
 
 import com.dishcovery.project.domain.IngredientsVO;
+import com.dishcovery.project.domain.OrderHistoryDTO;
 import com.dishcovery.project.domain.OrderPageItemDTO;
 import com.dishcovery.project.domain.ProductVO;
 import com.dishcovery.project.persistence.ProductMapper;
@@ -12,14 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @Log4j
 public class ProductServiceImple implements ProductService {
-    
+
     @Autowired
     private ProductMapper productMapper;
 
@@ -73,7 +74,7 @@ public class ProductServiceImple implements ProductService {
     public int getTotalProductCount() {
         return productMapper.getTotalProductCount(); // 총 상품 개수 조회
     }
-    
+
     @Override
     public List<IngredientsVO> getAllProductIngredients() {
         return productMapper.getAllProductIngredients();
@@ -94,6 +95,56 @@ public class ProductServiceImple implements ProductService {
             productInfo.initTotal();
 
             result.add(productInfo);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getOrderDetail(int memberId) {
+        List<OrderHistoryDTO> orders = productMapper.getOrderDetail(memberId);
+        Map<String, Map<String, List<OrderHistoryDTO>>> groupedOrders = new HashMap<>();
+        List<Map<String, Object>> result = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        for (OrderHistoryDTO order : orders) {
+            String orderId = order.getOrderId();
+            LocalDateTime orderDate = order.getOrderDate();
+            String key = orderId + "::" + orderDate.format(formatter);
+
+            if (!groupedOrders.containsKey(key)) {
+                Map<String, List<OrderHistoryDTO>> orderDetails = new HashMap<>();
+                groupedOrders.put(key, orderDetails);
+            }
+
+            Map<String, List<OrderHistoryDTO>> orderDetails = groupedOrders.get(key);
+
+            if (!orderDetails.containsKey(order.getOrderProductName())) {
+                orderDetails.put(order.getOrderProductName(), new ArrayList<>());
+            }
+            orderDetails.get(order.getOrderProductName()).add(order);
+        }
+
+        for (Map.Entry<String, Map<String, List<OrderHistoryDTO>>> entry : groupedOrders.entrySet()) {
+            String[] keyParts = entry.getKey().split("::");
+            String orderId = keyParts[0];
+            String orderDateStr = keyParts[1]; // 문자열 형태의 orderDate를 그대로 사용
+
+            for (Map.Entry<String, List<OrderHistoryDTO>> productEntry : entry.getValue().entrySet()) {
+                Map<String, Object> orderMap = new HashMap<>();
+                orderMap.put("orderId", orderId);
+                orderMap.put("orderDate", orderDateStr); // 문자열 형태의 orderDate를 그대로 사용
+                orderMap.put("orderProductName", productEntry.getKey());
+                orderMap.put("orderDetails", productEntry.getValue());
+
+                int totalAmount = 0;
+                for (OrderHistoryDTO order : productEntry.getValue()) {
+                    totalAmount += order.getProductPrice() * order.getProductCount();
+                }
+                orderMap.put("totalAmount", totalAmount);
+
+                result.add(orderMap);
+            }
         }
 
         return result;

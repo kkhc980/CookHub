@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/store")
@@ -216,8 +217,21 @@ public class ProductController {
         return "store/success"; // success.jsp 호출
     }
 
-    @GetMapping("paymentResult")
+    @GetMapping("/paymentResult")
     public String showPaymentResultPage() {
         return "paymentResult";
+    }
+
+    @GetMapping("/orderdetail")
+    public String showOrderDetailPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String email = userDetails.getUsername();
+        MemberDTO memberDTO = memberService.getMemberByEmail(email);
+
+        List<Map<String, Object>> list = productService.getOrderDetail(memberDTO.getMemberId());
+
+        model.addAttribute("list", list);
+        model.addAttribute("pageContent", "store/history.jsp");
+
+        return "layout";
     }
 }

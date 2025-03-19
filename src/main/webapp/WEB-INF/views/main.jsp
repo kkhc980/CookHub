@@ -156,5 +156,39 @@
             <c:set var="rank" value="${rank + 1}"/>
         </c:forEach>
     </div>
+    
+    <!-- 추천 레시피 추가 -->
+    <c:if test="${not empty recommendedRecipes}">
+        <h2>💡 맞춤 추천 레시피</h2>
+        <div class="recipe-container">
+            <c:forEach var="recipe" items="${recommendedRecipes}">
+			    <div class="recipe-card" onclick="location.href='${pageContext.request.contextPath}/recipeboard/detail/${recipe.recipe_board_id}'">
+			        
+			        <!-- 썸네일 -->
+			        <div class="recipe-thumbnail-container">
+			            <img class="recipe-thumbnail" 
+			                 src="${pageContext.request.contextPath}/uploads/${recipe.thumbnail_path}" 
+			                 alt="Thumbnail"
+			                 onerror="this.classList.add('error'); this.nextElementSibling.style.display='block';">
+			            <span class="no-image-text">이미지 없음</span>
+			        </div>
+			
+			        <!-- 게시글 정보 -->
+			        <div class="recipe-info">
+			            <div class="recipe-title">${recipe.recipe_board_title}</div>
+			            <div class="recipe-meta">👤 작성자: ${recipe.member_id}</div>
+			            <div class="recipe-meta">👁️ 조회수: ${recipe.view_count}</div>
+			            <div class="recipe-meta">⭐ <span class="rating">${recipe.avg_rating}</span></div>
+			            <div class="recipe-meta">❤️ 좋아요: ${recipe.like_count}</div>
+			            
+			            <!-- 가중치, 유사도, 최종 점수 (hidden 처리) -->
+			            <input type="hidden" value="${recipe.weight_score}">
+			            <input type="hidden" value="${recipe.cosine_similarity}">
+			            <input type="hidden" value="${recipe.final_score}">
+			        </div>
+			    </div>
+			</c:forEach>
+        </div>
+    </c:if>
 </body>
 </html>

@@ -160,7 +160,7 @@
     </div>
 
     <div>
-        <button class="purchase-button" onclick="submitOrder(${totalPayment})">구매하기</button>
+        <button class="purchase-button" onclick="validateAndSubmit(${totalPayment})">구매하기</button>
     </div>
 </c:if>
 
@@ -171,6 +171,14 @@
 <div id="paymentResultArea"></div>
 
 <script>
+    function validateAndSubmit(totalPayment) {
+        if (!document.getElementById("sample6_postcode").value) {
+            alert("주소 입력을 해주세요.");
+            return;
+        }
+        submitOrder(totalPayment);
+    }
+
     function submitOrder(totalPayment) {
         let form = document.createElement("form");
         form.method = "POST";
@@ -224,9 +232,9 @@
         let addressInput = document.createElement("input");
         addressInput.type = "hidden";
         addressInput.name = "address";
-        addressInput.value = document.getElementById("sample6_address").value + " " +
-            document.getElementById("sample6_detailAddress").value + " " +
-            document.getElementById("sample6_extraAddress").value;
+        addressInput.value = document.getElementById("sample6_address").value.trim() + " " +
+            document.getElementById("sample6_detailAddress").value.trim() + " " +
+            document.getElementById("sample6_extraAddress").value.trim();
         form.appendChild(addressInput);
 
         let csrfInput = document.createElement("input");

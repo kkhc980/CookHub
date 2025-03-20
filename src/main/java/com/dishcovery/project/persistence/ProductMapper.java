@@ -25,4 +25,6 @@ public interface ProductMapper {
     int insertProductDetails(@Param("memberId") int memberId, @Param("orderId") String orderId, @Param("orderDetails") List<OrderPageItemDTO> orderDetails);
 
     List<OrderHistoryDTO> getOrderDetail(int memberId);
+
+    void decreaseProductStockList(List<OrderPageItemDTO> orderDetails);
 }

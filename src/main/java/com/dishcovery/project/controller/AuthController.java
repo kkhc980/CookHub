@@ -75,9 +75,7 @@ public class AuthController {
             model.addAttribute("canceledMsg", "회원가입이 취소되었습니다!");
         }
 
-        model.addAttribute("pageContent", "auth/login.jsp");
-
-        return "layout";
+        return "/auth/login";
     }
 
 }

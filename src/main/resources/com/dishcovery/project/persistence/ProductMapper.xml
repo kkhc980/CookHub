@@ -99,4 +99,13 @@
         WHERE o.member_id = #{memberId}
         ORDER BY o.created_at DESC
     </select>
+
+    <update id="decreaseProductStockList" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE Products
+            SET stock = stock - #{item.productCount}
+            WHERE product_id = #{item.productId}
+            AND stock >= #{item.productCount}
+        </foreach>
+    </update>
 </mapper>

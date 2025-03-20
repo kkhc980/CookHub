@@ -13,6 +13,22 @@
     <style>
         body {
             font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
             margin: 20px;
         }
 
@@ -95,64 +111,78 @@
         }
 
         input[type="checkbox"] {
-            transform: scale(1.5); /* 체크박스 크기 조정 */
+            transform: scale(1.5);
         }
 
+        .button-container { /* 버튼들을 감싸는 컨테이너 */
+            display: flex;
+            justify-content: space-between; /* 버튼들을 양쪽 끝으로 배치 */
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-<h2>장바구니</h2>
-<c:if test="${not empty message}">
-    <p class="message">${message}</p>
-</c:if>
-<c:if test="${not empty cart}">
-    <table>
-        <thead>
-        <tr>
-            <th><input type="checkbox" id="select-all"></th>
-            <th>상품명</th>
-            <th>가격</th>
-            <th>수량</th>
-            <th>합계</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="item" items="${cart}" varStatus="status">
-            <tr>
-                <td><input type="checkbox" checked="checked" class="item-checkbox"></td>
-                <td>${item.productName}</td>
-                <td><span class="product-price" data-product-id="${item.productId}">${item.productPrice}</span></td>
-                <td>
-                    <div class="quantity-container">
-                        <button class="quantity-btn minus-btn" data-index="${status.index}"
-                                data-product-id="${item.productId}">-
-                        </button>
-                        <input type="number" class="quantity-input" value="${item.productCount}" min="1"
-                               max="${item.stock}" data-index="${status.index}" data-product-id="${item.productId}">
-                        <button class="quantity-btn plus-btn" data-index="${status.index}"
-                                data-product-id="${item.productId}">+
-                        </button>
-                    </div>
-                </td>
-                <td><span class="total-price" data-product-id="${item.productId}">${item.totalPrice}</span></td>
-                <td><a href="../store/cart/delete/${item.productId}">삭제</a></td>
-            </tr>
-        </c:forEach>
-        <tr>
-            <td colspan="6">
-                <div id="total-cart-price">
-                    총 결제 금액: <span id="total-price-value">0</span> 원
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</c:if>
-<a href="../store/list" class="shopping_btn">계속 쇼핑하기</a>
-<a class="order_btn">주문하기</a>
-<form class="order_form" action="${pageContext.request.contextPath}/store/order/${memberDTO.memberId}" method="post">
-</form>
+<body>
+<main>
+    <div class="container">
+        <h2>장바구니</h2>
+        <c:if test="${not empty message}">
+            <p class="message">${message}</p>
+        </c:if>
+        <c:if test="${not empty cart}">
+            <table>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"></th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>수량</th>
+                    <th>합계</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <c:forEach var="item" items="${cart}" varStatus="status">
+                    <tr>
+                        <td><input type="checkbox" checked="checked" class="item-checkbox"></td>
+                        <td>${item.productName}</td>
+                        <td><span class="product-price" data-product-id="${item.productId}">${item.productPrice}</span>
+                        </td>
+                        <td>
+                            <div class="quantity-container">
+                                <button class="quantity-btn minus-btn" data-index="${status.index}"
+                                        data-product-id="${item.productId}">-
+                                </button>
+                                <input type="number" class="quantity-input" value="${item.productCount}" min="1"
+                                       max="${item.stock}" data-index="${status.index}"
+                                       data-product-id="${item.productId}">
+                                <button class="quantity-btn plus-btn" data-index="${status.index}"
+                                        data-product-id="${item.productId}">+
+                                </button>
+                            </div>
+                        </td>
+                        <td><span class="total-price" data-product-id="${item.productId}">${item.totalPrice}</span> 원</td>
+                        <td><a href="../store/cart/delete/${item.productId}">삭제</a></td>
+                    </tr>
+                </c:forEach>
+                <tr>
+                    <td colspan="6">
+                        <div id="total-cart-price">
+                            총 결제 금액: <span id="total-price-value">0</span> 원
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </c:if>
+        <div class="button-container">
+            <a href="../store/list" class="shopping_btn">계속 쇼핑하기</a>
+            <a class="order_btn">주문하기</a>
+        </div>
+        <form class="order_form" action="${pageContext.request.contextPath}/store/order/${memberDTO.memberId}"
+              method="post"></form>
+    </div>
+</main>
 <script>
     $(document).ready(function () {
         // 수량 증가 버튼 클릭 이벤트
@@ -189,6 +219,7 @@
             }
             quantityInput.val(quantity);
             updateTotalPrice(productId, quantity, totalPriceSpan);
+            updateCartSession(productId, quantity); // 세션 업데이트 추가
         }
 
         // 총 가격 업데이트 함수
@@ -199,7 +230,7 @@
                 success: function (price) {
                     let totalPrice = price * quantity;
                     totalPriceSpan.text(totalPrice.toLocaleString());
-                    updateProductPrice(productId, price);
+                    $(".product-price[data-product-id='" + productId + "']").text(price.toLocaleString()); // 가격 포맷
                     calculateAndDisplayTotalCartPrice();
                 },
                 error: function () {
@@ -208,8 +239,21 @@
             });
         }
 
-        function updateProductPrice(productId, price) {
-            $(".product-price[data-product-id='" + productId + "']").text(price.toLocaleString());
+        // 세션 업데이트 함수 추가
+        function updateCartSession(productId, quantity) {
+            $.ajax({
+                url: "../store/cart/updateSession/" + productId,
+                type: "POST",
+                data: { productCount: quantity },
+                success: function (response) {
+                    if (response !== "success") {
+                        alert("세션 업데이트 실패!");
+                    }
+                },
+                error: function () {
+                    alert("세션 업데이트 요청 실패!");
+                }
+            });
         }
 
         // 총 가격 계산 및 표시 함수
@@ -227,17 +271,11 @@
         }
 
         function initialize() {
-            $(".product-price").each(function () {
-                let productId = $(this).data("product-id");
-                let price = parseInt($(this).text());
-                updateProductPrice(productId, price);
+            $(".product-price, .total-price").each(function () {
+                let text = $(this).text();
+                let value = parseInt(text.replace(/,/g, ''));
+                $(this).text(value.toLocaleString());
             });
-
-            $(".total-price").each(function () { // 초기 로딩 시 쉼표 추가
-                let totalPrice = parseInt($(this).text().replace(/,/g, ''));
-                $(this).text(totalPrice.toLocaleString() + " 원");
-            });
-
             calculateAndDisplayTotalCartPrice();
         }
 

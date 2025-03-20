@@ -143,6 +143,9 @@ public class KakaoPayService {
             List<OrderPageItemDTO> orderDetails = orderPageDTO.getOrders();
             productMapper.insertProductDetails(memberId, partnerOrderId, orderDetails);
 
+            // DB에 재고 감소
+            productMapper.decreaseProductStockList(orderDetails);
+
             System.out.println("✅ 결제 승인 성공: " + approveVO.getAid());
             return approveVO;
 

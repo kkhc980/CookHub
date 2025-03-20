@@ -91,7 +91,8 @@
                od.product_id,
                od.product_count,
                p.product_name,
-               p.product_price
+               p.product_price,
+               o.address
         FROM orders o
                  JOIN orders_detail od ON o.order_id = od.order_id
                  JOIN products p ON od.product_id = p.product_id

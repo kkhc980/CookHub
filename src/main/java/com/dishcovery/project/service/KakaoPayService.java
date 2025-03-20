@@ -33,7 +33,7 @@ public class KakaoPayService {
     private final OrderMapper orderMapper; // ✅ 주문 정보를 저장할 Mapper
     private final ProductMapper productMapper; // 주문 상세 정보를 저장할 Mapper
 
-    public KakaoPayResponseVO readyToPay(OrderPageDTO orderPageDTO, int totalPrice, Integer memberId, HttpSession session) {
+    public KakaoPayResponseVO readyToPay(OrderPageDTO orderPageDTO, int totalPrice, Integer memberId, HttpSession session, String postcode, String address) {
         RestTemplate restTemplate = new RestTemplate();
 
         if (memberId == null) {
@@ -74,6 +74,8 @@ public class KakaoPayService {
                 session.setAttribute("product_name", rename);  // ✅ 추가
                 session.setAttribute("product_count", productCount);
                 session.setAttribute("orderPageDTO", orderPageDTO);
+                session.setAttribute("postcode", postcode);
+                session.setAttribute("address", address);
             }
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -96,6 +98,8 @@ public class KakaoPayService {
         String productName = (String) session.getAttribute("product_name");  // ✅ 추가
         Integer productCount = (Integer) session.getAttribute("product_count");
         OrderPageDTO orderPageDTO = (OrderPageDTO) session.getAttribute("orderPageDTO");
+        String postcode = (String) session.getAttribute("postcode");
+        String address = (String) session.getAttribute("address");
 
         if (tid == null || partnerOrderId == null || memberId == null || productId == null || productName == null || productCount == null) {
             throw new RuntimeException("❌ 결제 정보가 유효하지 않습니다.");
@@ -133,7 +137,7 @@ public class KakaoPayService {
             }
 
             // ✅ 결제 승인 성공 → DB에 주문 정보 저장
-            orderMapper.insertOrder(memberId, partnerOrderId, approveVO.getAmount().getTotal(), productId, productName, productCount);
+            orderMapper.insertOrder(memberId, partnerOrderId, approveVO.getAmount().getTotal(), productName, postcode, address);
 
             // DB에 주문 상세 정보 저장
             List<OrderPageItemDTO> orderDetails = orderPageDTO.getOrders();

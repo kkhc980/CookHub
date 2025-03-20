@@ -21,6 +21,7 @@ public class OrderHistoryDTO {
     private String productName;
     private int productPrice;
     private int productTotalPrice; // 상품 총 가격 필드
+    private String address;
 
     public int getProductTotalPrice() {
         return productPrice * productCount; // 상품 총 가격 계산 함수

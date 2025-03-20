@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -104,7 +105,7 @@
         <tr class="order-row" data-order-id="${order.orderId}" data-order-date="${order.orderDate}" data-address="${order.address}">
             <td>${order.orderId}</td>
             <td>${order.orderDate}</td>
-            <td>${order.totalAmount}</td>
+            <td><fmt:formatNumber value="${order.totalAmount}" pattern="#,###원"/></td>
             <td>${order.orderProductName}</td>
         </tr>
         <tr class="detail-row" data-order-id="${order.orderId}" data-order-date="${order.orderDate}">
@@ -125,9 +126,9 @@
                     <c:forEach var="detail" items="${order.orderDetails}">
                         <tr>
                             <td>${detail.productName}</td>
-                            <td>${detail.productPrice}</td>
+                            <td><fmt:formatNumber value="${detail.productPrice}" pattern="#,###원"/></td>
                             <td>${detail.productCount}</td>
-                            <td>${detail.productTotalPrice}</td>
+                            <td><fmt:formatNumber value="${detail.productTotalPrice}" pattern="#,###원"/></td>
                         </tr>
                     </c:forEach>
                     </tbody>

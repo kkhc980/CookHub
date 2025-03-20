@@ -239,16 +239,4 @@ public class ProductController {
         return "paymentResult";
     }
 
-    @GetMapping("/orderdetail")
-    public String showOrderDetailPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        String email = userDetails.getUsername();
-        MemberDTO memberDTO = memberService.getMemberByEmail(email);
-
-        List<Map<String, Object>> list = productService.getOrderDetail(memberDTO.getMemberId());
-
-        model.addAttribute("list", list);
-        model.addAttribute("pageContent", "store/history.jsp");
-
-        return "layout";
-    }
 }

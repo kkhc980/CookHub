@@ -104,4 +104,6 @@ public interface RecipeBoardMapper {
 	int getTotalRecipeBoardCount();
 	
 	List<RecipeBoardVO> getTopPosts();
+	
+	List<Map<String, Object>> getGuestRecommendations();
 }

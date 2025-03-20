@@ -27,6 +27,7 @@
         const loginError = urlParams.get('error') === 'true';
         const expired = urlParams.get('error') === 'expired';
         const canceled = urlParams.get('error') === 'canceled';
+        const restricted = urlParams.get('error') === 'restricted';
 
         // 회원가입 성공 시 알림
         const signupSuccess = '${signupSuccess}'; // RedirectAttributes에서 전달된 속성값 받기
@@ -46,7 +47,9 @@
             alert("아이디 또는 비밀번호가 일치하지 않습니다.");
         } else if (canceled) {
             alert("회원가입이 취소되었습니다.");
-        } else if (expired) {
+        } else if (restricted) {
+            alert("로그인이 제한되었습니다.");
+        }else if (expired) {
             const res = confirm("인증이 만료되었습니다. 재인증 하시겠습니까?");
             if (res) {
                 // 재인증 로직

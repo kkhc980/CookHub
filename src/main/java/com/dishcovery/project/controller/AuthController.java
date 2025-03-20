@@ -80,9 +80,4 @@ public class AuthController {
         return "layout";
     }
 
-    @PostMapping("/loginSuccess")
-    public String loginSuccess(Model model) {
-        model.addAttribute("successMessage", "로그인 성공!"); // 성공 메시지 추가
-        return "redirect:/recipeboard/list?success=true";  // 성공 메시지를 리다이렉트 URL에 포함
-    }
 }

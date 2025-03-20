@@ -315,7 +315,7 @@
                         </sec:authorize>
                         <a href="${pageContext.request.contextPath}/store/cart">장바구니</a>
                         <a href="${pageContext.request.contextPath}/store/orderdetail">구매내역</a>
-                        <form action="../auth/logout" method="post">
+                        <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                             <input type="submit" value="로그아웃">
                             <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
                         </form>

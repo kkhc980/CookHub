@@ -198,42 +198,25 @@
             return;
         }
 
-        let totalPrice = productPrice * productCount;
-
         let form = document.createElement("form");
         form.method = "POST";
-        form.action = '${pageContext.request.contextPath}/store/purchase';
+        form.action = '${pageContext.request.contextPath}/store/order/${memberDTO.memberId}'; // order로 전송
 
+        // csrf 토큰 추가
         let csrfInput = document.createElement("input");
         csrfInput.type = "hidden";
         csrfInput.name = "${_csrf.parameterName}";
         csrfInput.value = "${_csrf.token}";
-
-        let input1 = document.createElement("input");
-        input1.type = "hidden";
-        input1.name = "productId";
-        input1.value = productId;
-
-        let input2 = document.createElement("input");
-        input2.type = "hidden";
-        input2.name = "productName";
-        input2.value = productName;
-
-        let input3 = document.createElement("input");
-        input3.type = "hidden";
-        input3.name = "productPrice";
-        input3.value = productPrice;
-
-        let input4 = document.createElement("input");
-        input4.type = "hidden";
-        input4.name = "productCount";
-        input4.value = productCount;
-
         form.appendChild(csrfInput);
-        form.appendChild(input1);
-        form.appendChild(input2);
-        form.appendChild(input3);
-        form.appendChild(input4);
+
+        // 주문 상품 정보 추가
+        let orderValue = productId + ":" + productCount;
+        let orderInput = document.createElement("input");
+        orderInput.type = "hidden";
+        orderInput.name = "orders";
+        orderInput.value = orderValue;
+        form.appendChild(orderInput);
+
         document.body.appendChild(form);
         form.submit();
     }

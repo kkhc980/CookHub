@@ -41,7 +41,9 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
         if (memberVO.getAuthStatus() == 0) {
             response.sendRedirect("../auth/login?error=authRequired");
-        } else {
+        } else if (memberVO.getAuthStatus() == 2) {
+            response.sendRedirect("../auth/login?error=restricted");
+        }else {
             response.sendRedirect("../auth/login?error=true"); // 그 외의 실패 처리
         }
     }

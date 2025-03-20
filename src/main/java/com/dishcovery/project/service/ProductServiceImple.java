@@ -103,7 +103,7 @@ public class ProductServiceImple implements ProductService {
     @Override
     public List<Map<String, Object>> getOrderDetail(int memberId) {
         List<OrderHistoryDTO> orders = productMapper.getOrderDetail(memberId);
-        Map<String, Map<String, List<OrderHistoryDTO>>> groupedOrders = new HashMap<>();
+        Map<String, Map<String, List<OrderHistoryDTO>>> groupedOrders = new LinkedHashMap<>(); // LinkedHashMap 사용
         List<Map<String, Object>> result = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -113,7 +113,7 @@ public class ProductServiceImple implements ProductService {
             String key = orderId + "::" + orderDate.format(formatter);
 
             if (!groupedOrders.containsKey(key)) {
-                Map<String, List<OrderHistoryDTO>> orderDetails = new HashMap<>();
+                Map<String, List<OrderHistoryDTO>> orderDetails = new LinkedHashMap<>(); // LinkedHashMap 사용
                 groupedOrders.put(key, orderDetails);
             }
 
@@ -128,20 +128,25 @@ public class ProductServiceImple implements ProductService {
         for (Map.Entry<String, Map<String, List<OrderHistoryDTO>>> entry : groupedOrders.entrySet()) {
             String[] keyParts = entry.getKey().split("::");
             String orderId = keyParts[0];
-            String orderDateStr = keyParts[1]; // 문자열 형태의 orderDate를 그대로 사용
+            String orderDateStr = keyParts[1];
 
             for (Map.Entry<String, List<OrderHistoryDTO>> productEntry : entry.getValue().entrySet()) {
                 Map<String, Object> orderMap = new HashMap<>();
                 orderMap.put("orderId", orderId);
-                orderMap.put("orderDate", orderDateStr); // 문자열 형태의 orderDate를 그대로 사용
+                orderMap.put("orderDate", orderDateStr);
                 orderMap.put("orderProductName", productEntry.getKey());
                 orderMap.put("orderDetails", productEntry.getValue());
 
                 int totalAmount = 0;
+                String address = null;
+
                 for (OrderHistoryDTO order : productEntry.getValue()) {
                     totalAmount += order.getProductPrice() * order.getProductCount();
+                    address = order.getAddress();
                 }
+
                 orderMap.put("totalAmount", totalAmount);
+                orderMap.put("address", address);
 
                 result.add(orderMap);
             }

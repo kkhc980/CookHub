@@ -91,11 +91,21 @@
                od.product_id,
                od.product_count,
                p.product_name,
-               p.product_price
+               p.product_price,
+               o.address
         FROM orders o
                  JOIN orders_detail od ON o.order_id = od.order_id
                  JOIN products p ON od.product_id = p.product_id
         WHERE o.member_id = #{memberId}
         ORDER BY o.created_at DESC
     </select>
+
+    <update id="decreaseProductStockList" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE Products
+            SET stock = stock - #{item.productCount}
+            WHERE product_id = #{item.productId}
+            AND stock >= #{item.productCount}
+        </foreach>
+    </update>
 </mapper>

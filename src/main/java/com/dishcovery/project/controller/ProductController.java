@@ -157,6 +157,23 @@ public class ProductController {
         return "layout";
     }
 
+    @PostMapping("/cart/updateSession/{productId}")
+    @ResponseBody
+    public String updateCartSession(@PathVariable int productId, @RequestParam("productCount") int productCount) {
+        List<OrderPageItemDTO> cart = (List<OrderPageItemDTO>) session.getAttribute("cart");
+        if (cart != null) {
+            for (OrderPageItemDTO item : cart) {
+                if (item.getProductId() == productId) {
+                    item.setProductCount(productCount);
+                    item.initTotal(); // 총 가격 다시 계산
+                    session.setAttribute("cart", cart);
+                    return "success";
+                }
+            }
+        }
+        return "fail";
+    }
+
     @GetMapping("/cart/update/{productId}")
     @ResponseBody
     public int getProductPrice(@PathVariable int productId) {
@@ -222,16 +239,4 @@ public class ProductController {
         return "paymentResult";
     }
 
-    @GetMapping("/orderdetail")
-    public String showOrderDetailPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        String email = userDetails.getUsername();
-        MemberDTO memberDTO = memberService.getMemberByEmail(email);
-
-        List<Map<String, Object>> list = productService.getOrderDetail(memberDTO.getMemberId());
-
-        model.addAttribute("list", list);
-        model.addAttribute("pageContent", "store/history.jsp");
-
-        return "layout";
-    }
 }

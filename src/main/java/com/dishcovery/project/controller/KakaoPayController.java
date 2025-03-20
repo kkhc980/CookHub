@@ -30,7 +30,8 @@ public class KakaoPayController {
 
     // ✅ 결제 요청 (카카오페이 결제창으로 리디렉트)
     @PostMapping("/purchase")
-    public RedirectView kakaoPayReady(OrderPageDTO orderPageDTO, @RequestParam("totalPayment") int totalPayment, HttpSession session, HttpServletRequest request) {
+    public RedirectView kakaoPayReady(OrderPageDTO orderPageDTO, @RequestParam("totalPayment") int totalPayment, HttpSession session, HttpServletRequest request,
+                                      @RequestParam("postcode") String postcode, @RequestParam("address") String address) {
         Integer memberId = getCurrentUserId();
         if (memberId == null) {
             throw new RuntimeException("로그인된 사용자 정보를 찾을 수 없습니다.");
@@ -43,7 +44,7 @@ public class KakaoPayController {
         // ✅ 리디렉션 URL을 세션에 저장 (보안을 위해)
         session.setAttribute("redirectUrl", request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()));
 
-        KakaoPayResponseVO response = kakaoPayService.readyToPay(orderPageDTO, totalPayment, memberId, session);
+        KakaoPayResponseVO response = kakaoPayService.readyToPay(orderPageDTO, totalPayment, memberId, session, postcode, address);
 
         if (response == null || response.getNext_redirect_pc_url() == null) {
             throw new RuntimeException("카카오페이 결제 요청 중 오류가 발생했습니다.");

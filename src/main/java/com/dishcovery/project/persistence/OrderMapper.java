@@ -8,9 +8,9 @@ public interface OrderMapper {
         @Param("memberId") Integer memberId,
         @Param("orderId") String orderId,
         @Param("totalAmount") int totalAmount,
-        @Param("productId") int productId, 
-        @Param("productName") String productName, 
-        @Param("productCount") int productCount);
+        @Param("productName") String productName,
+        @Param("postcode") String postcode,
+        @Param("address") String address);
 
     int existsOrder(@Param("orderId") String orderId);
 }

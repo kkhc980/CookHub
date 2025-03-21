@@ -51,7 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		.antMatchers("/member/detail","/member/update").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/recipeboard/register").authenticated()
         		.antMatchers("/recipeboard/update/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
-        		.antMatchers("/recipeboard/delete/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')")
+        		.antMatchers("/recipeboard/delete/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')").antMatchers("/recipeboard/reviews/**").access("hasRole('ROLE_MEMBER') or hasRole('ROLE_ADMIN')") // ✅ AJAX 요청과 일치하도록 설정
+        		.antMatchers("/recipeboard/reviews/**").authenticated() // 리뷰 관련 요청은 인증 필요
         		.antMatchers("/recipeboard/detail").permitAll()
         		.antMatchers("/notifications/**").permitAll()
                 .antMatchers("/follow/**").permitAll()
@@ -78,6 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Encoding 필터를 Csrf 필터보다 먼저 실행
         httpSecurity.addFilterBefore(encodingFilter(), CsrfFilter.class);
         httpSecurity.addFilterBefore(multipartFilter(), CsrfFilter.class);
+        
     }
 
     // AuthenticationManagerBuilder 객체를 통해 인증 기능을 구성

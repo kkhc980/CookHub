@@ -14,7 +14,7 @@ $(document).ready(function() {
         // submitNestedReply();
 	var nestedReplyContent = $(this).siblings('#nestedReplyContent').val();
     var replyId = $(this).siblings('#parentReplyId').val();
-    var nestedModal = document.getElementById("nestedReplyModal");
+    var nestedReplyModal = document.getElementById("nestedReplyModal");
 
     // Get memberId from hidden input
     var memberId = $(this).siblings('#nestedReplyMemberId').val();
@@ -41,7 +41,7 @@ $(document).ready(function() {
         }),
         success: function(response) {
             alert("답글이 작성되었습니다.");
-            nestedModal.style.display = "none";
+            nestedReplyModal.style.display = "none";
             window.getAllReply(); // ✅ 전역 함수로 호출
         },
         error: function(xhr, status, error) {
@@ -52,30 +52,30 @@ $(document).ready(function() {
         
     });
     
-    $(document).on('click', '#nestedReplyModal .close', function() {
+    $(document).on('click', '#nestedReplyModal .nested-close', function() {
         console.log("✅ 모달 닫기 버튼 클릭됨!"); // ✅ 디버깅용 로그 출력
 
-        var nestedModal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
-        console.log("🔹 닫힐 모달 요소:", nestedModal);
+        var nestedReplyModal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
+        console.log("🔹 닫힐 모달 요소:", nestedReplyModal);
 
-        if (nestedModal.length === 0) {
+        if (nestedReplyModal.length === 0) {
             alert("❌ 닫을 모달을 찾을 수 없습니다.");
             return;
         }
 
-        nestedModal.hide(); // ✅ 모달 닫기
-    });$(document).on('click', '#nestedReplyModal .close', function() {
+        nestedReplyModal.hide(); // ✅ 모달 닫기
+    });$(document).on('click', '#nestedReplyModal .nested-close', function() {
         console.log("✅ 모달 닫기 버튼 클릭됨!"); // ✅ 디버깅용 로그 출력
 
-        var nestedModal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
-        console.log("🔹 닫힐 모달 요소:", nestedModal);
+        var nestedReplyModal = $('#nestedReplyModal'); // ✅ 모달 ID를 사용하여 선택
+        console.log("🔹 닫힐 모달 요소:", nestedReplyModal);
 
-        if (nestedModal.length === 0) {
+        if (nestedReplyModal.length === 0) {
             alert("❌ 닫을 모달을 찾을 수 없습니다.");
             return;
         }
 
-        nestedModal.hide(); // ✅ 모달 닫기
+        nestedReplyModal.hide(); // ✅ 모달 닫기
     });
 });
 
@@ -119,6 +119,19 @@ function getAllNestedReply(replyId) {
 
         $(data).each(function() {
             var nestedReplyDateCreated = new Date(this.nestedReplyDateCreated);
+            
+             var nestedReplyformattedDate = nestedReplyDateCreated.toLocaleString("ko-KR", { 
+	                   		    year: "numeric", 
+	                   		    month: "2-digit", 
+	                   		    day: "2-digit", 
+	                   		 	hourCycle: "h23",  // ✅ 24시간 형식 강제 적용
+	                   		    hour: "2-digit", 
+	                   		    minute: "2-digit", 
+	                   		    second: "2-digit" 
+	                   		})
+							.replace(/\. /g, '-')  // "2025. 03. 18. 10:36:48" → "2025-03-18-10:36:48"
+							.replace(/-(\d{2}):/, ' $1:');  // ✅ 날짜와 시간 사이의 `-`을 공백으로 변경
+            
 
             nestedReplyList += '<div class="nested_reply_item" data-nested-reply-id="' + this.nestedReplyId + '">' +
                 '<pre>' +
@@ -127,10 +140,12 @@ function getAllNestedReply(replyId) {
                 '  ' +
                 '<span class="nestedReplyContentDisplay">' + this.nestedReplyContent + '</span>' +
                 '  ' +
-                nestedReplyDateCreated +
+                nestedReplyformattedDate +
                 '  ' +
+                '<div class="nested_reply_buttons" data-nested-reply-id="' + this.nestedReplyId + '">' +
                 '<button class="btn_update_nested_reply" data-nested-reply-id="' + this.nestedReplyId + '">수정</button>' +
                 '<button class="btn_delete_nested_reply" data-nested-reply-id="' + this.nestedReplyId + '">삭제</button>' +
+                '</div>' + // 닫는 div 추가
                 '</pre>' +
                 '</div>';
         });
@@ -171,7 +186,7 @@ function getAllNestedReply(replyId) {
 	        }),
 	        success: function (response) {
 	        
-	        	$('.nestedReplyDisplay[data-nested-reply-id="' + nestedReplyId + '"]').text(response.nestedReplyContent); // 수정된 내용만 삽입
+	        	$('.nestedReplyContentDisplay[data-nested-reply-id="' + nestedReplyId + '"]').text(response.nestedReplyContent); // 수정된 내용만 삽입
 	        	
 	            if (response == 1) {
 	            	alert('답글 수정 성공!');
@@ -202,35 +217,36 @@ function getAllNestedReply(replyId) {
 // 모달 열기
 function openNestedReplyModal(element) {
     var replyId = $(element).data('reply-id');
-    
-     let nestedModal = document.getElementById("nestedReplyModal");
-	    if (!nestedModal) {
-	        console.error("nestedModal element with ID 'nestedReplyModal' not found.");
+	let nestedReplyModal = document.getElementById("nestedReplyModal");
+	
+	    if (!nestedReplyModal) {
+	        console.error("nestedReplyModal element with ID 'nestedReplyModal' not found.");
 	        return;
 	    }
-   // var nestedModal = document.getElementById("nestedReplyModal");
+	    
+   // var nestedReplyModal = document.getElementById("nestedReplyModal");
 
     // Set the parent reply ID
     $("#parentReplyId").val(replyId);
 
-    // Display the nestedModal
-    nestedModal.style.display = "block";
+    // Display the nestedReplyModal
+    nestedReplyModal.style.display = "block";
 
     // Close button functionality
-    var closeBtn = document.getElementsByClassName("close")[0];
+    var closeBtn = document.getElementsByClassName("nested-close")[0];
     closeBtn.onclick = function() {
-      let nestedModal = document.getElementById("nestedReplyModal");
-      if (nestedModal) {
-            nestedModal.style.display = "none";
+      let nestedReplyModal = document.getElementById("nestedReplyModal");
+      if (nestedReplyModal) {
+            nestedReplyModal.style.display = "none";
        } else {
-           console.log("nestedModal element not found!");
+           console.log("nestedReplyModal element not found!");
        }
     }
 
-    // When the user clicks anywhere outside of the modal, close it
+    // 외부 클릭시 모달 닫힘
     window.onclick = function(event) {
-        if (event.target == nestedModal) {
-            nestedModal.style.display = "none";
+        if (event.target == nestedReplyModal) {
+            nestedReplyModal.style.display = "none";
         }
     }
 }
@@ -239,7 +255,7 @@ function openNestedReplyModal(element) {
 function submitNestedReply() {
     var nestedReplyContent = $('#nestedReplyContent').val();
     var replyId = $('#parentReplyId').val();
-    var nestedModal = document.getElementById("nestedReplyModal");
+    var nestedReplyModal = document.getElementById("nestedReplyModal");
 
     // Get memberId from hidden input
     var memberId = $('#nestedReplyMemberId').val();
@@ -252,5 +268,8 @@ function submitNestedReply() {
         alert("댓글 ID 또는 내용이 없습니다.");
         return;
     }
+    
+    // 모달 닫기
+    nestedReplyModal.style.display = "none";
 	    
 }

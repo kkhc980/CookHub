@@ -17,4 +17,6 @@ public interface ReplyMapper {
 	int getTotalReplyCount(@Param("recipeBoardId") int recipeBoardId);
 	int updateReply(ReplyVO replyVO);
 	int deleteReply(int replyId);
+	
+	ReplyVO selectReplyById(int replyId);
 }

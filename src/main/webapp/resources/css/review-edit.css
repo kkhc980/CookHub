@@ -20,11 +20,38 @@
 }
 
 /* 별점 스타일 */
+.review-input-area .star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    direction: rtl;
+}
+
+.review-input-area .star-rating input {
+    display: none;
+}
+
+.review-input-area .star-rating label {
+    font-size: 30px;
+    color: #ddd;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.review-input-area .star-rating label:hover,
+.review-input-area .star-rating label:hover ~ label,
+.review-input-area .star-rating input:checked ~ label {
+    color: gold;
+}
+
+/* 별점 스타일 */
 .star-rating {
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-end;
     margin-bottom: 20px;
+    direction: rtl;
 }
 
 .star-rating input {
@@ -62,16 +89,25 @@
     resize: vertical;
     min-height: 100px;
     font-size: 14px;
+    flex-grow: 1; /* Allow the textarea to grow */
 }
 
 /* drag - image 영역 스타일*/
 .review-input-area .image-drop {
-    text-align: center;
-    color: #777;
-    padding: 20px;
-    border: 1px dashed #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
+  width: 100px; /* Fixed width */
+  height: 100px; /* Make it a square (same height as min-height of textarea) */
+  text-align: center;
+  color: #777;
+  padding: 20px; /* Adjust padding as needed */
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  margin-right: 10px; /* Add space between image and textarea */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px 5px 5px 5px; /* 오른쪽 상단, 오른쪽 하단 모서리만 둥글게 */
 }
 
 /* 리뷰 이미지 미리보기 영역 스타일*/
@@ -92,20 +128,28 @@
 }
 
 .review-add-button {
-    background-color: #4CAF50;
+	width: 100px;
+    background-color: #ff9900;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 5px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 14px;
     cursor: pointer;
     border-radius: 5px;
+    margin: 0; /* Add space between textarea and button */
+  	height: 100px;
+ 	flex-shrink: 0; /* Prevent the button from shrinking */
+ 	align-self: stretch; /* Make the button stretch to the height of the textarea */
+  	right: 15px;   
+  	position: absolute;  /* 절대 위치 설정 */  
+  	top: 15px;
 }
 
 .review-add-button:hover {
-    background-color: #3e8e41;
+    background-color: #e68900;
 }
 
 /* 리뷰 목록 스타일 */

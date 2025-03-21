@@ -11,5 +11,5 @@ public interface ReplyService {
 	int createReply(ReplyVO replyVO);
 	int updateReply(int replyId, String replyContent);
 	int deleteReply(int replyId, int recipeBoardId);
-	
+//	ReplyVO getReplyById(int replyId);
 }

@@ -80,6 +80,7 @@ public class RecipeBoardController {
 
         // 모델에 데이터 추가
         model.addAllAttributes(result);
+        model.addAttribute("pagination", pagination);
         model.addAttribute("selectedTypeId", typeId);
         model.addAttribute("selectedSituationId", situationId);
         model.addAttribute("selectedMethodId", methodId);

@@ -351,12 +351,12 @@
 	            이전
 	        </a>
 	    </c:if>
-	    <c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
-	        <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}" 
-	           href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&sort=${param.sort}&hashtag=${fn:escapeXml(param.hashtag)}">
-	            ${pageNum}
-	        </a>
-	    </c:forEach>
+	<c:forEach var="pageNum" begin="${pageMaker.startNum}" end="${pageMaker.endNum}">
+	    <a class="pagination-link ${pagination.pageNum == pageNum ? 'active' : ''}"
+	       href="?pageNum=${pageNum}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&sort=${param.sort}&hashtag=${fn:escapeXml(param.hashtag)}">
+	        ${pageNum}
+	    </a>
+	</c:forEach>
 	    <c:if test="${pageMaker.next}">
 	        <a class="pagination-link" 
 	           href="?pageNum=${pageMaker.endNum + 1}&typeId=${selectedTypeId}&situationId=${selectedSituationId}&methodId=${selectedMethodId}&ingredientIds=${ingredientIdsStr}&sort=${param.sort}&hashtag=${fn:escapeXml(param.hashtag)}">
@@ -364,7 +364,6 @@
 	        </a>
 	    </c:if>
 	</div>
-
 
     <script>
 	    function redirectToLogin() {

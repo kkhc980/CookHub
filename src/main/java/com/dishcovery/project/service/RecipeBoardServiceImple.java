@@ -808,4 +808,8 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         return mapper.getTotalRecipeBoardCount();
     }
 
+    @Override
+    public List<RecipeBoardVO> getTopPosts() {
+        return mapper.getTopPosts();
+    }
 }

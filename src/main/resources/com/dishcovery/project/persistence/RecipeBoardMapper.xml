@@ -552,5 +552,56 @@
 	<select id="getTotalRecipeBoardCount" resultType="int">
 	    SELECT COUNT(*) FROM recipe_board  <!-- 레시피 보드의 총 개수 조회 -->
 	</select>
+	
+	<select id="getTopPosts" resultType="com.dishcovery.project.domain.RecipeBoardVO">
+	    <![CDATA[
+	    SELECT *
+	    FROM (
+	        SELECT ranked.*, 
+	               ROWNUM AS rnum
+	        FROM (
+	            SELECT RECIPE_BOARD_ID, RECIPE_BOARD_TITLE, MEMBER_ID, 
+	                   VIEW_COUNT, AVG_RATING, RECIPE_REVIEW_COUNT, LIKE_COUNT, THUMBNAIL_PATH,
+	                   RANK() OVER (ORDER BY VIEW_COUNT DESC) AS view_rank,
+	                   RANK() OVER (ORDER BY AVG_RATING DESC) AS rating_rank,
+	                   (RANK() OVER (ORDER BY VIEW_COUNT DESC) + 
+	                    RANK() OVER (ORDER BY AVG_RATING DESC)) AS total_rank
+	            FROM RECIPE_BOARD
+	        ) ranked
+	        ORDER BY total_rank ASC
+	    ) 
+	    WHERE rnum <= 10
+	    ]]>
+	</select>
 
+	<select id="getGuestRecommendations" resultType="java.util.Map">
+	    SELECT
+	        rb.recipe_board_id AS "recipe_board_id",
+	        rb.recipe_board_title AS "recipe_board_title",
+	        rb.recipe_board_content AS "recipe_board_content",
+	        rb.member_id AS "member_id",
+	        rb.recipe_board_created_date AS "recipe_board_created_date",
+	        rb.view_count AS "view_count",
+	        rb.avg_rating AS "avg_rating",
+	        rb.thumbnail_path AS "thumbnail_path",
+	        NVL(rb.like_count, 0) AS "like_count",
+	        0 AS "weight_score",  -- JSP에서 hidden 처리되어 있으므로 기본값
+	        0 AS "cosine_similarity",
+	        0 AS "final_score"
+	    FROM (
+	        SELECT rb.recipe_board_id,
+	               ROW_NUMBER() OVER (
+	                   ORDER BY DBMS_RANDOM.VALUE,
+			                   rb.avg_rating DESC,
+	                            rb.view_count DESC,
+	                            rb.recipe_board_created_date DESC
+	               ) AS rn
+	        FROM recipe_board rb
+	        JOIN recipe_ingredients ri ON rb.recipe_board_id = ri.recipe_board_id
+	        JOIN products p ON ri.ingredient_id = p.ingredient_id
+	        GROUP BY rb.recipe_board_id, rb.avg_rating, rb.view_count, rb.recipe_board_created_date
+	    ) ranked_boards
+	    JOIN recipe_board rb ON ranked_boards.recipe_board_id = rb.recipe_board_id
+	    WHERE ranked_boards.rn &lt;= 5
+	</select>
 </mapper>

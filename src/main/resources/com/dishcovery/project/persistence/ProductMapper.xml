@@ -21,6 +21,17 @@
         <result property="productPrice" column="PRODUCT_PRICE"/>
     </resultMap>
 
+    <resultMap id="orderHistoryResultMap" type="com.dishcovery.project.domain.OrderHistoryDTO">
+        <result property="orderId" column="order_id"/>
+        <result property="orderDate" column="order_date"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="orderProductName" column="order_product_name"/>
+        <result property="productId" column="product_id"/>
+        <result property="productCount" column="product_count"/>
+        <result property="productName" column="product_name"/>
+        <result property="productPrice" column="product_price"/>
+    </resultMap>
+
     <!-- 상품 등록 -->
     <insert id="insertProduct">
         INSERT INTO Products (product_id, product_name, product_price, product_description, ingredient_id,
@@ -62,4 +73,39 @@
         FROM PRODUCTS
         WHERE PRODUCT_ID = #{productId}
     </select>
+
+    <insert id="insertProductDetails">
+        INSERT ALL
+        <foreach collection="orderDetails" item="item">
+            INTO ORDERS_DETAIL (MEMBER_ID, ORDER_ID, PRODUCT_ID, PRODUCT_COUNT)
+            VALUES (#{memberId}, #{orderId}, #{item.productId}, #{item.productCount})
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <select id="getOrderDetail" resultMap="orderHistoryResultMap">
+        SELECT o.order_id     AS order_id,
+               o.created_at   AS order_date,
+               o.total_amount,
+               o.product_name AS order_product_name,
+               od.product_id,
+               od.product_count,
+               p.product_name,
+               p.product_price,
+               o.address
+        FROM orders o
+                 JOIN orders_detail od ON o.order_id = od.order_id
+                 JOIN products p ON od.product_id = p.product_id
+        WHERE o.member_id = #{memberId}
+        ORDER BY o.created_at DESC
+    </select>
+
+    <update id="decreaseProductStockList" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE Products
+            SET stock = stock - #{item.productCount}
+            WHERE product_id = #{item.productId}
+            AND stock >= #{item.productCount}
+        </foreach>
+    </update>
 </mapper>

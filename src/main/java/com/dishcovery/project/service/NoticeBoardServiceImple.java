@@ -86,4 +86,9 @@ public class NoticeBoardServiceImple implements NoticeBoardService {
             throw new RuntimeException("공지사항 삭제 중 오류 발생", e);
         }
     }
+    
+    @Override
+    public List<NoticeBoardVO> getLatestNotices(int limit) {
+        return noticeBoardMapper.getLatestNotices(limit);
+    }
 }

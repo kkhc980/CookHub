@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/store")
@@ -133,7 +134,6 @@ public class ProductController {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
-
     // 장바구니 페이지 보여주기
     @GetMapping("/cart")
     public String showCart(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -155,6 +155,23 @@ public class ProductController {
 
         // 3. 장바구니 페이지로 이동한다.
         return "layout";
+    }
+
+    @PostMapping("/cart/updateSession/{productId}")
+    @ResponseBody
+    public String updateCartSession(@PathVariable int productId, @RequestParam("productCount") int productCount) {
+        List<OrderPageItemDTO> cart = (List<OrderPageItemDTO>) session.getAttribute("cart");
+        if (cart != null) {
+            for (OrderPageItemDTO item : cart) {
+                if (item.getProductId() == productId) {
+                    item.setProductCount(productCount);
+                    item.initTotal(); // 총 가격 다시 계산
+                    session.setAttribute("cart", cart);
+                    return "success";
+                }
+            }
+        }
+        return "fail";
     }
 
     @GetMapping("/cart/update/{productId}")
@@ -211,4 +228,15 @@ public class ProductController {
 
         return "layout";
     }
+
+    @GetMapping("/success")
+    public String showSuccessPage() {
+        return "store/success"; // success.jsp 호출
+    }
+
+    @GetMapping("/paymentResult")
+    public String showPaymentResultPage() {
+        return "paymentResult";
+    }
+
 }

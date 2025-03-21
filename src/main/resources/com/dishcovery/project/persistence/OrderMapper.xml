@@ -6,8 +6,8 @@
 
     <!-- 주문 정보 저장 -->
     <insert id="insertOrder">
-        INSERT INTO orders (id, member_id, order_id, total_amount, product_id, product_name, product_count, created_at)
-        VALUES (orders_seq.NEXTVAL, #{memberId}, #{orderId}, #{totalAmount}, #{productId}, #{productName}, #{productCount}, SYSTIMESTAMP)
+        INSERT INTO orders (id, member_id, order_id, total_amount, product_name, created_at, post_code, address)
+        VALUES (orders_seq.NEXTVAL, #{memberId}, #{orderId}, #{totalAmount}, #{productName}, SYSTIMESTAMP, #{postcode}, #{address})
     </insert>
     
 	<select id="existsOrder" resultType="int">

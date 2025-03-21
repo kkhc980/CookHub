@@ -280,7 +280,7 @@
 
     </div>
     <div class="center-logo">
-        <a href="${pageContext.request.contextPath}/recipeboard/list" style="text-decoration: none; color: #ff9900;">CookHub</a>
+        <a href="${pageContext.request.contextPath}/main" style="text-decoration: none; color: #ff9900;">CookHub</a>
     </div>
 
     <div class="user-notification-container">
@@ -314,7 +314,8 @@
                             <a href="${pageContext.request.contextPath}/admin/recipeboard">관리자 페이지</a>
                         </sec:authorize>
                         <a href="${pageContext.request.contextPath}/store/cart">장바구니</a>
-                        <form action="../auth/logout" method="post">
+                        <a href="${pageContext.request.contextPath}/store/orderdetail">구매내역</a>
+                        <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                             <input type="submit" value="로그아웃">
                             <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
                         </form>

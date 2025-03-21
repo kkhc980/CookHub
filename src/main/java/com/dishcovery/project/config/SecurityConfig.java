@@ -69,11 +69,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("email") // 이메일 파라미터 설정
                 .passwordParameter("password") // 비밀번호 파라미터 설정
                 .failureHandler(customAuthenticationFailureHandler) // 사용자 정의 AuthenticationFailureHandler 적용
-                .successForwardUrl("/auth/loginSuccess");  // 로그인 성공시 컨트롤러를 거치도록 변경
-                //.defaultSuccessUrl("/recipeboard/list"); // 로그인 성공 시 이동할 URL 설정
+                .defaultSuccessUrl("/main"); // 로그인 성공 시 이동할 URL 설정
 
         httpSecurity.logout().logoutUrl("/auth/logout") // 로그아웃 URL 설정
-                .logoutSuccessUrl("/recipeboard/list") // 로그아웃 성공 시 이동할 URL 설정
+                .logoutSuccessUrl("/main") // 로그아웃 성공 시 이동할 URL 설정
                 .invalidateHttpSession(true); // 세션 무효화 설정
 
         // Encoding 필터를 Csrf 필터보다 먼저 실행

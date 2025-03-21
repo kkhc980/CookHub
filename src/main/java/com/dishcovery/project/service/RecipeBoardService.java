@@ -96,4 +96,5 @@ public interface RecipeBoardService {
 
 	int getTotalRecipeBoardCount();
 
+	List<RecipeBoardVO> getTopPosts();
 }

@@ -75,14 +75,7 @@ public class AuthController {
             model.addAttribute("canceledMsg", "회원가입이 취소되었습니다!");
         }
 
-        model.addAttribute("pageContent", "auth/login.jsp");
-
-        return "layout";
+        return "/auth/login";
     }
 
-    @PostMapping("/loginSuccess")
-    public String loginSuccess(Model model) {
-        model.addAttribute("successMessage", "로그인 성공!"); // 성공 메시지 추가
-        return "redirect:/recipeboard/list?success=true";  // 성공 메시지를 리다이렉트 URL에 포함
-    }
 }

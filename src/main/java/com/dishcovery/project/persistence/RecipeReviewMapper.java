@@ -27,4 +27,6 @@ public interface RecipeReviewMapper {
 	// AVG_RATING 업데이트
 	int updateAvgRating(@Param("recipeBoardId") int recipeBoardId, @Param("avgRating") double avgRating);
 	
+	RecipeReviewVO selectReviewById(int recipeReviewId);
+
 }

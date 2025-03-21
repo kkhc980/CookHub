@@ -182,4 +182,12 @@ public class RecipeReviewServiceImple implements RecipeReviewService{
       return reviewAttach;
    }
    
+   @Override
+   public RecipeReviewDTO getReviewById(int recipeReviewId) {
+       log.info("getReviewById() 호출 - recipeReviewId: " + recipeReviewId);
+       RecipeReviewVO recipeReviewVO = recipeReviewMapper.selectReviewById(recipeReviewId);
+       return recipeReviewVO != null ? toDTO(recipeReviewVO) : null;
+   }
+
+   
 }

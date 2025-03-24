@@ -87,69 +87,83 @@
             border: 1px solid #add8e6;
             border-radius: 5px;
         }
+        .no-orders {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #777;
+        }
     </style>
 </head>
 <body>
 <h2>구매 내역</h2>
-<table id="orderTable">
-    <thead>
-    <tr>
-        <th>주문 ID</th>
-        <th>주문 날짜</th>
-        <th>총 금액</th>
-        <th>주문 상품 이름</th>
-    </tr>
-    </thead>
-    <tbody>
-    <c:forEach var="order" items="${list}">
-        <tr class="order-row" data-order-id="${order.orderId}" data-order-date="${order.orderDate}" data-address="${order.address}">
-            <td>${order.orderId}</td>
-            <td>${order.orderDate}</td>
-            <td><fmt:formatNumber value="${order.totalAmount}" pattern="#,###원"/></td>
-            <td>${order.orderProductName}</td>
-        </tr>
-        <tr class="detail-row" data-order-id="${order.orderId}" data-order-date="${order.orderDate}">
-            <td colspan="4">
-                <div class="address-info">
-                    <strong>배송지:</strong> <span class="address"></span>
-                </div>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>상품 이름</th>
-                        <th>상품 가격</th>
-                        <th>상품 수량</th>
-                        <th>상품 총 가격</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach var="detail" items="${order.orderDetails}">
-                        <tr>
-                            <td>${detail.productName}</td>
-                            <td><fmt:formatNumber value="${detail.productPrice}" pattern="#,###원"/></td>
-                            <td>${detail.productCount}</td>
-                            <td><fmt:formatNumber value="${detail.productTotalPrice}" pattern="#,###원"/></td>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </c:forEach>
-    </tbody>
-</table>
 
-<script>
-    $(document).ready(function() {
-        $(".order-row").click(function() {
-            const orderId = $(this).data("order-id");
-            const orderDate = $(this).data("order-date");
-            const address = $(this).data("address"); // 배송지 정보 가져오기
-            const detailRow = $(".detail-row[data-order-id='" + orderId + "'][data-order-date='" + orderDate + "']");
-            detailRow.find(".address").text(address); // 배송지 정보 설정
-            detailRow.toggle();
-        });
-    });
-</script>
+<c:choose>
+    <c:when test="${empty list}">
+        <div class="no-orders">구매 내역이 없습니다.</div>
+    </c:when>
+    <c:otherwise>
+        <table id="orderTable">
+            <thead>
+            <tr>
+                <th>주문 ID</th>
+                <th>주문 날짜</th>
+                <th>총 금액</th>
+                <th>주문 상품 이름</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach var="order" items="${list}">
+                <tr class="order-row" data-order-id="${order.orderId}" data-order-date="${order.orderDate}" data-address="${order.address}">
+                    <td>${order.orderId}</td>
+                    <td>${order.orderDate}</td>
+                    <td><fmt:formatNumber value="${order.totalAmount}" pattern="#,###원"/></td>
+                    <td>${order.orderProductName}</td>
+                </tr>
+                <tr class="detail-row" data-order-id="${order.orderId}" data-order-date="${order.orderDate}">
+                    <td colspan="4">
+                        <div class="address-info">
+                            <strong>배송지:</strong> <span class="address"></span>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>상품 이름</th>
+                                <th>상품 가격</th>
+                                <th>상품 수량</th>
+                                <th>상품 총 가격</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach var="detail" items="${order.orderDetails}">
+                                <tr>
+                                    <td>${detail.productName}</td>
+                                    <td><fmt:formatNumber value="${detail.productPrice}" pattern="#,###원"/></td>
+                                    <td>${detail.productCount}</td>
+                                    <td><fmt:formatNumber value="${detail.productTotalPrice}" pattern="#,###원"/></td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+
+        <script>
+            $(document).ready(function() {
+                $(".order-row").click(function() {
+                    const orderId = $(this).data("order-id");
+                    const orderDate = $(this).data("order-date");
+                    const address = $(this).data("address"); // 배송지 정보 가져오기
+                    const detailRow = $(".detail-row[data-order-id='" + orderId + "'][data-order-date='" + orderDate + "']");
+                    detailRow.find(".address").text(address); // 배송지 정보 설정
+                    detailRow.toggle();
+                });
+            });
+        </script>
+    </c:otherwise>
+</c:choose>
 </body>
 </html>

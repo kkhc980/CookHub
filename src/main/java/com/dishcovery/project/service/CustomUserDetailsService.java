@@ -28,7 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     // 전송된 email 으로 사용자 정보를 조회하고, UserDetails 에 저장하여 리턴하는 메서드
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("loadUserByUsername()");
         // 이메일을 이용하여 회원 정보와 권한 정보를 조회
         MemberVO member = memberMapper.selectEmail(email);
 

@@ -314,7 +314,7 @@
                             <a href="${pageContext.request.contextPath}/admin/recipeboard">관리자 페이지</a>
                         </sec:authorize>
                         <a href="${pageContext.request.contextPath}/store/cart">장바구니</a>
-                        <a href="${pageContext.request.contextPath}/store/orderdetail">구매내역</a>
+                        <a href="${pageContext.request.contextPath}/member/orderdetail">구매내역</a>
                         <form action="${pageContext.request.contextPath}/auth/logout" method="post">
                             <input type="submit" value="로그아웃">
                             <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">

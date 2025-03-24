@@ -60,6 +60,7 @@ public class NestedReplyRESTController {
 			return new ResponseEntity<List<NestedReplyVO>>(list, HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasRole('ROLE_MEMBER')")
 	@PutMapping("/nestedreplies/{nestedReplyId}")
 	public ResponseEntity<Integer> updateNestedReply(
 			@PathVariable("nestedReplyId") int nestedReplyId,
@@ -68,6 +69,23 @@ public class NestedReplyRESTController {
 			log.info("updateNestedReply()");
 			log.info("nestedReplyId = " + nestedReplyId);
 			log.info("받은 nestedReplyContent(JSON) = " + nestedReplyContentJson);
+			
+			// 현재 로그인한 사용자 ID 가져오기
+		    Integer currentUserId = getCurrentUserId();
+		    if (currentUserId == null) {
+		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 로그인하지 않은 사용자
+		    }
+		    
+		    // 해당 nestedReplyId의 작성자 정보 조회
+		    NestedReplyVO existingNestedReply = nestedReplyService.getNestedReplyById(nestedReplyId);
+		    if (existingNestedReply == null) {
+		        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 해당 답글이 존재하지 않음
+		    }
+		    
+		    // 작성자와 로그인한 사용자가 다르면 권한 없음
+		    if (!currentUserId.equals(existingNestedReply.getMemberId())) {
+		        return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
+		    }
 			
 			String nestedReplyContent = extractNestedReplyContent(nestedReplyContentJson);
 			log.info("변환된 nestedReplyContent = " + nestedReplyContent);
@@ -83,6 +101,7 @@ public class NestedReplyRESTController {
 	       return json;  
 	 }
 	 
+	 @PreAuthorize("hasRole('ROLE_MEMBER')")
 	 @DeleteMapping("/nestedreplies/{nestedReplyId}/{replyId}")
 	 public ResponseEntity<Integer> deleteNestedReply(
 			 @PathVariable("nestedReplyId") int nestedReplyId,
@@ -90,6 +109,24 @@ public class NestedReplyRESTController {
 		 log.info("deleteNestedReply()");
 		 log.info("nestedReplyId = " + nestedReplyId);
 		 
+		 // 현재 로그인한 사용자 ID 가져오기
+		    Integer currentUserId = getCurrentUserId();
+		    if (currentUserId == null) {
+		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 로그인하지 않은 사용자
+		    }
+		 
+		    // 해당 nestedReplyId의 작성자 정보 조회
+		    NestedReplyVO existingNestedReply = nestedReplyService.getNestedReplyById(nestedReplyId);
+		    if (existingNestedReply == null) {
+		        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 해당 답글이 존재하지 않음
+		    }
+		    
+		    
+		 // 작성자와 로그인한 사용자가 다르면 권한 없음
+		    if (!currentUserId.equals(existingNestedReply.getMemberId())) {
+		        return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
+		    }
+
 		 int result = nestedReplyService.deleteNestedReply(nestedReplyId, replyId);
 		 
 		 return new ResponseEntity<Integer>(result, HttpStatus.OK);

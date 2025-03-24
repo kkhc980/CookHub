@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dishcovery.project.domain.NestedReplyVO;
 import com.dishcovery.project.domain.RecipeReviewDTO;
 import com.dishcovery.project.domain.RecipeReviewVO;
 import com.dishcovery.project.domain.ReplyVO;
@@ -74,6 +75,11 @@ public class ReplyServiceImple implements ReplyService{
 //				.updateReplyCount(recipeBoardId, -1);
 //		log.info(updateResult);
 		return 1;
+	}
+	
+	@Override
+	public ReplyVO getReplyById(int nestedReplyId) {
+	    return replyMapper.selectReplyById(nestedReplyId);
 	}
 	
 }

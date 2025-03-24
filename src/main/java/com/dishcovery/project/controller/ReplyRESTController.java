@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dishcovery.project.domain.CustomUser;
 import com.dishcovery.project.domain.ReplyVO;
 import com.dishcovery.project.service.ReplyService;
 import com.dishcovery.project.util.PageMaker;
@@ -37,7 +39,6 @@ public class ReplyRESTController {
    @PreAuthorize("hasRole('ROLE_MEMBER')")
    @PostMapping("/replies/detail")
    public ResponseEntity<Integer> createReply(@RequestBody ReplyVO replyVO){
-      log.info("createReply()");
       try {
       int result = replyService.createReply(replyVO);
       return new ResponseEntity<Integer>(result, HttpStatus.OK);
@@ -53,28 +54,34 @@ public class ReplyRESTController {
 	        @PathVariable("recipeBoardId") int recipeBoardId,
 	        @RequestParam(value = "pageNum", defaultValue = "1") int pageNum) {
       // @PathVariable("recipeBoardId") : {recipeBoardId} 값을 설정된 변수에 저장
-      log.info("readdAllReply()");
-      log.info("recipeBoardId = " + recipeBoardId);
-      log.info("pageNum = " + pageNum);
-      
+	   
+	   Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       Integer currentUserId = null;
+       
+       if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUser) {
+           CustomUser customUser = (CustomUser) authentication.getPrincipal();
+           currentUserId = customUser.getMemberVO().getMemberId();
+       }
+       
+       log.info("현재 로그인한 사용자 ID = " + currentUserId);
+	   
    // Pagination 객체를 명시적으로 생성
       Pagination pagination = new Pagination(pageNum, 5); 
       
       int replyTotalCount = replyService.getTotalReplyCount(recipeBoardId);
-      log.info("총 댓글 개수 (replyTotalCount) = " + replyTotalCount); // ← 로그 추가
-      
+           
    // PageMaker 객체 생성 및 설정
       PageMaker pageMaker = new PageMaker();
       pageMaker.setPagination(pagination);
       pageMaker.setReplyTotalCount(replyTotalCount);
       
       List<ReplyVO> list = replyService.getAllReply(recipeBoardId, pagination);
-      log.info("조회된 댓글 개수 = " + list.size()); // ← 로그 추가
-      
+            
       // ResponseEntity<T> : T의 타입은 프론트 side로 전송될 데이터 타입으로선언
       Map<String, Object> result = new HashMap<>();
       result.put("replies", list);
       result.put("pagination", pageMaker);
+      result.put("currentUserId", currentUserId); // ✅ 현재 로그인한 사용자 ID 추가
       
       System.out.println("응답 데이터: " + result); // 🔥 콘솔에 전체 데이터 출력해서 확인
 
@@ -88,15 +95,10 @@ public class ReplyRESTController {
     public ResponseEntity<Integer> updateReply(
           @PathVariable("replyId") int replyId,
            @RequestBody String replyContentJson) { // ✅ JSON 문자열을 받음
-
-          log.info("updateReply()");
-          log.info("replyId = " + replyId);
-          log.info("받은 replyContent(JSON) = " + replyContentJson); // ✅ 디버깅용 로그
-
+	   
           // ✅ JSON에서 실제 replyContent 값만 추출
           String replyContent = extractReplyContent(replyContentJson);
-          log.info("변환된 replyContent = " + replyContent); // ✅ 변환된 값 확인
-
+          
           int result = replyService.updateReply(replyId, replyContent);
           return new ResponseEntity<>(result, HttpStatus.OK);
    }
@@ -109,19 +111,36 @@ public class ReplyRESTController {
    }
    
    
-//   @PreAuthorize("#customUser.memberVO.memberId == #reply.memberId")
+   @PreAuthorize("hasRole('ROLE_MEMBER')")
    @DeleteMapping("replies/{replyId}/{recipeBoardId}") // DELETE : 댓글 삭제
     public ResponseEntity<Integer> deleteReply(
           @PathVariable("replyId") int replyId,
           @PathVariable("recipeBoardId") int recipeBoardId) {
-      log.info("deleteReply()");
-      log.info("replyId = " + replyId);
-      
+	   
+//	   		// 📌 삭제할 댓글 정보 조회 (DB에서 가져옴)
+//	    	ReplyVO replyVO = replyService.getReplyById(replyId); // ✅ 리뷰와 동일한 방식 적용
+//	    	if (replyVO == null) {
+//	    		return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
+//	    	}
+//	      
+//	      // 현재 사용자와 리뷰 작성자가 동일한지 확인
+//	      if (!currentUserId.equals(replyVO.getMemberId())) {
+//	          return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
+//	      }
+	   
       int result = replyService.deleteReply(replyId, recipeBoardId);   
       
       return new ResponseEntity<Integer>(result, HttpStatus.OK);
       }
    
+   private Integer getCurrentUserId() {
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+       if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUser) {
+           CustomUser customUser = (CustomUser) authentication.getPrincipal();
+           return customUser.getMemberVO().getMemberId(); // CustomUser에서 memberId를 가져옴
+       }
+       return null; // 인증되지 않은 경우 null 반환
+   }
    
 
 }

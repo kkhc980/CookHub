@@ -30,7 +30,16 @@
         href="${pageContext.request.contextPath }/resources/css/reviews.css">   
         
    <link rel="stylesheet"
-        href="${pageContext.request.contextPath }/resources/css/review-edit.css">       		
+        href="${pageContext.request.contextPath }/resources/css/review-edit.css"> 
+        
+   <link rel="stylesheet"
+        href="${pageContext.request.contextPath }/resources/css/detail-components.css">
+        
+   <link rel="stylesheet"
+        href="${pageContext.request.contextPath }/resources/css/follow.css">  
+   
+   <link rel="stylesheet"
+        href="${pageContext.request.contextPath }/resources/css/reply.css">          		
    
    <!-- CSRF 토큰 추가 -->
    <meta name="_csrf" content="${_csrf.token}" />
@@ -44,84 +53,6 @@
     </sec:authorize>
 
 <title>${recipeBoard.recipeBoardTitle }</title>
-
-<style>
-.star-rating {
-   display: inline-block;
-   direction: rtl; /* 별을 오른쪽부터 채우도록 설정 */
-   font-size: 20px; /* 별 크기 */
-   color: lightgray;
-}
-
-.star-rating input[type="radio"] {
-   display: none;
-}
-
-.star-rating label {
-   cursor: pointer;
-}
-
-.star-rating label:before {
-   content: '★';
-   display: inline-block;
-   transition: color 0.2s;
-}
-
-.star-rating input[type="radio"]:checked ~ label:before {
-   color: gold;
-}
-
-.star-rating label:hover:before, .star-rating label:hover ~ label:before
-   {
-   color: gold;
-}
-
-.hashtags {
-   margin-top: 20px;
-}
-
-.hashtag-button {
-   display: inline-block;
-   background-color: #4CAF50;
-   color: white;
-   border: none;
-   padding: 7px 15px;
-   margin: 5px;
-   border-radius: 15px;
-   font-size: 14px;
-   cursor: pointer;
-}
-
-.hashtag-button:hover {
-   background-color: #45a049;
-}
-
-.thumbnail-container {
-    width: 200px;
-    height: 200px;
-    display: flex;
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    border: 1px solid #ddd;
-    overflow: hidden; /* 이미지 크기 초과 방지 */
-    position: relative;
-}
-
-.thumbnail {
-    max-width: 100%;  /* 컨테이너 크기에 맞춤 */
-    max-height: 100%; /* 컨테이너 크기에 맞춤 */
-    object-fit: contain; /* 비율 유지하며 꽉 차도록 */
-}
-
-.no-image-text {
-    display: none; /* 기본적으로 숨김 */
-    color: gray;
-    font-size: 14px;
-    text-align: center;
-    position: absolute;
-}
-
-</style>
 
 </head>
 <body>
@@ -146,7 +77,7 @@
 
 
 <!-- 작성자 버튼 -->
-<div>
+<div class="author-info">
     <p>작성자 :</p>
     <button class="btn btn-link p-0 follow-btn" data-member-id="${recipeBoard.memberId}">
         ${recipeBoard.memberId}
@@ -158,10 +89,11 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
+            	<h5 class="modal-title"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h5 class="modal-title">작성자 정보</h5>
+                
             </div>
             <div class="modal-body">
                 <p><strong>작성자 ID:</strong> <span id="popupMemberId"></span></p>
@@ -391,10 +323,11 @@ $(document).ready(function() {
       </c:if>
    </sec:authorize>
 
-   <div>
-      <button id="like-button">좋아요</button>
+	<div class="likeContainer">
+      <button id="like-button"> </button>
       <span id="like-count">0</span>
    </div>
+
 
    <form id="deleteForm"
       action="recipeboard/delete/${recipeBoard.recipeBoardId}" method="POST">
@@ -448,17 +381,16 @@ $(document).ready(function() {
       <button id="btnAdd" class="add-button">등록</button>
     </div>
   </c:if>
-
-  <hr>
+  
   <div id="replies"></div>
   <div id="pagination"></div>
   <hr>
 
   <!-- Modal Structure -->
   <sec:authorize access="isAuthenticated()">
-    <div id="nestedReplyModal" class="modal-nested">
-      <div class="modal-nested-content">
-        <span class="close">×</span>
+    <div id="nestedReplyModal" class="nestedReplyModal">
+      <div class="nested-reply-modal-content">
+        <span class="nested-close">×</span>
         <h5>답글</h5>
         <textarea id="nestedReplyContent" class="form-control" placeholder="답글 내용을 입력하세요."></textarea>
         <input type="hidden" id="parentReplyId">
@@ -471,30 +403,26 @@ $(document).ready(function() {
   <h2>리뷰 (<span id="reviewTotalCount">0</span>)</h2>
 
 <c:if test="${not empty loggedInMemberId}">
- <div class="review-header">
-
-  <span class="star-rating">
-        <input type="radio" name="reviewRating" id="star1" value="1"><label for="star1"></label>
-        <input type="radio" name="reviewRating" id="star2" value="2"><label for="star2"></label>
-        <input type="radio" name="reviewRating" id="star3" value="3"><label for="star3"></label>
-        <input type="radio" name="reviewRating" id="star4" value="4"><label for="star4"></label>
-        <input type="radio" name="reviewRating" id="star5" value="5"><label for="star5"></label>
-  </span>
- </div> 
-
-  
+ 
     <div class="review-input-area">
+    <div class="review-content-container">
     <div class="image-drop">drag - image</div>
     <div class="reviewAttachDTOImg-list"></div>
       <span id="loggedInReviewMemberId"></span>
       <input type="hidden" id="reviewMemberId" value="${loggedInMemberId}">
       <textarea id="recipeReviewContent" placeholder="리뷰 내용을 입력하세요"></textarea>
-
-      <button id="btnReviewAdd" class="review-add-button">등록</button>
-    </div>
+	  <button id="btnReviewAdd" class="review-add-button">등록</button>
+      </div>
+  	  	<span class="star-rating">
+	        <input type="radio" name="reviewRating" id="star1" value="1"><label for="star1"></label>
+	        <input type="radio" name="reviewRating" id="star2" value="2"><label for="star2"></label>
+	        <input type="radio" name="reviewRating" id="star3" value="3"><label for="star3"></label>
+	        <input type="radio" name="reviewRating" id="star4" value="4"><label for="star4"></label>
+	        <input type="radio" name="reviewRating" id="star5" value="5"><label for="star5"></label>
+	  	  </span>
+	  </div>
   </c:if>
 
-  <hr>
   <div id="reviews">
     <c:forEach var="review" items="${reviews}">
       <div class="recipeReview_item" data-review-id="${review.recipeReviewId}">
@@ -553,9 +481,9 @@ $(document).ready(function() {
                          $.get(contextRoot + '/recipeboard/' + recipeBoardId + '/like-status', function(response) {
                             isLoggedIn = true; // 로그인 확인
                             if (response.liked) {
-                               $('#like-button').text('좋아요 취소');
+                               $('#like-button').addClass('liked');
                             } else {
-                               $('#like-button').text('좋아요');
+                               $('#like-button').removeClass('liked');
                             }
                          }).fail(function(xhr) {
                            if (xhr.status === 403) {
@@ -577,10 +505,10 @@ $(document).ready(function() {
                             alert(response.message); // 로그인 필요 메시지 표시
                         } else {
                             if (response.liked) {
-                                $('#like-button').text('좋아요 취소'); // 버튼 텍스트 변경
+                                $('#like-button').addClass('liked'); // 버튼 텍스트 변경
                                 alert('좋아요가 설정되었습니다.');
                             } else {
-                                $('#like-button').text('좋아요'); // 버튼 텍스트 변경
+                                $('#like-button').removeClass('liked'); // 버튼 텍스트 변경
                                 alert('좋아요가 취소되었습니다.');
                             }
                         }
@@ -593,7 +521,7 @@ $(document).ready(function() {
                           
                      $('#btnAdd').click(function() {
                          var recipeBoardId = $('#recipeBoardId').val(); // 게시판 번호 데이터
-                           var memberId = $('#memberId').val();
+                         var memberId = $('#memberId').val();
                          var replyContent = $('#replyContent').val(); // 댓글 내용
                          
                          if (!memberId || memberId.trim() === "") {
@@ -738,27 +666,39 @@ $(document).ready(function() {
                          var list = '';
 
                          $.each(data.replies, function() {
-                   		 var replyDateCreated = new Date(this.replyDateCreated);
+                   		 var replyDateCreated = new Date(this.replyDateCreated);                   		
+	                   	 var formattedDate = replyDateCreated.toLocaleString("ko-KR", { 
+	                   		    year: "numeric", 
+	                   		    month: "2-digit", 
+	                   		    day: "2-digit", 
+	                   		 	hourCycle: "h23",  // ✅ 24시간 형식 강제 적용
+	                   		    hour: "2-digit", 
+	                   		    minute: "2-digit", 
+	                   		    second: "2-digit" 
+	                   		})
+							.replace(/\. /g, '-')  // "2025. 03. 18. 10:36:48" → "2025-03-18-10:36:48"
+							.replace(/-(\d{2}):/, ' $1:');  // ✅ 날짜와 시간 사이의 `-`을 공백으로 변경
 
-                           list += '<div class="reply_item" data-reply-id="' + this.replyId + '">' +
-                                   '<pre>' +
-                                     '<input type="hidden" class="replyId" value="' + this.replyId + '">' +
-                                     this.memberId +
-                                     '  ' +
-                                      '<span class="replyContentDisplay">' + escapeHtml(this.replyContent) + '</span>' +  // 텍스트로 출력, data 속성 추가
-                                     '  ' +
-                                     replyDateCreated +
-                                     '  ' +
-                                     '<button class="btn_update" data-reply-id="' + this.replyId + '">수정</button>' + // data 속성 추가
-                                     '<button class="btn_delete" data-reply-id="' + this.replyId + '">삭제</button>' + // data 속성 추가
-                                     '  ' +
-                                     '<button class="btn_reply" data-reply-id="' + this.replyId + '">답글</button>' + // "답글" 버튼 추가
-                                     '</pre>' +
-                                     '<hr>' +  
-                                     '<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + // 대댓글 영역 추가
-                                     '</div>';
+
+							list += '<div class="reply_item" data-reply-id="' + this.replyId + '">' +
+						    '<pre>' +
+						    '<input type="hidden" class="replyId" value="' + this.replyId + '">' +
+						    this.memberId +
+						    '  ' +
+						    '<span class="replyContentDisplay">' + escapeHtml(this.replyContent) + '</span>' +
+						    '  ' +
+						    formattedDate +
+						    '  ' +
+						    '<div class="reply_buttons" data-reply-id="' + this.replyId + '">' +
+						    '<button class="btn_update" data-reply-id="' + this.replyId + '">수정</button>' +
+						    '<button class="btn_delete" data-reply-id="' + this.replyId + '">삭제</button>' +
+						    '</div>' + // 닫는 div 추가
+						    '<button class="btn_reply" data-reply-id="' + this.replyId + '">답글</button>' + // "답글" 버튼 추가
+						    '</pre>' +
+						    '<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + // 대댓글 영역 추가
+						    '</div>';
                                      
-                                     getAllNestedReply(this.replyId); // ✅ 대댓글도 같이 불러오기
+                             getAllNestedReply(this.replyId); // ✅ 대댓글도 같이 불러오기
                                      
                          });
                        
@@ -918,29 +858,44 @@ $(document).ready(function() {
                                           
                                     
                                     $.getJSON(url, function(data) {
-                                        		        
-                                    			
-                                    			console.log("백엔드에서 받은 데이터:", data); // ✅ 받은 데이터 확인
-                                        		console.log("페이지네이션 데이터:", data.pagination);
-                                        		console.log("페이지네이션 totalCount:", data.pagination.totalCount);
-		                                        console.log("페이지네이션 reviewTotalCount:", data.pagination.reviewTotalCount);
-		                                        console.log("페이지네이션 startNum:", data.pagination.startNum);
-		                                        console.log("페이지네이션 endNum:", data.pagination.endNum);
-		                                        
+                                    			console.log("백엔드에서 받은 데이터:", data); // ✅ 전체 데이터 확인        
 		                                        if (data.pagination) {
 		                                       	    console.log("reviewTotalCount 값:", data.pagination.reviewTotalCount);
 		                                       	} else {
 		                                       	    console.warn("pagination 데이터가 존재하지 않음!");
 		                                       	}
                                     			
-                                    			
-                                                var list = '';
+		                                        var currentUserId = data.currentUserId; // ✅ 백엔드에서 받은 로그인한 사용자 ID
+		                                        console.log("현재 로그인한 사용자 ID:", currentUserId); // ✅ 로그인한 사용자 ID 확인
+		                                        var list = '';
                                                 
                                                 
                                            $(data.recipeReviews).each(function() {
+                                        	   		 console.log("각 리뷰의 작성자 ID:", this.memberId); // ✅ 각 리뷰의 작성자 ID 확인
+                                        	   		 
+                                        	   		 if (currentUserId === this.memberId) {
+                                        	             console.log("✅ 수정/삭제 버튼 표시 - 리뷰 ID:", this.recipeReviewId);
+                                        	         } else {
+                                        	             console.log("❌ 수정/삭제 버튼 숨김 - 리뷰 ID:", this.recipeReviewId);
+                                        	         }
+                                        	   		 
                                         	   		 console.log(this); // 각 리뷰 객체 출력
                                         	   		 var reviewAttachList = this.reviewAttachList || []; // 기본값으로 빈 배열 설정
                                         	   		 var recipeReviewDateCreated = new Date(this.recipeReviewDateCreated)
+                                        	   		                  		
+                            	                   	 var reviewFormattedDate = recipeReviewDateCreated.toLocaleString("ko-KR", { 
+                            	                   		    year: "numeric", 
+                            	                   		    month: "2-digit", 
+                            	                   		    day: "2-digit", 
+                            	                   		 	hourCycle: "h23",  // ✅ 24시간 형식 강제 적용
+                            	                   		    hour: "2-digit", 
+                            	                   		    minute: "2-digit", 
+                            	                   		    second: "2-digit" 
+                            	                   		})
+                            							.replace(/\. /g, '-')  // "2025. 03. 18. 10:36:48" → "2025-03-18-10:36:48"
+                            							.replace(/-(\d{2}):/, ' $1:');  // ✅ 날짜와 시간 사이의 `-`을 공백으로 변경
+
+                                        	   		 
                                                       
                                                      var starRatingHTML = '';
                                                       
@@ -969,31 +924,41 @@ $(document).ready(function() {
                                                           });
                                                       }
                                                       
+                                                   
+                                                      
                                                       // 기존 리스트 초기화 후 새로운 리뷰 추가
                                                       list += '<div class="review_item" data-recipeReview-id="' + this.recipeReviewId + '">'
                                                       + '<pre>'
                                                       + '<input type="hidden" id="recipeReviewId" value="' + this.recipeReviewId + '">'
-                                                      + '<div class="review_header">'
-                                                      + '<span class="memberId">' + this. memberId + '</span>&nbsp;&nbsp;'
+                                                      + '<div class="review-header">'
+                                                      + '<div class="image-upload">'
                                                       + imageHTML // 이미지 HTML 코드 삽입
                                                       + '</div>'
-                                                      +   '<span class="recipeReviewContentDisplay" data-recipeReview-id="' + this.recipeReviewId + '">' + this.recipeReviewContent + '</span>'
-                                                      + '<br>'
+                                                      + '<div class="review-info-container">' // 회원 정보 및 별점 컨테이너
+                                                      + '<div class="review-info">'
+                                                      + '<span class="memberId">' + this. memberId + '</span> <br>'
+                                                      + reviewFormattedDate
+                                                      + '</div>'
                                                       + '<span class="starRatingDisplay" data-recipeReview-id="' + this.recipeReviewId + '">' + starRatingHTML + '</span>'
-                                                      + '&nbsp;&nbsp;'
-                                                      + '<br>'                                                     
-                                                      + '&nbsp;&nbsp;'
-                                                      + recipeReviewDateCreated
-                                                      + '&nbsp;&nbsp;'
+                                                      + '</div>'
+                                                      + '</div>'
+                                                      + '<div class = "review-content">'
+                                                      + '<span class="recipeReviewContentDisplay" data-recipeReview-id="' + this.recipeReviewId + '">' + this.recipeReviewContent + '</span>'
+                                                      + '</div>'    
+                                                      
+                                                      if(currentUserId != null && currentUserId == this.memberId) {
+                                                   	  console.log("✅ 수정/삭제 버튼 표시 - 리뷰 ID:", this.recipeReviewId);
+                                                      list += '<div class="review-buttons">'
                                                       + '<button class="btn_review_update" data-review-id="' + this.recipeReviewId + '">수정</button>'
-                                                      + '<button class="btn_review_delete" >삭제</button>'
+                                                      + '<button class="btn_review_delete" data-review-id="' + this.recipeReviewId + '">삭제</button>'                                                     
+                                                      + '</div>'                                                    
                                                       + '</pre>'                                                      
-                                                      + '</div>';
-                                                                                         
-                                                      // 이미지가 있는 경우만 추가
-                                                  //    if (imageHTML !== '') {
-                                                  //        list += '<div class="review_images show-image-list">' + imageHTML + '</div>';
-                                                  //    }
+                                                      + '</div>';                                                                                    
+                                                      } else {
+                                                          console.log("❌ 수정/삭제 버튼 숨김 - 리뷰 ID:", this.recipeReviewId);
+                                                      }
+                                                      
+                                                      list += '</pre></div>';
                                                       
                                                    // ✅ 리뷰 수정 모달 추가 (초기 숨김 상태)
                                                       list += '<div class="editReviewModal modal" id="editReviewModal_' + this.recipeReviewId + '" style="display: none;">'
@@ -1101,8 +1066,8 @@ $(document).ready(function() {
                                                       return;
                                                   }
                                                 
-                                                var modal = $('#editReviewModal_' + selectedReviewId);
-                                                console.log("🔹 해당 모달 요소:", modal); // ✅ 모달이 존재하는지 확인
+                                                var reviewModal = $('#editReviewModal_' + selectedReviewId);
+                                                console.log("🔹 해당 모달 요소:", reviewModal); // ✅ 모달이 존재하는지 확인
                                                 var reviewItem = $('.recipeReview_item[data-review-id="' + selectedReviewId + '"]');
                                                 var currentContent = reviewItem.find('.recipeReviewContentDisplay').text();
                                                 var currentRating = reviewItem.find('.starRatingDisplay span[style="color:gold;"]').length;
@@ -1119,9 +1084,9 @@ $(document).ready(function() {
                                            
                                                  
                                               // 해당 리뷰 아래로 모달 이동 후 표시
-                                                 reviewItem.after(modal);
-                                                 modal.show();
-                                                 modal.css("display", "block");
+                                                 reviewItem.after(reviewModal);
+                                                 reviewModal.show();
+                                                 reviewModal.css("display", "block");
                                                  
                                                   
                                              });
@@ -1130,10 +1095,10 @@ $(document).ready(function() {
                                             $(document).on('click', '.close', function() {
     											console.log("✅ 모달 닫기 버튼 클릭됨!"); // ✅ 디버깅용 로그 출력
 
-    											var modal = $(this).closest('.editReviewModal'); // ✅ 올바른 클래스명 사용
-    											console.log("🔹 닫힐 모달 요소:", modal);
+    											var reviewModal = $(this).closest('.editReviewModal'); // ✅ 올바른 클래스명 사용
+    											console.log("🔹 닫힐 모달 요소:", reviewModal);
 
-								    modal.hide(); // ✅ 모달 닫기
+								    reviewModal.hide(); // ✅ 모달 닫기
 								});
                                                                                                   
                                                 // 수정 완료 버튼 클릭 이벤트
@@ -1249,8 +1214,18 @@ $(document).ready(function() {
                                                 console.log(this);
                                                 var recipeBoardId = $(
                                                       "#recipeBoardId").val(); // 게시판 번호 데이터
-                                                var recipeReviewId = $(this).prevAll(
-                                                      '#recipeReviewId').val(); // 댓글 번호 데이터
+                                                var recipeReviewId = // ✅ data 속성에서 직접 가져오기 
+                                                //	$(this).prevAll('#recipeReviewId').val(); // 댓글 번호 데이터
+                                                	  $(this).closest('.review_item').find('#recipeReviewId').val();
+                                                
+                                                      console.log("삭제할 리뷰 ID:", recipeReviewId);
+                                                      console.log("삭제할 게시판 ID:", recipeBoardId);
+
+                                                      if (!recipeReviewId) {
+                                                          alert("삭제할 리뷰 ID가 없습니다.");
+                                                          return;
+                                                      }
+
 
                                                 $
                                                       .ajax({
@@ -1275,8 +1250,7 @@ $(document).ready(function() {
                                                      });
                                              }); // end reviews.on
                   }); // end document()
-                  
-                                   
+                                                                      
    </script>
    
    <script src="${pageContext.request.contextPath }/resources/js/nestedreply.js"></script>

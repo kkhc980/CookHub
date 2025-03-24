@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dishcovery.project.domain.RecipeReviewDTO;
+import com.dishcovery.project.domain.RecipeReviewVO;
 import com.dishcovery.project.domain.ReplyVO;
 import com.dishcovery.project.persistence.RecipeBoardMapper;
 import com.dishcovery.project.persistence.ReplyMapper;
@@ -73,4 +75,5 @@ public class ReplyServiceImple implements ReplyService{
 //		log.info(updateResult);
 		return 1;
 	}
+	
 }

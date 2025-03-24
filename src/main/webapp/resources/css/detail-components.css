@@ -1,0 +1,141 @@
+.star-rating {
+   display: inline-block;
+   direction: rtl; /* 별을 오른쪽부터 채우도록 설정 */
+   font-size: 20px; /* 별 크기 */
+   color: lightgray;
+}
+
+.star-rating input[type="radio"] {
+   display: none;
+}
+
+.star-rating label {
+   cursor: pointer;
+}
+
+.star-rating label:before {
+   content: '★';
+   display: inline-block;
+   transition: color 0.2s;
+}
+
+.star-rating input[type="radio"]:checked ~ label:before {
+   color: gold;
+}
+
+.star-rating label:hover:before, .star-rating label:hover ~ label:before
+   {
+   color: gold;
+}
+
+.hashtags {
+   margin-top: 20px;
+}
+
+.hashtag-button {
+   display: inline-block;
+   background-color: #4CAF50;
+   color: white;
+   border: none;
+   padding: 7px 15px;
+   margin: 5px;
+   border-radius: 15px;
+   font-size: 14px;
+   cursor: pointer;
+}
+
+.hashtag-button:hover {
+   background-color: #45a049;
+}
+
+.thumbnail-container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    border: 1px solid #ddd;
+    overflow: hidden; /* 이미지 크기 초과 방지 */
+    position: relative;
+}
+
+.thumbnail {
+    max-width: 100%;  /* 컨테이너 크기에 맞춤 */
+    max-height: 100%; /* 컨테이너 크기에 맞춤 */
+    object-fit: contain; /* 비율 유지하며 꽉 차도록 */
+}
+
+.no-image-text {
+    display: none; /* 기본적으로 숨김 */
+    color: gray;
+    font-size: 14px;
+    text-align: center;
+    position: absolute;
+}
+
+.likeContainer {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 (선택 사항) */
+}
+
+#like-button {
+  position: relative;
+  width: 50px; /* 하트 너비 */
+  height: 45px; /* 하트 높이 */
+  border: none; /* 검정색 테두리 */
+  background: none;
+  cursor: pointer;
+  border-radius: 0; /* 버튼 둥글기 제거 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px; /* 하트 크기 */
+}
+
+#like-button::before {
+  content: '🤍'; /* 기본 빈 하트 */
+  display: inline-block;
+  transition: color 0.2s; /* 색상 변경 애니메이션 */
+  }
+
+/* 필요없는 속성 제거 */
+#like-button::after {
+  display: none;
+}
+
+/* 좋아요(채워진) 하트 스타일 */
+#like-button.liked::before {
+  content: '❤️'; /* 좋아요 상태일 때 빨간 하트 */
+  color: red; /* 빨간색 하트 */
+}
+
+/* 기존의 중복 스타일 및 그림자 제거 */
+#like-button::before{
+    box-shadow: none; /* 그림자 제거 */
+}
+
+/* 좋아요 취소(빈) 하트 스타일: 'liked' 클래스가 없는 경우 */
+#like-button:not(.liked)::before {
+    background: white; /* 흰색 배경 */
+}
+
+#like-count {
+  margin-left: 5px;
+  font-family: sans-serif; /* San-serif 폰트 지정 */
+  font-weight: bold; /* 굵게 */
+  font-size: 14px; /* 글자 크기 (원하는 크기로 조정) */
+}
+
+textarea {
+    width: 800px; /* 예시: .info-container의 너비와 동일하게 설정 */
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.info-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+

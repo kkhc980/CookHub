@@ -3,14 +3,36 @@
   margin: 20px auto; /* 가운데 정렬 및 간격 */
 }
 
+.review-info-container {
+  display: flex;         /* 가로로 정렬 */
+  flex-direction: column; /* 세로로 정렬 */
+}
+
+.review-content-container {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+.review-info {
+   margin-bottom: 10px; /* 회원 정보와 별점 사이 간격 */
+
+}
+
 .input-area {
   display: flex; /* flexbox 레이아웃 사용 */
   align-items: stretch; /* 자식 요소 높이를 부모에 맞춤 */
   margin-bottom: 10px;
   position: relative; /* button absolute 속성을 위해 추가 */
+  width: 100%;
+  max-width: 600px; /* review-item과 동일한 최대 너비 설정 */
+  margin: 0 auto; /* 가운데 정렬 */
+  
 }
 
 .input-area textarea {
+  width: 100%; /* 부모 요소(.input-area)의 크기를 100%로 채움 */
+  max-width: 600px; /* review-item과 동일한 크기로 조정 */
   flex-grow: 1; /* 남은 공간 모두 차지 */
   height: 100px;
   padding: 8px;
@@ -18,8 +40,12 @@
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;
-  margin-bottom: 0; /* textarea 아래 간격 제거 */
+  margin-bottom: 20; /* textarea 아래 간격 제거 */
   
+}
+
+.review-content {
+  margin-top: 10px; /* 리뷰 내용과 정보 영역 사이 간격 */
 }
 
 .review-add-button {
@@ -30,7 +56,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 1em;
-  color: #555;
+  color: #e68900;
   position: absolute;
   bottom: 23px;
   right: 0;
@@ -40,9 +66,13 @@
 /* 리뷰 영역 스타일 */
 .review-input-area {
   display: flex;
-  align-items: stretch;
+  flex-direction: column; /* 세로 정렬 */
+  align-items: flex-start;
+  max-width: 600px; /* review-item과 동일한 최대 너비 적용 (필요 시 조정) */
   margin-bottom: 10px;
   position: relative;
+  padding-bottom: 20px; /* 하단 여백 확보 */
+  width: 100%;
 }
 
 .review-input-area textarea {
@@ -53,22 +83,26 @@
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;
-  margin-bottom: 0;
 }
 
 .add-button {
   width: 100px; 
   padding: 8px 16px;
-  background-color: #eee;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background-color: #ff9900;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 1em;
-  color: #555;
+  font-size: 14px;
+  color: white;
   position: absolute;
   bottom: 0;
   right: 0;
   height: 100px; /* 높이를 textarea에 맞춤 */
+}
+
+.add-button:hover {
+    background-color: #e68900;
 }
 
 /* hr 태그 길이 조정 */
@@ -82,19 +116,59 @@
 /* 리뷰 제목과 별점 영역 */
 .review-header {
     display: flex;
-    align-items: center; /* 세로 중앙 정렬 */
-    justify-content: space-between; /* 좌우로 분산 */
-    margin-bottom: 10px; /* 간격 */
+    align-items: flex-start; /* 상단 정렬 */
 }
 
 .review-header h2 {
     margin: 0; /* h2 기본 마진 제거 */
+    margin-right: auto;
+}
+
+.review_item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  max-width: 600px; /* 입력 영역과 동일한 너비 설정 */
+  position: relative; /* 내부 요소의 절대 위치 조정을 위해 설정 */
+  padding-bottom: 40px; /* 버튼 높이만큼 여백 추가 */
+}
+
+/* 버튼 컨테이너를 우측 하단으로 정렬 */
+.review-buttons {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex; /* 버튼을 가로로 정렬 */
+  gap: 10px; /* 버튼 간격 */
+}
+
+.review-add-button:hover {
+    background-color: #e68900;
+}
+
+
+.review_item .btn_review_update,
+.review_item .btn_review_delete {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  min-width: 70px; /* 버튼 크기 통일 */
+  text-align: center;
+  background-color: #ff9900; /* 버튼 배경색 (주황색) */
+  color: white; /* 글씨색 흰색 */
+  border-radius: 5px; /* 둥근 테두리 */
+}
+
+.review-buttons .btn_review_update:hover,
+.review-buttons .btn_review_delete:hover {
+  background-color: #e68900; /* 마우스 오버 시 약간 어두운 주황색 */
 }
 
 /* 리뷰 이미지 업로드 스타일 (기존 코드 재사용) */
 .image-upload {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #f9f9f9;
@@ -107,9 +181,13 @@
 
 /* 별점 스타일 */
 .star-rating {
-  display: inline-block;
-  direction: rtl;
-  /* 좌우 반전 */
+  display: flex;
+  flex-direction: row-reverse; /* 기존 row-reverse가 문제일 가능성 있음 */
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px; /* 버튼과의 간격 */
+  direction: ltr;
+  /*	 좌우 반전 */ 
 }
 
 .star-rating input {
@@ -228,6 +306,7 @@
     border-radius: 5px;
     margin-bottom: 10px;
     height: 100px; /* Set a specific height */
+    width: 100px;
     display: flex;
     align-items: center; /* Vertically align items */
     justify-content: center; /* Horizontally align items */
@@ -237,7 +316,7 @@
 .editReviewModal .btnEditComplete {
     width: 100px;
     height: 100px;
-    background-color: #4CAF50;
+    background-color: #ff9900;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -248,13 +327,13 @@
     cursor: pointer;
     border-radius: 5px;
     position: absolute; /* Set position absolute */
-    bottom: 0; /* Put it on the bottom */
+    bottom: 25; /* Put it on the bottom */
     right: 0; /* Put it on the right */
     margin: 0; /* Remove default margins */
 }
 
 .editReviewModal .btnEditComplete:hover {
-    background-color: #3e8e41;
+    background-color: #e68900;
 }
 
 /* 리뷰 수정 모달 내 별점 스타일 (기존 별점 스타일 재사용) */
@@ -285,8 +364,8 @@
 }
 
 .editReviewModal .reviewAttachDTOImg-list img {
-    width: 80px;
-    height: 80px;
+    width: 1000px;
+    height: 100px;
     border: 1px solid #ddd;
     border-radius: 5px;
     margin-right: 5px;

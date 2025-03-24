@@ -86,4 +86,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     	WHERE RECIPE_BOARD_ID = #{recipeBoardId}
 	  </update>
 	  
+	  <select id="selectReviewById" resultType="com.dishcovery.project.domain.RecipeReviewVO">
+    		SELECT * FROM recipe_review WHERE recipe_review_id = #{recipeReviewId}
+	  </select>
+	  
 </mapper>

@@ -482,38 +482,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 해시태그 추가 함수
     function addHashtag(value) {
-        hashtags.push(value);
-        const hashtagElement = document.createElement("div");
-        hashtagElement.className = "hashtag";
-        const hashtagText = document.createTextNode("#" + value);
-        hashtagElement.appendChild(hashtagText);
-
-        const removeButton = document.createElement("span");
-        removeButton.className = "remove-hashtag";
-        removeButton.textContent = "x";
-        removeButton.addEventListener("click", function () {
-            removeHashtag(value, hashtagElement);
-        });
-
-        hashtagElement.appendChild(removeButton);
-        hashtagList.appendChild(hashtagElement);
-
-        updateHiddenInput();
-    }
+	    hashtags.push(value);
+	
+	    const hashtagElement = document.createElement("div");
+	    hashtagElement.className = "hashtag";
+	
+	    const hashtagText = document.createTextNode("#" + value);
+	    hashtagElement.appendChild(hashtagText);
+	
+	    const removeButton = document.createElement("span");
+	    removeButton.className = "remove-hashtag";
+	    removeButton.textContent = "x";
+	
+	    // 💡 정확하게 div 통째로 넘김
+	    removeButton.addEventListener("click", function () {
+	        removeHashtag(value, hashtagElement);
+	    });
+	
+	    hashtagElement.appendChild(removeButton);
+	    hashtagList.appendChild(hashtagElement);
+	
+	    updateHiddenInput();
+	}
 
     // 해시태그 제거 함수
 	window.removeHashtag = function (value, element) {
-	    // 배열에서 해시태그 제거
 	    hashtags = hashtags.filter(tag => tag !== value);
 	
-	    // HTML에서 해당 해시태그 요소 제거
-	    const parentElement = element.parentNode; // "hashtag" div
-	    hashtagList.removeChild(parentElement);
+	    // 해시태그 div 요소 구하기
+	    const hashtagDiv = element.classList.contains("hashtag") ? element : element.parentNode;
 	
-	    // 히든 필드 업데이트
+	    // 삭제
+	    hashtagList.removeChild(hashtagDiv);
+	
 	    updateHiddenInput();
 	};
-
 
     // 히든 필드 업데이트
     function updateHiddenInput() {

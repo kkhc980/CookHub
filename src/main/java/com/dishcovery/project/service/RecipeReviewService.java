@@ -11,8 +11,8 @@ public interface RecipeReviewService {
 	int getTotalReviewCount(int recipeBoardId); // 총 리뷰 수 메서드 추가
 	int createRecipeReview(RecipeReviewDTO recipeReviewDTO);
 	int updateRecipeReview(RecipeReviewDTO recipeReviewDTO);
-	int deleteRecipeReview(int recipeReviewId, int recipeBoardId);    
-    
+	int deleteRecipeReview(int recipeReviewId, int recipeBoardId);
+	RecipeReviewDTO getReviewById(int recipeReviewId);
 }
 	
 	

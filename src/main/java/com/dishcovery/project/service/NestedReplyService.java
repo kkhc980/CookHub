@@ -9,4 +9,5 @@ public interface NestedReplyService {
 	List<NestedReplyVO> getAllNestedReply(int replyId);
 	int updateNestedReply(int nestedReplyId, String nestedReplyContent);
 	int deleteNestedReply(int nestedReplyId, int replyId);
+	NestedReplyVO getNestedReplyById(int nestedReplyId);
 }

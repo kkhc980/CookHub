@@ -90,12 +90,29 @@ public class ReplyRESTController {
    }
    
    
-//   @PreAuthorize("#customUser.memberVO.memberId == #reply.memberId")
+   @PreAuthorize("hasRole('ROLE_MEMBER')")
    @PutMapping("replies/{replyId}") // PUT : 댓글 수정
     public ResponseEntity<Integer> updateReply(
           @PathVariable("replyId") int replyId,
-           @RequestBody String replyContentJson) { // ✅ JSON 문자열을 받음
+          @RequestBody String replyContentJson) { // ✅ JSON 문자열을 받음
 	   
+	   	// 현재 로그인한 사용자 ID 가져오기
+	    Integer currentUserId = getCurrentUserId();
+	    if (currentUserId == null) {
+	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 로그인하지 않은 사용자
+	    }
+	    
+		// 해당 replyId의 작성자 정보 조회
+	    ReplyVO existingReply = replyService.getReplyById(replyId);
+	    if (existingReply == null) {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 해당 답글이 존재하지 않음
+	    }	
+	    
+	    // 현재 사용자와 리뷰 작성자가 동일한지 확인
+	      if (!currentUserId.equals(existingReply.getMemberId())) {
+	          return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
+	      }
+	    
           // ✅ JSON에서 실제 replyContent 값만 추출
           String replyContent = extractReplyContent(replyContentJson);
           
@@ -117,16 +134,22 @@ public class ReplyRESTController {
           @PathVariable("replyId") int replyId,
           @PathVariable("recipeBoardId") int recipeBoardId) {
 	   
-//	   		// 📌 삭제할 댓글 정보 조회 (DB에서 가져옴)
-//	    	ReplyVO replyVO = replyService.getReplyById(replyId); // ✅ 리뷰와 동일한 방식 적용
-//	    	if (replyVO == null) {
-//	    		return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 댓글이 존재하지 않음
-//	    	}
-//	      
-//	      // 현재 사용자와 리뷰 작성자가 동일한지 확인
-//	      if (!currentUserId.equals(replyVO.getMemberId())) {
-//	          return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
-//	      }
+	   		// 현재 로그인한 사용자 ID 가져오기
+		    Integer currentUserId = getCurrentUserId();
+		    if (currentUserId == null) {
+		        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 로그인하지 않은 사용자
+		    }
+	    	
+	    	// 해당 replyId의 작성자 정보 조회
+		    ReplyVO existingReply = replyService.getReplyById(replyId);
+		    if (existingReply == null) {
+		        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 해당 답글이 존재하지 않음
+		    }	
+	      
+	      // 현재 사용자와 리뷰 작성자가 동일한지 확인
+	      if (!currentUserId.equals(existingReply.getMemberId())) {
+	          return new ResponseEntity<>(HttpStatus.FORBIDDEN); // 권한 없음
+	      }
 	   
       int result = replyService.deleteReply(replyId, recipeBoardId);   
       

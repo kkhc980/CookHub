@@ -40,4 +40,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
       WHERE NESTED_REPLY_ID = #{nestedReplyId}
    </delete>
    
+   <select id="selectNestedReplyById" parameterType="int" resultType="com.dishcovery.project.domain.NestedReplyVO">
+    	SELECT * FROM nested_reply WHERE nested_reply_id = #{nestedReplyId}
+	</select>
+   
 </mapper>   

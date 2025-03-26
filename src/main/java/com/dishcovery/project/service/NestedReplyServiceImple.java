@@ -60,4 +60,9 @@ public class NestedReplyServiceImple implements NestedReplyService {
 		return 1;
 	}
 	
+	@Override
+	public NestedReplyVO getNestedReplyById(int nestedReplyId) {
+	    return nestedReplyMapper.selectNestedReplyById(nestedReplyId);
+	}
+	
 }

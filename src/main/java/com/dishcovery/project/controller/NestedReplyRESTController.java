@@ -1,6 +1,8 @@
 package com.dishcovery.project.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,14 +52,30 @@ public class NestedReplyRESTController {
 	    }
 	
 	@GetMapping("/nestedreplies/all/{replyId}") // 덧글 선택(all)
-	public ResponseEntity<List<NestedReplyVO>> readAllNestedReply(
+	public ResponseEntity<Map<String, Object>> readAllNestedReply(
 			@PathVariable("replyId") int replyId) {
-			log.info("readAllNestedReply()");
-			log.info("replyId = " + replyId);
+			
+		 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	        Integer currentUserId = null;
+	        
+	        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUser) {
+	           CustomUser customUser = (CustomUser) authentication.getPrincipal();
+	           currentUserId = customUser.getMemberVO().getMemberId();
+	       }
+	       	        
+	       log.info("현재 로그인한 사용자 ID = " + currentUserId);
+			
+		   log.info("readAllNestedReply()");
+		   log.info("replyId = " + replyId);
 			
 			List<NestedReplyVO> list = nestedReplyService.getAllNestedReply(replyId);
 			
-			return new ResponseEntity<List<NestedReplyVO>>(list, HttpStatus.OK);
+		    // 응답 데이터 생성
+		    Map<String, Object> response = new HashMap<>();
+		    response.put("nestedReplies", list);  // 대댓글 목록
+		    response.put("currentUserId", currentUserId);  // 로그인한 사용자 ID
+		 
+			return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_MEMBER')")

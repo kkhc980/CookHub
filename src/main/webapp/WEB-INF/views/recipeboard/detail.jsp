@@ -310,8 +310,11 @@ $(document).ready(function() {
          </div>
       </c:forEach>
    </div>
-   <button onclick="location.href='recipeboard/list'">글 목록</button>
-
+   
+   <div class="return-list-btn-container">
+   <button class="return-list-btn" onclick="location.href='recipeboard/list'">글 목록</button>
+   </div>
+   
    <!-- 글 수정/삭제 버튼 -->
    <sec:authorize access="isAuthenticated()">
       <sec:authentication var="customUser" property="principal" />
@@ -662,6 +665,9 @@ $(document).ready(function() {
                          var currentUserId = data.currentUserId; // ✅ 백엔드에서 받은 로그인한 사용자 ID
                          console.log("현재 로그인한 사용자 ID:", currentUserId); // ✅ 로그인한 사용자 ID 확인
                          
+                      		// ✅ 기존 댓글을 비운 후 새로 채움 (덮어쓰기)
+                         $('#replies').empty();
+                         
                          var list = '';
 
                          $.each(data.replies, function() {
@@ -703,19 +709,19 @@ $(document).ready(function() {
 							        '<button class="btn_delete" data-reply-id="' + this.replyId + '">삭제</button>' +
 							        '</div>'; // ✅ 닫는 div 추가
 							}
+						   
 							// ✅ 답글 버튼은 로그인한 사용자(ROLE_MEMBER)만 보이도록 처리
 				            if (currentUserId != null) {
 				                list += '<button class="btn_reply" data-reply-id="' + this.replyId + '">답글</button>';
 				            }
-
-				            list += '</pre>' +
-				                '<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + // 대댓글 영역 추가
-				                '</div>'; // ✅ reply_item 닫기
-						    						 	                                     
-                             getAllNestedReply(this.replyId); // ✅ 대댓글도 같이 불러오기
-                                     
-                         });
-                       
+						   
+								list += '</pre>' +
+			                	'<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + 
+			                	'</div>'; 
+			                	
+			                	getAllNestedReply(this.replyId); // ✅ 대댓글도 같이 불러오기
+			       			});
+                         
                          $('#replies').html(list);
                          
                       	// ✅ 댓글 총 개수 표시 (replyTotalCount 사용)

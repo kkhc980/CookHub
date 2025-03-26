@@ -114,10 +114,12 @@ function getAllNestedReply(replyId) {
 
     $.getJSON(url, function(data) {
         console.log("Nested Replies for replyId " + replyId + ":", data);
+		
+     	var currentUserId = data.currentUserId; // ✅ 백엔드에서 받은 로그인한 사용자 ID
+        console.log("현재 로그인한 사용자 ID:", currentUserId); // ✅ 로그인한 사용자 ID 확인
+	    var nestedReplyList = '';
 
-        var nestedReplyList = '';
-
-        $(data).each(function() {
+        $(data.nestedReplies).each(function() {
             var nestedReplyDateCreated = new Date(this.nestedReplyDateCreated);
             
              var nestedReplyformattedDate = nestedReplyDateCreated.toLocaleString("ko-KR", { 
@@ -132,8 +134,8 @@ function getAllNestedReply(replyId) {
 							.replace(/\. /g, '-')  // "2025. 03. 18. 10:36:48" → "2025-03-18-10:36:48"
 							.replace(/-(\d{2}):/, ' $1:');  // ✅ 날짜와 시간 사이의 `-`을 공백으로 변경
             
-
-            nestedReplyList += '<div class="nested_reply_item" data-nested-reply-id="' + this.nestedReplyId + '">' +
+            
+            	nestedReplyList += '<div class="nested_reply_item" data-nested-reply-id="' + this.nestedReplyId + '">' +
                 '<pre>' +
                 '<input type="hidden" class="nestedReplyId" value="' + this.nestedReplyId + '">' +
                 this.memberId +
@@ -141,13 +143,20 @@ function getAllNestedReply(replyId) {
                 '<span class="nestedReplyContentDisplay">' + this.nestedReplyContent + '</span>' +
                 '  ' +
                 nestedReplyformattedDate +
-                '  ' +
-                '<div class="nested_reply_buttons" data-nested-reply-id="' + this.nestedReplyId + '">' +
-                '<button class="btn_update_nested_reply" data-nested-reply-id="' + this.nestedReplyId + '">수정</button>' +
-                '<button class="btn_delete_nested_reply" data-nested-reply-id="' + this.nestedReplyId + '">삭제</button>' +
-                '</div>' + // 닫는 div 추가
-                '</pre>' +
-                '</div>';
+                '  ' 
+                
+	            if (currentUserId != null && currentUserId == this.memberId) {
+	                console.log("✅ 수정/삭제 버튼 표시 - 대댓글 ID:", this.nestedReplyId);
+	                nestedReplyList += '<div class="nested_reply_buttons" data-nested-reply-id="' + this.nestedReplyId + '">' +
+	                    '<button class="btn_update_nested_reply" data-nested-reply-id="' + this.nestedReplyId + '">수정</button>' +
+	                    '<button class="btn_delete_nested_reply" data-nested-reply-id="' + this.nestedReplyId + '">삭제</button>' +
+	                    '</div>';
+	            } else {
+	                console.log("❌ 수정/삭제 버튼 숨김 - 대댓글 ID:", this.nestedReplyId);
+	            }
+	
+	            nestedReplyList += '</pre>' +
+	                '</div>';
         });
 
         $('#nested_replies_' + replyId).html(nestedReplyList); // 해당 댓글 아래에 대댓글 목록 표시

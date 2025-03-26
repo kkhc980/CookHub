@@ -176,6 +176,12 @@
 		    font-size: 14px; /* 글자 크기 */
 		    white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 설정 */
 		}
+		
+		.more-button-container {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between; /* 제목과 버튼을 양 끝으로 정렬 */
+		}
 
 		.more-button:hover {
 			background-color: #e68900; /* 호버 시 배경색 변경 */
@@ -197,8 +203,10 @@
   </div> 
    
   <div class="recipe-section">
+  <div class="more-button-container">
 	<h2>인기 게시글</h2>
 	<a href="${pageContext.request.contextPath}/recipeboard/list" class="more-button">더보기</a>
+	</div>
     <div class="recipe-container">
         <c:set var="rank" value="1"/>
         <c:forEach var="post" items="${topPosts}">

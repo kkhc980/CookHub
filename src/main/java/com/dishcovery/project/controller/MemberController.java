@@ -5,7 +5,6 @@ import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
 import com.dishcovery.project.service.ProductService;
-import com.dishcovery.project.util.Pagination;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,7 +73,6 @@ public class MemberController {
         int result = signupMember(memberDTO, authKey);
         if (result == 1) {
             mss.sendAuthMail(memberDTO.getEmail(), authKey);
-            log.info("mail send");
 
             // RedirectAttributes를 사용하여 메시지 전달
             redirectAttributes.addFlashAttribute("signupSuccess", true);
@@ -88,7 +86,6 @@ public class MemberController {
     private int signupMember(MemberDTO memberDTO, String authKey) {
         memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
         int result = memberService.registerMember(memberDTO, authKey);
-        log.info("member register : " + result);
 
         return result;
     }
@@ -113,36 +110,25 @@ public class MemberController {
     @GetMapping("/mailCheck")
     @ResponseBody
     public String mailCheck(String email) {
-        log.info("mailCheck");
         String authKey = getKey(6);
-        int result = memberService.createAuthKey(email, authKey);
-        log.info(result + " row update");
         mss.sendVerificationCode(email, authKey);
-        log.info("mail send");
         return authKey;
     }
-
 
     // 메일 인증 실패 후 메일 재 전송
     @GetMapping("/reAuth")
     public String reAuthKey(String email) {
-        log.info("reAuthKey");
-        log.info("email : " + email);
-
         String authKey = getKey(6);
         int result = memberService.updateAuthKey(email, authKey);
         if (result == 1) {
             mss.sendAuthMail(email, authKey);
         }
-
         return "redirect:/auth/login";
     }
 
     // 메일 인증 실패 후 회원 정보 삭제
     @GetMapping("/deleteExpired")
     public String deleteExpired(String email) {
-        log.info("deleteExpired");
-        log.info("email : " + email);
         int result = memberService.deleteMember(email);
         if (result == 1) {
             return "redirect:/auth/login?error=canceled";
@@ -165,10 +151,8 @@ public class MemberController {
 
             if (result > 0) {
                 mss.sendTemporaryPassword(email, tempPw);
-                log.info("임시 비밀번호 발송 완료");
                 return "success";
             } else {
-                log.info("임시 비밀번호 발송 실패");
                 return "fail";
             }
         } catch (Exception e) {

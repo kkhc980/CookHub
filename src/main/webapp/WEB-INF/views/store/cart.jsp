@@ -85,6 +85,20 @@
             margin-top: 20px;
         }
 
+        .order-disabled {
+            background-color: #ccc; /* 회색 배경 */
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: not-allowed; /* 클릭 금지 표시 */
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
         .shopping_btn {
             background-color: #008CBA;
             border: none;
@@ -161,7 +175,8 @@
                                 </button>
                             </div>
                         </td>
-                        <td><span class="total-price" data-product-id="${item.productId}">${item.totalPrice}</span> 원</td>
+                        <td><span class="total-price" data-product-id="${item.productId}">${item.totalPrice}</span> 원
+                        </td>
                         <td><a href="../store/cart/delete/${item.productId}">삭제</a></td>
                     </tr>
                 </c:forEach>
@@ -177,7 +192,14 @@
         </c:if>
         <div class="button-container">
             <a href="../store/list" class="shopping_btn">계속 쇼핑하기</a>
-            <a class="order_btn">주문하기</a>
+            <c:choose>
+                <c:when test="${not empty cart}">
+                    <a class="order_btn">주문하기</a>
+                </c:when>
+                <c:otherwise>
+                    <a class="order-disabled">주문하기</a>
+                </c:otherwise>
+            </c:choose>
         </div>
         <form class="order_form" action="${pageContext.request.contextPath}/store/order/${memberDTO.memberId}"
               method="post"></form>
@@ -244,7 +266,7 @@
             $.ajax({
                 url: "../store/cart/updateSession/" + productId,
                 type: "POST",
-                data: { productCount: quantity },
+                data: {productCount: quantity},
                 success: function (response) {
                     if (response !== "success") {
                         alert("세션 업데이트 실패!");
@@ -280,6 +302,11 @@
         }
 
         initialize();
+
+        $(".order-disabled").on("click", function (event) {
+            event.preventDefault();
+            alert("장바구니가 비어있습니다.");
+        });
 
         // 전체 선택/해제 기능 추가
         $("#select-all").on("change", function () {

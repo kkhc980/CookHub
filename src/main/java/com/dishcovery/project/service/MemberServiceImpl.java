@@ -27,7 +27,8 @@ public class MemberServiceImpl implements MemberService {
         int insertMemberResult = memberMapper.insert(toEntity(memberDTO));
         int insertMemberRoleResult = memberMapper.insertMemberRole(memberDTO.getEmail());
         int insertMemberAuthKey = createAuthKey(memberDTO.getEmail(), authKey);
-        return 1;
+        if (insertMemberResult + insertMemberAuthKey + insertMemberRoleResult == 3) return 1;
+        return 0;
     }
 
     @Override

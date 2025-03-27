@@ -16,12 +16,14 @@
             min-height: 100vh;
             background-color: #f4f7f9;
         }
+
         .content {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .form-container {
             width: 500px;
             padding: 40px;
@@ -29,24 +31,29 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             background-color: white;
         }
+
         .input-group {
             display: flex;
             align-items: center;
             margin-bottom: 25px;
         }
+
         .input-group input, .input-group select, .input-group button {
             padding: 14px;
             border: 1px solid #ced4da;
             border-radius: 6px;
             font-size: 16px;
         }
+
         .input-group input {
             flex: 1;
         }
+
         .input-group select {
             width: 150px;
             margin-left: 10px;
         }
+
         .input-group button {
             background-color: #007bff;
             color: white;
@@ -54,11 +61,13 @@
             margin-left: 10px;
             border: none;
         }
+
         .mail-check-box {
             margin-top: 20px;
             display: flex;
             align-items: center;
         }
+
         .mail-check-box input {
             flex: 1;
             padding: 14px;
@@ -67,6 +76,7 @@
             font-size: 16px;
             margin-right: 10px;
         }
+
         .mail-check-box button {
             background-color: #28a745;
             color: white;
@@ -76,26 +86,31 @@
             border-radius: 6px;
             font-size: 16px;
         }
+
         .custom-email-input {
             display: none;
         }
+
         #mail-check-warn {
             display: block;
             margin-top: 10px;
             font-size: 14px;
             color: #dc3545;
         }
+
         h2 {
             text-align: center;
             margin-bottom: 30px;
             color: #343a40;
         }
+
         label {
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
             color: #495057;
         }
+
         .at-symbol {
             margin: 0 10px;
             font-size: 18px;
@@ -132,7 +147,6 @@
     </div>
 </div>
 <script>
-    // 기존 JavaScript 코드 (AJAX 등)
     $(document).ajaxSend(function (e, xhr, opt) {
         var token = $("meta[name='_csrf']").attr("content");
         var header = $("meta[name='_csrf_header']").attr("content");
@@ -163,29 +177,32 @@
             email = $('#userEmail1').val() + "@" + $('#userEmail2').val();
         }
 
-        const checkInput = $('.mail-check-input')
+        const checkInput = $('.mail-check-input');
         const checkSubmitBtn = $('#mail-Check-Submit-Btn');
 
         $.ajax({
             type: 'get',
             url: "../member/mailCheck?email=" + email,
-            success: function (data) {
-                console.log("data : " + data);
-                if (data === "error") {
-                    alert("메일 전송에 실패했습니다.");
-                } else {
+            success: function (response) { // 응답 데이터를 받음
+                const data = JSON.parse(response); // JSON 문자열을 객체로 파싱
+
+                if (data.result === "success") {
                     checkInput.attr('disabled', false);
                     checkSubmitBtn.attr('disabled', false);
-                    checkInput.data('code', data);
-                    alert('인증번호가 전송되었습니다.')
+                    checkInput.data('code', data.authKey);
+                    alert('인증번호가 전송되었습니다.');
+                } else if (data.result === "not_found") {
+                    alert('회원가입된 메일이 아닙니다.');
+                } else {
+                    alert("메일 전송에 실패했습니다.");
                 }
             },
             error: function (xhr, status, error) {
                 console.error("AJAX request failed", status, error);
                 alert("서버와의 통신 중 오류가 발생했습니다.");
             }
-        }); // end ajax
-    }); // end send email
+        });
+    });
 
     // 인증번호 비교
     $('#mail-Check-Submit-Btn').click(function () {

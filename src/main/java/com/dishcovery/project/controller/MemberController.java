@@ -5,6 +5,7 @@ import com.dishcovery.project.domain.MemberVO;
 import com.dishcovery.project.service.MailSendService;
 import com.dishcovery.project.service.MemberService;
 import com.dishcovery.project.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -110,9 +111,27 @@ public class MemberController {
     @GetMapping("/mailCheck")
     @ResponseBody
     public String mailCheck(String email) {
-        String authKey = getKey(6);
-        mss.sendVerificationCode(email, authKey);
-        return authKey;
+        try {
+            MemberVO memberVO = memberService.selectDupCheckEmail(email);
+            if (memberVO == null) {
+                // 등록되지 않은 이메일 주소
+                Map<String, Object> response = new HashMap<>();
+                response.put("result", "not_found");
+                return new ObjectMapper().writeValueAsString(response);
+            }
+
+            String authKey = getKey(6);
+            mss.sendVerificationCode(email, authKey);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("result", "success");
+            response.put("authKey", authKey);
+            return new ObjectMapper().writeValueAsString(response);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return "error";
+        }
     }
 
     // 메일 인증 실패 후 메일 재 전송

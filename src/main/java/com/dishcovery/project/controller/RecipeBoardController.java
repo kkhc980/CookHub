@@ -23,6 +23,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import com.dishcovery.project.domain.RecipeBoardDTO;
 import com.dishcovery.project.domain.RecipeBoardStepVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
 import com.dishcovery.project.domain.RecipeDetailVO;
+import com.dishcovery.project.domain.RecipeIngredientDetailsList;
 import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
 import com.dishcovery.project.util.FileUploadUtil;
@@ -148,10 +150,7 @@ public class RecipeBoardController {
         @RequestParam(value = "time", required = false) String time,
         @RequestParam(value = "difficulty", required = false) String difficulty,
         @RequestParam(value = "stepOrder", required = false) List<Integer> stepOrders,
-        @RequestParam(value = "ingredientName", required = false) List<String> ingredientNames,
-        @RequestParam(value = "ingredientAmount", required = false) List<String> ingredientAmounts,
-        @RequestParam(value = "ingredientUnit", required = false) List<String> ingredientUnits,
-        @RequestParam(value = "ingredientNote", required = false) List<String> ingredientNotes
+        @ModelAttribute("ingredientDetailsList") RecipeIngredientDetailsList ingredientDetailsList
     ) throws IOException {
 
     	 Integer currentUserId = getCurrentUserId();
@@ -160,24 +159,7 @@ public class RecipeBoardController {
     	        recipeBoard.setMemberId(currentUserId);
     	        log.info("Setting recipeBoard.memberId to: " + currentUserId);
     	    }
-        List<RecipeIngredientsDetailVO> ingredientDetails = new ArrayList<>();
-        if (ingredientNames != null) {
-            for (int i = 0; i < ingredientNames.size(); i++) {
-                RecipeIngredientsDetailVO detail = new RecipeIngredientsDetailVO();
-                detail.setIngredientName(ingredientNames.get(i));
-                  if(ingredientAmounts != null && i < ingredientAmounts.size()){
-                          detail.setIngredientAmount(ingredientAmounts.get(i));
-                      }
-                  if(ingredientUnits != null && i < ingredientUnits.size()){
-                         detail.setIngredientUnit(ingredientUnits.get(i));
-                      }
-                   if(ingredientNotes != null && i < ingredientNotes.size()){
-                        detail.setIngredientNote(ingredientNotes.get(i));
-                     }
-                ingredientDetails.add(detail);
-                log.info("Ingredient Detail: " + detail);
-            }
-        }
+    	    List<RecipeIngredientsDetailVO> ingredientDetails = ingredientDetailsList.getIngredientDetails();
 
         List<RecipeBoardStepVO> steps = new ArrayList<>();
         if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
@@ -218,7 +200,6 @@ public class RecipeBoardController {
         recipeBoardService.createRecipe(recipeBoard, ingredientIds, hashtags, thumbnail, steps, ingredientDetails);
         return "redirect:/recipeboard/list";
     }
-    
     @GetMapping("/detail/{recipeBoardId}")
     public String getRecipeDetail(@PathVariable int recipeBoardId, Model model, HttpServletRequest request) {
         log.info("getRecipeDetail() called with recipeBoardId: " + recipeBoardId);

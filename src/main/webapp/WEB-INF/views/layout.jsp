@@ -274,7 +274,7 @@
 <div class="navbar">
     <div class="left-menu">
         <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
-        <a href="${pageContext.request.contextPath}/recipeboard/list">게시글</a>
+        <a href="${pageContext.request.contextPath}/recipeboard/list">레시피</a>
         <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
         <a href="${pageContext.request.contextPath}/store/list">스토어</a>
 

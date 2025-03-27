@@ -204,7 +204,7 @@
    
   <div class="recipe-section">
   <div class="more-button-container">
-	<h2>인기 게시글</h2>
+	<h2>인기 레시피</h2>
 	<a href="${pageContext.request.contextPath}/recipeboard/list" class="more-button">더보기</a>
 	</div>
     <div class="recipe-container">

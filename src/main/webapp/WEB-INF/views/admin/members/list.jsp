@@ -160,7 +160,7 @@ h2 {
 	<div class="container mt-5">
 		<h2>회원 목록</h2>
 		<div class="d-flex justify-content-between align-items-center mb-3">
-			<form id="searchForm" class="d-flex"
+		<%-- 	<form id="searchForm" class="d-flex"
 				action="${pageContext.request.contextPath}/admin/members/search"
 				method="get">
 				<input type="hidden" name="page"
@@ -181,7 +181,7 @@ h2 {
 				<button type="submit" class="btn btn-primary">검색</button>
 				<button type="button" class="btn btn-secondary ms-2"
 					onclick="resetForm()">초기화</button>
-			</form>
+			</form> --%>
 		</div>
 		<div class="table-responsive">
 			<table class="table table-bordered table-hover">
@@ -222,8 +222,8 @@ h2 {
 											<option value="1" ${member.authStatus == 1 ? 'selected' : ''}>활성</option>
 											<option value="2" ${member.authStatus == 2 ? 'selected' : ''}>비활성</option>
 									</select>
-										<button type="button" class="btn btn-sm btn-danger mt-1"
-											onclick="openDeleteModal(${member.memberId})">삭제</button></td>
+									<%-- 	<button type="button" class="btn btn-sm btn-danger mt-1"
+											onclick="openDeleteModal(${member.memberId})">삭제</button></td> --%>
 								</tr>
 							</c:forEach>
 						</c:when>

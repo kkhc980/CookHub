@@ -1,144 +1,138 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>공지 게시판</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f4;
+    }
 
-        hr {
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    hr {
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
 
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
 
-        tbody tr:hover {
-            background-color: #f5f5f5;
-        }
+    th {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+    }
 
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
+    tbody tr:hover {
+        background-color: #f5f5f5;
+    }
 
-        a:hover {
-            text-decoration: underline;
-        }
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
 
-        ul {
-            list-style: none;
-            padding: 0;
-            text-align: center;
-        }
+    a:hover {
+        text-decoration: underline;
+    }
 
-        ul li {
-            display: inline;
-            margin: 0 5px;
-        }
+    ul {
+        list-style: none;
+        padding: 0;
+        text-align: center;
+    }
 
-        ul li a {
-            display: inline-block;
-            padding: 8px 12px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            color: #333;
-        }
+    ul li {
+        display: inline;
+        margin: 0 5px;
+    }
 
-        ul li a:hover {
-            background-color: #ddd;
-        }
+    ul li a {
+        display: inline-block;
+        padding: 8px 12px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        color: #333;
+    }
 
-        .button-container {
-            text-align: right;
-            margin-bottom: 10px;
-        }
+    ul li a:hover {
+        background-color: #ddd;
+    }
 
-        .button-container a {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    .button-container {
+        text-align: right;
+        margin-bottom: 10px;
+    }
 
-        .button-container a:hover {
-            background-color: #218838;
-        }
+    .button-container a {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+    }
 
-        .pagination-container {
-            text-align: center;
-            margin-top: 20px;
-        }
+    .button-container a:hover {
+        background-color: #218838;
+    }
 
-        .pagination-container ul {
-            display: inline-block;
-        }
+    .pagination-container {
+        text-align: center;
+        margin-top: 20px;
+    }
 
-        .pagination-container ul li {
-            display: inline;
-            margin: 0 5px;
-        }
+    .pagination-container ul {
+        display: inline-block;
+    }
 
-        .pagination-container ul li a {
-            display: inline-block;
-            padding: 8px 12px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
+    .pagination-container ul li {
+        display: inline;
+        margin: 0 5px;
+    }
 
-        .pagination-container ul li a:hover {
-            background-color: #0056b3;
-        }
+    .pagination-container ul li a {
+        display: inline-block;
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
 
-        .pagination-container ul li.active a {
-            background-color: #0056b3;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
+    .pagination-container ul li a:hover {
+        background-color: #0056b3;
+    }
+
+    .pagination-container ul li.active a {
+        background-color: #0056b3;
+        font-weight: bold;
+    }
+</style>
+
 <h1>공지 게시판</h1>
 
 <!-- 글 작성 페이지 이동 버튼 -->
@@ -201,5 +195,3 @@
         </c:if>
     </ul>
 </div>
-</body>
-</html>

@@ -80,7 +80,7 @@
                           <c:forEach items="${member.roles}" var="role">
                              <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span >${role}</span>
-                                <button class="btn btn-sm btn-danger" onclick="openRemoveRoleModal('${member.memberId}', '${role}')">삭제</button>
+                             <%--    <button class="btn btn-sm btn-danger" onclick="openRemoveRoleModal('${member.memberId}', '${role}')">삭제</button> --%>
                              </li>
                            </c:forEach>
                    </ul>

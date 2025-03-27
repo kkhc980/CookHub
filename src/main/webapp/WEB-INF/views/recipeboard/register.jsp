@@ -389,37 +389,39 @@ register-form {
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        // 재료 입력 관련 요소
-        const ingredientInputs = document.getElementById("ingredientInputs");
-        const addIngredientButton = document.getElementById("addIngredient");
-        let ingredientCounter = ingredientInputs.querySelectorAll('.ingredient-row').length;
+    // 재료 입력 관련 요소
+    const ingredientInputs = document.getElementById("ingredientInputs");
+    const addIngredientButton = document.getElementById("addIngredient");
+    let ingredientCounter = 1;
 
-        // 재료 추가 함수
-        function addIngredientRow() {
-            const newRow = document.createElement("div");
-            newRow.className = "ingredient-row";
-            const index = ingredientInputs.querySelectorAll('.ingredient-row').length;
-            newRow.innerHTML = `
-                <input type="text" name="ingredientName[${index}]" placeholder="예) 돼지고기" required>
-                <input type="text" name="ingredientAmount[${index}]" placeholder="예) 10(수량)" required>
-                <input type="text" name="ingredientUnit[${index}]" placeholder="예) g,ml(단위)" required>
-                <input type="text" name="ingredientNote[${index}]" placeholder="예) (비고)">
-                <button type="button" class="remove-ingredient">삭제</button>
-            `;
-            ingredientInputs.appendChild(newRow);
+    // 재료 추가 함수
+    function addIngredientRow() {
+        const newRow = document.createElement("div");
+        newRow.className = "ingredient-row";
+        newRow.innerHTML = `
+            <input type="text" name="ingredientDetails[\${ingredientCounter}].ingredientName" placeholder="예) 돼지고기" required>
+            <input type="text" name="ingredientDetails[\${ingredientCounter}].ingredientAmount" placeholder="예) 10(수량)" required>
+            <input type="text" name="ingredientDetails[\${ingredientCounter}].ingredientUnit" placeholder="예) g,ml(단위)" required>
+            <input type="text" name="ingredientDetails[\${ingredientCounter}].ingredientNote" placeholder="예) (비고)">
+            <button type="button" class="register-button remove-ingredient">삭제</button>
+        `;
+        ingredientInputs.appendChild(newRow);
+        ingredientCounter++;
+    }
+
+    // 초기 재료 행 추가 (초기 1개 행을 위해)
+    addIngredientRow();
+
+    // 이벤트 위임: 삭제 버튼
+    ingredientInputs.addEventListener('click', function (event) {
+        if (event.target.classList.contains('remove-ingredient')) {
+            event.target.closest('.ingredient-row').remove();
         }
-
-        // 이벤트 위임: 삭제 버튼
-        ingredientInputs.addEventListener('click', function (event) {
-            if (event.target.classList.contains('remove-ingredient')) {
-                event.target.closest('.ingredient-row').remove();
-            }
-        });
-
-        // 재료 추가 버튼 클릭 이벤트
-        addIngredientButton.addEventListener("click", addIngredientRow);
     });
 
+    // 재료 추가 버튼 클릭 이벤트
+    addIngredientButton.addEventListener("click", addIngredientRow);
+});
     document.addEventListener("DOMContentLoaded", function () {
         // 조리 순서 입력 관련 요소
         const stepInputs = document.getElementById("stepInputs");
@@ -431,10 +433,10 @@ register-form {
             const newRow = document.createElement("div");
             newRow.className = "step-row";
             newRow.innerHTML = `
-                <label>Step ${stepCounter}</label>
+                <label>Step \${stepCounter}</label>
                 <textarea name="stepDescription" placeholder="예) 소고기는 기름기를 떼어내고 적당한 크기로 썰어주세요." required></textarea>
                 <input type="file" name="stepImage" accept="image/*" >
-                <input type="number" name="stepOrder" value="${stepCounter}" style="width: 80px;">
+                <input type="number" name="stepOrder" value="\${stepCounter}" style="width: 80px;">
                 <button type="button" class="remove-step">삭제</button>
                 <div class="step-preview">
                     <img src="#" alt="Step Preview" style="display: none;">
@@ -617,20 +619,19 @@ register-form {
 			<div class="hashtag-container" id="hashtagList"></div>
 		</div>
 		<%-- 재료 입력 컨테이너 --%>
-		<div class="selection-container">
-			<h3>재료 입력</h3>
-			<div id="ingredientInputs">
-				<div class="ingredient-row">
-					<input type="text" name="ingredientName" placeholder="예) 돼지고기"
-						required> <input type="text" name="ingredientAmount"
-						placeholder="예) 10(수량)" required> <input type="text"
-						name="ingredientUnit" placeholder="예) g,ml(단위)" required>
-					<input type="text" name="ingredientNote" placeholder="예) (비고)">
-					<button type="button" class="register-button remove-ingredient">삭제</button>
-				</div>
-			</div>
-			<button type="button" id="addIngredient" class="register-button">재료 추가</button>
-		</div>
+	<div class="selection-container">
+    <h3>상세 재료 입력</h3>
+    <div id="ingredientInputs">
+         <div class="ingredient-row">
+            <input type="text" name="ingredientDetails[0].ingredientName" placeholder="예) 돼지고기" required>
+            <input type="text" name="ingredientDetails[0].ingredientAmount" placeholder="예) 10(수량)" required>
+            <input type="text" name="ingredientDetails[0].ingredientUnit" placeholder="예) g,ml(단위)" required>
+            <input type="text" name="ingredientDetails[0].ingredientNote" placeholder="예) (비고)">
+            <button type="button" class="register-button remove-ingredient">삭제</button>
+        </div>
+    </div>
+    <button type="button" id="addIngredient" class="register-button">재료 추가</button>
+</div>
 		<%-- 조리 순서 입력 컨테이너 --%>
 		<div class="selection-container">
 			<h3>조리 순서</h3>

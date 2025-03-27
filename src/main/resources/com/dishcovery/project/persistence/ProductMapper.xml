@@ -101,11 +101,13 @@
     </select>
 
     <update id="decreaseProductStockList" parameterType="java.util.List">
-        <foreach collection="list" item="item" separator=";">
+        BEGIN
+        <foreach collection="list" item="item">
             UPDATE Products
             SET stock = stock - #{item.productCount}
             WHERE product_id = #{item.productId}
-            AND stock >= #{item.productCount}
+            AND stock >= #{item.productCount};
         </foreach>
+        END;
     </update>
 </mapper>

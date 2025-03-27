@@ -126,37 +126,14 @@
         .purchase-button:hover {
             background-color: #e64a19;
         }
-		
-		.register-btn-container {
-		    display: flex;
-		    align-items: center;
-		    justify-content: space-between; /* 제목과 버튼을 양 끝으로 정렬 */
-		}
-		
-		.register-btn {
-		    padding: 10px 20px;
-		    background-color: #ff5722;
-		    color: white;
-		    border: none;
-		    border-radius: 5px;
-		    cursor: pointer;
-		    font-size: 14px;
-		    text-decoration: none; /* ✅ 밑줄 제거 */
-		}
 
-        .register-btn:hover {
-            background-color: #e64a19;
-        }
-		
     </style>
 </head>
 <body>
 
-<div class="register-btn-container">
 <h2>상품 목록</h2>
-	<a href="${pageContext.request.contextPath}/store/register" class="register-btn">상품 등록</a>
-</div>
 
+<a href="${pageContext.request.contextPath}/store/register" class="register-btn">상품 등록</a>
 
 <!-- 상품 리스트 -->
 <div class="product-list">

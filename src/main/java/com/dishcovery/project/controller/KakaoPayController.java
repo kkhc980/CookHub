@@ -41,7 +41,7 @@ public class KakaoPayController {
             throw new IllegalArgumentException("주문 정보가 없습니다.");
         }
 
-        // ✅ 리디렉션 URL을 세션에 저장 (보안을 위해)
+        // ✅ 리디렉션 URL을 세션에 저장
         session.setAttribute("redirectUrl", request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()));
 
         KakaoPayResponseVO response = kakaoPayService.readyToPay(orderPageDTO, totalPayment, memberId, session, postcode, address);

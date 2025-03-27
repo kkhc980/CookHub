@@ -395,18 +395,27 @@
         <h3>조리 순서</h3>
         <div id="stepInputs">
             <c:forEach var="step" items="${steps}" varStatus="status">
-                <div class="step-row">
-                    <label>Step ${status.index + 1}</label>
-                    <textarea name="stepDescription[${status.index}]" required>${step.stepDescription}</textarea>
-                    <input type="file" name="stepImage[${status.index}]" accept="image/*">
-                    <input type="number" name="stepOrder[${status.index}]" value="${step.stepOrder}" style="width: 80px;">
-                    <button type="button" class="recipe-button delete remove-step">삭제</button>
-
-                    <div class="step-preview">
-                        <img src="${step.stepImageUrl != null ? step.stepImageUrl : '#'}" alt="Step Preview" style="display: ${step.stepImageUrl != null ? 'block' : 'none'};">
-                    </div>
-                </div>
-            </c:forEach>
+			    <div class="step-row">
+			        <label>Step ${status.index + 1}</label>
+			        <textarea name="stepDescription[${status.index}]" required>${step.stepDescription}</textarea>
+			        <input type="file" name="stepImage[${status.index}]" accept="image/*">
+			        <input type="number" name="stepOrder[${status.index}]" value="${step.stepOrder}" style="width: 80px;">
+			        <button type="button" class="recipe-button delete remove-step">삭제</button>
+			
+			        <div class="step-preview">
+						<c:choose>
+						    <c:when test="${not empty step.stepImageUrl}">
+						        <c:set var="correctedStepUrl" value="uploads/${step.stepImageUrl}" />
+						        <img src="${pageContext.request.contextPath}/${correctedStepUrl}" 
+						             alt="Step Preview" style="display: block;">
+						    </c:when>
+						    <c:otherwise>
+						        <img src="#" alt="Step Preview" style="display: none;">
+						    </c:otherwise>
+						</c:choose>
+			        </div>
+			    </div>
+			</c:forEach>
         </div>
         <button type="button" id="addStep" class="recipe-button">조리 순서 추가</button>
 

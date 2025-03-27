@@ -86,7 +86,9 @@
 	
 	    /* 삭제 버튼은 빨간색 유지 */
 	    .recipe-button.delete {
-	        background-color: #dc3545;
+	         background-color: #dc3545;
+    		 margin: 0; /* 추가: 불필요한 마진 제거 */
+    		 padding: 0; /* 추가: 불필요한 패딩 제거 */
 	    }
 	
 	    .recipe-button.delete:hover {
@@ -187,11 +189,14 @@
             align-items: center;
             margin-bottom: 15px;
             flex-wrap: wrap;
+            
         }
 
         .step-row label {
             font-weight: bold;
             width: 100px;
+            margin: 0;
+    		padding: 0;
         }
 
         .step-row textarea {
@@ -267,6 +272,24 @@
                 padding: 20px;
             }
         }
+        
+		.file-upload-button {
+    background-color: #007bff !important; /* 파란색 */
+    color: white !important; /* 흰색 글씨 */
+    padding: 12px 25px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-size: 1.1rem !important;
+    display: inline-block !important;
+    text-align: center !important;
+    margin-top: 10px !important;
+    width: auto !important; /* 크기 자동 조정 */
+}
+
+.file-upload-button:hover {
+    background-color: #0056b3 !important;
+}
     </style>
 </head>
 <body>
@@ -608,7 +631,12 @@ document.addEventListener("DOMContentLoaded", function () {
         newRow.innerHTML = `
             <label>Step ${stepCounter}</label>
             <textarea name="stepDescription" placeholder="예) 소고기는 기름기를 떼어내고 적당한 크기로 썰어주세요." required></textarea>
-            <input type="file" name="stepImage" accept="image/*" >
+            <!-- 파일 업로드 버튼 -->
+            <label class="file-upload-button">
+                <span>이미지 업로드</span>
+                <input type="file" name="stepImage" accept="image/*" style="display: none;">
+            </label>
+            
             <input type="number" name="stepOrder" value="${stepCounter}" style="width: 80px;">
             <button type="button" class="remove-step">삭제</button>
             <div class="step-preview">
@@ -617,6 +645,22 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 
         stepInputs.appendChild(newRow);
+        
+        // 새로 추가된 파일 입력 필드에 이벤트 리스너 추가 (업로드 시 버튼 텍스트 변경)
+        const fileInput = newRow.querySelector('input[type="file"]');
+        const fileLabel = newRow.querySelector('.file-upload-button span');
+
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                fileLabel.textContent = fileInput.files[0].name; // 선택한 파일명 표시
+            } else {
+                fileLabel.textContent = "이미지 업로드"; // 기본 텍스트 유지
+            }
+        });
+
+        stepCounter++;
+    	});
+	});
 
         // 이미지 미리보기
         const fileInput = newRow.querySelector('input[type="file"]');

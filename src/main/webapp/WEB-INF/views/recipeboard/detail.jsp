@@ -310,8 +310,11 @@ $(document).ready(function() {
          </div>
       </c:forEach>
    </div>
-   <button onclick="location.href='recipeboard/list'">글 목록</button>
-
+   
+   <div class="return-list-btn-container">
+   <button class="return-list-btn" onclick="location.href='recipeboard/list'">글 목록</button>
+   </div>
+   
    <!-- 글 수정/삭제 버튼 -->
    <sec:authorize access="isAuthenticated()">
       <sec:authentication var="customUser" property="principal" />
@@ -648,24 +651,32 @@ $(document).ready(function() {
                      function getAllReply(pageNum = 1) {
                        var recipeBoardId = $('#recipeBoardId').val();
                        var url = '/project/recipeboard/all/' + recipeBoardId + '?pageNum=' + pageNum;
+                       
 
                        $.getJSON(url, function(data) {
-                         console.log("백엔드에서 받은 데이터:", data); // ✅ 받은 데이터 확인
-                         console.log("페이지네이션 데이터:", data.pagination);
-                         console.log("페이지네이션 totalCount:", data.pagination.totalCount);
-                         console.log("페이지네이션 replyTotalCount:", data.pagination.replyTotalCount);
-                         console.log("페이지네이션 startNum:", data.pagination.startNum);
-                         console.log("페이지네이션 endNum:", data.pagination.endNum);
+
                          
                          if (data.pagination) {
                         	    console.log("replyTotalCount 값:", data.pagination.replyTotalCount);
                         	} else {
                         	    console.warn("pagination 데이터가 존재하지 않음!");
                         	}
-
+						
+                         var currentUserId = data.currentUserId; // ✅ 백엔드에서 받은 로그인한 사용자 ID
+                         console.log("현재 로그인한 사용자 ID:", currentUserId); // ✅ 로그인한 사용자 ID 확인
+                         
+                      		// ✅ 기존 댓글을 비운 후 새로 채움 (덮어쓰기)
+                         $('#replies').empty();
+                         
                          var list = '';
 
                          $.each(data.replies, function() {
+                        	 
+                         if (currentUserId === this.memberId) {
+                	           console.log("✅ 수정/삭제 버튼 표시 - 리뷰 ID:", this.recipeReviewId);
+                	        } else {
+                	           console.log("❌ 수정/삭제 버튼 숨김 - 리뷰 ID:", this.recipeReviewId);
+                	        }	 
                    		 var replyDateCreated = new Date(this.replyDateCreated);                   		
 	                   	 var formattedDate = replyDateCreated.toLocaleString("ko-KR", { 
 	                   		    year: "numeric", 
@@ -681,27 +692,36 @@ $(document).ready(function() {
 
 
 							list += '<div class="reply_item" data-reply-id="' + this.replyId + '">' +
-						    '<pre>' +
+							'<pre>' +
 						    '<input type="hidden" class="replyId" value="' + this.replyId + '">' +
 						    this.memberId +
 						    '  ' +
 						    '<span class="replyContentDisplay">' + escapeHtml(this.replyContent) + '</span>' +
 						    '  ' +
 						    formattedDate +
-						    '  ' +
-						    '<div class="reply_buttons" data-reply-id="' + this.replyId + '">' +
-						    '<button class="btn_update" data-reply-id="' + this.replyId + '">수정</button>' +
-						    '<button class="btn_delete" data-reply-id="' + this.replyId + '">삭제</button>' +
-						    '</div>' + // 닫는 div 추가
-						    '<button class="btn_reply" data-reply-id="' + this.replyId + '">답글</button>' + // "답글" 버튼 추가
-						    '</pre>' +
-						    '<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + // 대댓글 영역 추가
-						    '</div>';
-                                     
-                             getAllNestedReply(this.replyId); // ✅ 대댓글도 같이 불러오기
-                                     
-                         });
-                       
+						    '  '; 
+						    
+						   // ✅ 현재 로그인한 사용자와 댓글 작성자가 동일한 경우에만 수정/삭제 버튼 출력
+							if (currentUserId != null && currentUserId == this.memberId) {
+							    console.log("✅ 수정/삭제 버튼 표시 - 댓글 ID:", this.replyId);
+							    list += '<div class="reply_buttons" data-reply-id="' + this.replyId + '">' +
+							        '<button class="btn_update" data-reply-id="' + this.replyId + '">수정</button>' +
+							        '<button class="btn_delete" data-reply-id="' + this.replyId + '">삭제</button>' +
+							        '</div>'; // ✅ 닫는 div 추가
+							}
+						   
+							// ✅ 답글 버튼은 로그인한 사용자(ROLE_MEMBER)만 보이도록 처리
+				            if (currentUserId != null) {
+				                list += '<button class="btn_reply" data-reply-id="' + this.replyId + '">답글</button>';
+				            }
+						   
+								list += '</pre>' +
+			                	'<div class="nested_replies" id="nested_replies_' + this.replyId + '"></div>' + 
+			                	'</div>'; 
+			                	
+			                	getAllNestedReply(this.replyId); // ✅ 대댓글도 같이 불러오기
+			       			});
+                         
                          $('#replies').html(list);
                          
                       	// ✅ 댓글 총 개수 표시 (replyTotalCount 사용)

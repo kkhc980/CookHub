@@ -12,4 +12,5 @@ public interface NestedReplyMapper {
 	List<NestedReplyVO> selectListByReplyId(int replyId);
 	int updateNestedReply(NestedReplyVO nestedReplyVO);
 	int deleteNestedReply(int nestedReplyId);
+	NestedReplyVO selectNestedReplyById(int nestedReplyId);
 }

@@ -138,4 +138,25 @@ textarea {
     resize: vertical;
 }
 
+.return-list-btn-container {
+	display: flex;
+    justify-content: flex-end; /* 우측 정렬 */
+    margin-top: 10px; /* 버튼과 콘텐츠 사이 간격 조정 */
+}
+
+.return-list-btn {
+    padding: 10px 20px;
+    background-color: #ff9900; /* 초록색 버튼 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.return-list-btn:hover {
+    background-color: #e68900;
+}
+
 

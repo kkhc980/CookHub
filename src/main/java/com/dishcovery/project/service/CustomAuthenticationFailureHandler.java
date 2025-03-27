@@ -21,7 +21,8 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     private MemberMapper memberMapper;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException {
         String email = request.getParameter("email");
 
         MemberVO memberVO = null;
@@ -43,7 +44,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
             response.sendRedirect("../auth/login?error=authRequired");
         } else if (memberVO.getAuthStatus() == 2) {
             response.sendRedirect("../auth/login?error=restricted");
-        }else {
+        } else {
             response.sendRedirect("../auth/login?error=true"); // 그 외의 실패 처리
         }
     }

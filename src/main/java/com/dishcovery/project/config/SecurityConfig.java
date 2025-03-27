@@ -43,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        .antMatchers("/store/update/**").authenticated() //.hasRole("ADMIN") // 관리자만 가능
 		        .antMatchers("/store/delete/**").authenticated() //.hasRole("ADMIN") // 관리자만 가능
 		        .antMatchers("/store/list").permitAll() // 모두 접근 가능
+                .antMatchers("/store/detail/**").authenticated() // 로그인한 사용자만 결제 가능
 		        .antMatchers("/store/purchase/**").authenticated() // 로그인한 사용자만 결제 가능
 		        .antMatchers("/store/approve").authenticated() // 로그인한 사용자만 승인 가능
 		        .antMatchers("/store/cancel").authenticated() // 로그인한 사용자만 취소 가능

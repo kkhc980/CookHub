@@ -3,68 +3,113 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Update</title>
+    <title>회원 정보 수정</title>
     <meta name="_csrf" content="${_csrf.token}"/>
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<sec:authentication property="principal" var="user"/>
-<form id="updateForm" action="../member/update" method="POST">
-    <div class="update-content">
-        <div class="update-group">
-            <div class="join-row">
-                <h3 class="join-title">
-                    <label for="email">이메일</label>
-                </h3>
-                <span>
-          	        ${memberDTO.email }
-                    <input id="email" type="hidden" name="email" value="${memberDTO.email }"> <br>
-                </span>
-            </div>
-            <div class="update-row">
-                <h3 class="update-title">
-                    <label for="password">비밀번호</label>
-                </h3>
-                <span>
-                    <input id="password" type="password" name="password" title="비밀번호" maxlength="16"> <br>
-			    </span>
-                <span id="pwMsg"></span>
-
-                <h3 class="update-title">
-                    <label for="pwConfirm">비밀번호 재확인</label>
-                </h3>
-                <span>
-                    <input id="pwConfirm" type="password" title="비밀번호 확인" maxlength="16"> <br>
-			    </span>
-                <span id="pwConfirmMsg"></span>
-
-                <h3 class="update-title">
-                    <label for="userName">이름</label>
-                </h3>
-                <span>
-                    <input id="userName" type="text" name="name" title="이름" maxlength="10"
-                           value="${memberDTO.name }">	<br>
-                </span>
-                <span id="nameMsg"></span>
-
-                <h3 class="update-title">
-                    <label for="phone">전화번호</label>
-                </h3>
-                <span>
-                    <input id="phone" type="text" name="phone" title="전화번호" value="${memberDTO.phone }"> <br>
-                </span>
-                <span id="phoneMsg"></span>
-            </div>
+<div class="container">
+    <sec:authentication property="principal" var="user"/>
+    <form id="updateForm" action="../member/update" method="POST">
+        <div class="form-group">
+            <label for="email" class="form-label">이메일</label>
+            <div>${memberDTO.email}</div>
+            <input type="hidden" name="email" value="${memberDTO.email}">
         </div>
-        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
-    </div>
-</form>
-<br>
-<button id="btnModify">제출</button>
+        <div class="form-group">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" id="password" name="password" title="비밀번호" maxlength="16"
+                   placeholder="비밀번호를 입력하세요" class="form-input">
+            <span id="pwMsg" class="error-message"></span>
+        </div>
+        <div class="form-group">
+            <label for="pwConfirm" class="form-label">비밀번호 재확인</label>
+            <input type="password" id="pwConfirm" title="비밀번호 확인" maxlength="16" placeholder="비밀번호를 다시 입력하세요"
+                   class="form-input">
+            <span id="pwConfirmMsg" class="error-message"></span>
+        </div>
+        <div class="form-group">
+            <label for="userName" class="form-label">이름</label>
+            <input type="text" id="userName" name="name" title="이름" maxlength="10" value="${memberDTO.name}"
+                   placeholder="이름을 입력하세요" class="form-input">
+            <span id="nameMsg" class="error-message"></span>
+        </div>
+        <div class="form-group">
+            <label for="phone" class="form-label">전화번호</label>
+            <input type="text" id="phone" name="phone" title="전화번호" value="${memberDTO.phone}"
+                   placeholder="전화번호를 입력하세요" class="form-input">
+            <span id="phoneMsg" class="error-message"></span>
+        </div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+        <button type="button" id="btnModify" class="submit-button">제출</button>
+    </form>
+</div>
 <script type="text/javascript">
     $(document).ready(function () {
         var pwFlag = false; // memberPw 유효성 변수
@@ -148,13 +193,11 @@
                 $('#phoneMsg').html('잘못된 전화번호 형식입니다.');
                 $('#phoneMsg').css('color', 'red');
                 phoneFlag = false;
-            }
-            else if(phoneNumber.length === 0){
+            } else if (phoneNumber.length === 0) {
                 $('#phoneMsg').html('필수 입력입니다.');
                 $('#phoneMsg').css('color', 'red');
                 phoneFlag = false;
-            }
-            else{
+            } else {
                 $('#phoneMsg').html('');
                 phoneFlag = true;
             }
@@ -162,11 +205,6 @@
 
         // 회원 정보 form 데이터 전송
         $('#btnModify').click(function () {
-            console.log('pwFlag : ' + pwFlag);
-            console.log('pwConfirmFlag : ' + pwConfirmFlag);
-            console.log('nameFlag : ' + nameFlag);
-            console.log('phoneFlag : ' + phoneFlag);
-
             if (pwFlag && pwConfirmFlag && nameFlag && phoneFlag) { // 입력된 데이터가 모두 유효한 경우
                 $('#updateForm').submit(); // form 전송 실행
             }

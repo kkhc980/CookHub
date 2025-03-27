@@ -274,7 +274,7 @@
 <div class="navbar">
     <div class="left-menu">
         <a href="${pageContext.request.contextPath}/noticeboard/list">공지</a>
-        <a href="${pageContext.request.contextPath}/recipeboard/list">분류</a>
+        <a href="${pageContext.request.contextPath}/recipeboard/list">게시글</a>
         <a href="${pageContext.request.contextPath}/rankingboard/ranklist">랭킹</a>
         <a href="${pageContext.request.contextPath}/store/list">스토어</a>
 
@@ -338,16 +338,16 @@
                 type="text"
                 name="hashtag"
                 value="${param.hashtag}"
-                placeholder="Search..."
+                placeholder="Search Hashtags..."
                 class="search-input">
         <input type="hidden" name="pageNum" value="1"> <!-- 검색 시 항상 첫 페이지로 이동 -->
-        <button type="submit" class="search-button">🔍 Search</button>
+        <button type="submit" class="search-button">🔍Hashtag Search</button>
     </form>
     &nbsp;
     <!-- 등록 버튼 -->
     <sec:authorize access="isAuthenticated()">
         <sec:csrfInput/>
-        <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-text-button">등록</a>
+        <a href="${pageContext.request.contextPath}/recipeboard/register" class="register-text-button">레시피 등록</a>
     </sec:authorize>
 
     <sec:authorize access="isAnonymous()">
@@ -355,7 +355,7 @@
                 type="button"
                 class="register-text-button"
                 onclick="redirectToLogin()">
-            등록
+            레시피 등록
         </button>
     </sec:authorize>
 </div>

@@ -23,6 +23,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ import com.dishcovery.project.domain.ImageData;
 import com.dishcovery.project.domain.RecipeBoardDTO;
 import com.dishcovery.project.domain.RecipeBoardStepVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
-import com.dishcovery.project.domain.RecipeDetailVO;
+import com.dishcovery.project.domain.RecipeIngredientDetailsList;
 import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
 import com.dishcovery.project.util.FileUploadUtil;
@@ -148,10 +149,7 @@ public class RecipeBoardController {
         @RequestParam(value = "time", required = false) String time,
         @RequestParam(value = "difficulty", required = false) String difficulty,
         @RequestParam(value = "stepOrder", required = false) List<Integer> stepOrders,
-        @RequestParam(value = "ingredientName", required = false) List<String> ingredientNames,
-        @RequestParam(value = "ingredientAmount", required = false) List<String> ingredientAmounts,
-        @RequestParam(value = "ingredientUnit", required = false) List<String> ingredientUnits,
-        @RequestParam(value = "ingredientNote", required = false) List<String> ingredientNotes
+        @ModelAttribute("ingredientDetailsList") RecipeIngredientDetailsList ingredientDetailsList
     ) throws IOException {
 
     	 Integer currentUserId = getCurrentUserId();
@@ -160,24 +158,7 @@ public class RecipeBoardController {
     	        recipeBoard.setMemberId(currentUserId);
     	        log.info("Setting recipeBoard.memberId to: " + currentUserId);
     	    }
-        List<RecipeIngredientsDetailVO> ingredientDetails = new ArrayList<>();
-        if (ingredientNames != null) {
-            for (int i = 0; i < ingredientNames.size(); i++) {
-                RecipeIngredientsDetailVO detail = new RecipeIngredientsDetailVO();
-                detail.setIngredientName(ingredientNames.get(i));
-                  if(ingredientAmounts != null && i < ingredientAmounts.size()){
-                          detail.setIngredientAmount(ingredientAmounts.get(i));
-                      }
-                  if(ingredientUnits != null && i < ingredientUnits.size()){
-                         detail.setIngredientUnit(ingredientUnits.get(i));
-                      }
-                   if(ingredientNotes != null && i < ingredientNotes.size()){
-                        detail.setIngredientNote(ingredientNotes.get(i));
-                     }
-                ingredientDetails.add(detail);
-                log.info("Ingredient Detail: " + detail);
-            }
-        }
+    	    List<RecipeIngredientsDetailVO> ingredientDetails = ingredientDetailsList.getIngredientDetails();
 
         List<RecipeBoardStepVO> steps = new ArrayList<>();
         if (stepDescriptions != null && !stepDescriptions.isEmpty()) {
@@ -394,22 +375,7 @@ public class RecipeBoardController {
 	}
 
     
-    /* 미완성 코드 (간소화 작업)
-     * @PostMapping("/update") public String updateRecipe(@ModelAttribute @Valid
-     * RecipeUpdateRequest request, BindingResult bindingResult, Model model) {
-     * log.info("updateRecipe() called with request: " + request); if
-     * (bindingResult.hasErrors()) { log.warn("Validation errors: " +
-     * bindingResult.getAllErrors()); model.addAttribute("errors",
-     * bindingResult.getAllErrors()); return "recipeboard/update"; // 수정 폼으로 다시 이동 }
-     * 
-     * try { recipeBoardService.updateRecipe(request);
-     * log.info("Recipe updated successfully with id: " +
-     * request.getRecipeBoardId()); return "redirect:/recipeboard/detail/" +
-     * request.getRecipeBoardId(); } catch (Exception e) {
-     * log.error("Error updating recipe: " + e.getMessage(), e);
-     * model.addAttribute("errorMessage", "레시피 수정 중 오류가 발생했습니다."); return
-     * "recipeboard/update"; // 수정 폼으로 다시 이동 } }
-     */
+   
     
     @PostMapping("/delete/{recipeBoardId}")
     public String deleteRecipe(@PathVariable int recipeBoardId) {

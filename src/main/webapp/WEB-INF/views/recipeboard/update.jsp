@@ -660,7 +660,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         stepCounter++;
     	});
-	});
 
         // 이미지 미리보기
         const fileInput = newRow.querySelector('input[type="file"]');
@@ -711,7 +710,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
-});
 </script>
 </body>
 </html>

@@ -87,7 +87,7 @@ public interface RecipeBoardMapper {
     
     // 저장된 썸네일 조회
     List<String> getAllThumbnailPaths();
-    
+    List<String> getAllStepImagePaths();
     // 좋아요 개수 업데이트
     void updateLikeCount(@Param("recipeBoardId") int recipeBoardId, @Param("likeCount") int likeCount);
 
@@ -110,11 +110,4 @@ public interface RecipeBoardMapper {
 	void batchInsertIngredients(List<RecipeIngredientsVO> ingredients);
 	void batchInsertIngredientDetails(List<RecipeIngredientsDetailVO> details);
 	void batchInsertSteps(List<RecipeBoardStepVO> steps);
-	
-	
-	List<HashtagsVO> selectHashtagsByNames(List<String> tagNames);
-	void batchInsertHashtags(List<HashtagsVO> hashtags);
-
-    // 🔸 레시피-해시태그 다건 매핑 insert
-    void batchInsertRecipeHashtags(List<RecipeHashtagsVO> recipeHashtags);
 }

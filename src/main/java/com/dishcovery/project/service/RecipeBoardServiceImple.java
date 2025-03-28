@@ -3,7 +3,6 @@ package com.dishcovery.project.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -447,65 +446,44 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     @Transactional
     public void saveHashtagsForRecipe(int recipeBoardId, String hashtags) {
         try {
-            // 기존 매핑 삭제
+            // 기존 해시태그 연결 삭제
             mapper.deleteRecipeHashtagsByRecipeId(recipeBoardId);
 
-            if (hashtags == null || hashtags.isBlank()) return;
-
-            // 1. 원본 파싱 + 정규화
-            Set<String> tagSet = Arrays.stream(hashtags.split(","))
-                .map(String::trim)
-                .filter(tag -> !tag.isEmpty())
-                .collect(Collectors.toSet());
-
-            if (tagSet.isEmpty()) return;
-
-            Set<String> normalizedTagSet = tagSet.stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
-
-            // 2. 기존 해시태그 조회 (정규화된 이름 기준)
-            List<HashtagsVO> existing = mapper.selectHashtagsByNames(new ArrayList<>(normalizedTagSet));
-            Set<String> existingNames = existing.stream()
-                .map(h -> h.getHashtagName().trim().toLowerCase())
-                .collect(Collectors.toSet());
-
-            // 3. 새로 insert할 해시태그 추출
-            List<String> toInsert = normalizedTagSet.stream()
-                .filter(tag -> !existingNames.contains(tag))
-                .collect(Collectors.toList());
-
-            if (!toInsert.isEmpty()) {
-                List<HashtagsVO> newHashtags = new ArrayList<>();
-                for (String tag : toInsert) {
-                    int id = mapper.getNextHashtagId();
-                    HashtagsVO vo = new HashtagsVO(id, tag);
-                    newHashtags.add(vo);
-                }
-                mapper.batchInsertHashtags(newHashtags);
-                existing.addAll(newHashtags); // 최종 리스트에 반영
+            if (hashtags == null || hashtags.isBlank()) {
+                return;
             }
 
-            // 4. 최종 매핑을 위한 Map
-            Map<String, Integer> nameToIdMap = existing.stream()
-                .collect(Collectors.toMap(
-                    h -> h.getHashtagName().trim().toLowerCase(),
-                    HashtagsVO::getHashtagId
-                ));
+            // 쉼표로 구분된 해시태그를 처리
+            String[] hashtagArray = hashtags.split(",");
+            for (String hashtagName : hashtagArray) {
+                hashtagName = hashtagName.trim();
 
-            // 5. recipeHashtags 생성 및 batch insert
-            List<RecipeHashtagsVO> recipeHashtags = normalizedTagSet.stream()
-                .map(name -> new RecipeHashtagsVO(recipeBoardId, nameToIdMap.get(name)))
-                .filter(vo -> vo.getHashtagId() != null) // null 방지
-                .collect(Collectors.toList());
+                if (!hashtagName.isEmpty()) {
+                    // 해시태그 이름으로 검색
+                    HashtagsVO existingHashtag = mapper.getHashtagByName(hashtagName);
 
-            mapper.batchInsertRecipeHashtags(recipeHashtags);
+                    if (existingHashtag == null) {
+                        // 시퀀스를 사용해 새 해시태그 추가
+                        int nextHashtagId = mapper.getNextHashtagId(); // 시퀀스 호출 메서드
+                        HashtagsVO newHashtag = new HashtagsVO();
+                        newHashtag.setHashtagId(nextHashtagId);
+                        newHashtag.setHashtagName(hashtagName);
 
+                        mapper.insertHashtag(newHashtag); // 새 해시태그 삽입
+                        existingHashtag = newHashtag;
+                    }
+
+                    // Recipe-Hashtag 연결 추가
+                    RecipeHashtagsVO recipeHashtag = new RecipeHashtagsVO();
+                    recipeHashtag.setRecipeBoardId(recipeBoardId);
+                    recipeHashtag.setHashtagId(existingHashtag.getHashtagId());
+                    mapper.insertRecipeHashtag(recipeHashtag);
+                }
+            }
         } catch (Exception e) {
             throw new RuntimeException("Failed to save hashtags for recipe", e);
         }
     }
-
 
     @Override
     public List<HashtagsVO> getHashtagsByRecipeBoardId(int recipeBoardId) {

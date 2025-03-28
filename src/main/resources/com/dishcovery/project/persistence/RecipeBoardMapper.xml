@@ -513,6 +513,13 @@
 	    WHERE TRUNC(VIEW_DATE) < TRUNC(SYSDATE)
 	]]>
 	</delete>
+	
+	<select id="getAllStepImagePaths" resultType="string">
+	    SELECT
+	    step_image_url
+	    FROM recipe_board_step
+	    WHERE step_image_url IS NOT NULL
+	</select>
 
 	<!-- 저장된 썸네일 조회 -->
 	<select id="getAllThumbnailPaths" resultType="string">
@@ -653,31 +660,6 @@
 	    </foreach>
 	    SELECT * FROM DUAL
 	</insert>
+
 	
-	<select id="selectHashtagsByNames" resultType="com.dishcovery.project.domain.HashtagsVO">
-	    SELECT HASHTAG_ID, HASHTAG_NAME
-	    FROM HASHTAGS
-	    WHERE HASHTAG_NAME IN
-	    <foreach collection="list" item="name" open="(" separator="," close=")">
-	        #{name}
-	    </foreach>
-	</select>
-	
-	<insert id="batchInsertHashtags">
-	    INSERT ALL
-	    <foreach collection="list" item="tag">
-	        INTO HASHTAGS (HASHTAG_ID, HASHTAG_NAME)
-	        VALUES (#{tag.hashtagId}, #{tag.hashtagName})
-	    </foreach>
-	    SELECT * FROM DUAL
-	</insert>
-	
-	<insert id="batchInsertRecipeHashtags">
-	    INSERT ALL
-	    <foreach collection="list" item="item">
-	        INTO RECIPE_HASHTAGS (RECIPE_BOARD_ID, HASHTAG_ID)
-	        VALUES (#{item.recipeBoardId}, #{item.hashtagId})
-	    </foreach>
-	    SELECT * FROM DUAL
-	</insert>
 </mapper>

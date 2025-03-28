@@ -47,27 +47,29 @@ public class BoardScheduler {
         }
     }
     
-//    @Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE) // 10초 후 스케줄러 실행 (테스트용)
+    //@Scheduled(initialDelay = 10000, fixedRate = Long.MAX_VALUE) // 10초 후 스케줄러 실행 (테스트용)
     @Scheduled(cron = "0 30 12 * * ?") // 매일 12시 30분 실행
     public void cleanUnusedThumbnails() {
         log.info("Starting cleanup of unused thumbnails...");
 
         try {
-            // 데이터베이스에 저장된 모든 썸네일 경로 가져오기
-            List<String> dbThumbnails = mapper.getAllThumbnailPaths();
+            // 1. 썸네일과 스텝 이미지 경로 모두 가져오기
+            List<String> thumbnailPaths = mapper.getAllThumbnailPaths();
+            List<String> stepImagePaths = mapper.getAllStepImagePaths();
 
-            // 업로드 디렉터리 설정
+            Set<String> dbImagePathsSet = new HashSet<>();
+            if (thumbnailPaths != null) dbImagePathsSet.addAll(thumbnailPaths);
+            if (stepImagePaths != null) dbImagePathsSet.addAll(stepImagePaths);
+
+            // 2. 업로드 디렉터리 기준
             File uploadDir = new File("C:" + File.separator + "uploads");
             if (!uploadDir.exists() || !uploadDir.isDirectory()) {
                 log.warn("Upload directory does not exist: " + uploadDir.getPath());
                 return;
             }
 
-            // 데이터베이스 경로를 Set으로 변환 (검색 속도 향상)
-            Set<String> dbThumbnailsSet = new HashSet<>(dbThumbnails);
-
-            // 디렉터리 탐색 및 정리
-            cleanDirectory(uploadDir, dbThumbnailsSet);
+            // 3. 파일 정리
+            cleanDirectory(uploadDir, dbImagePathsSet);
 
             log.info("Cleanup of unused thumbnails completed.");
         } catch (Exception e) {

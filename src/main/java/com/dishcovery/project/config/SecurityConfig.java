@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
 
 import com.dishcovery.project.service.CustomAuthenticationFailureHandler;
@@ -110,6 +111,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return multipartFilter;
     }
 
+    @Bean
+    public ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
+    }
+    
     // 스레드 풀 설정
     public Executor mailExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

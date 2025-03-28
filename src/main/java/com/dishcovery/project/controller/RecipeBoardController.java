@@ -37,7 +37,6 @@ import com.dishcovery.project.domain.ImageData;
 import com.dishcovery.project.domain.RecipeBoardDTO;
 import com.dishcovery.project.domain.RecipeBoardStepVO;
 import com.dishcovery.project.domain.RecipeBoardVO;
-import com.dishcovery.project.domain.RecipeDetailVO;
 import com.dishcovery.project.domain.RecipeIngredientDetailsList;
 import com.dishcovery.project.domain.RecipeIngredientsDetailVO;
 import com.dishcovery.project.service.RecipeBoardService;
@@ -411,17 +410,7 @@ public class RecipeBoardController {
     }
 
     private String getClientIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
+        return request.getRemoteAddr();
     }
 
     private Integer getCurrentUserId() {

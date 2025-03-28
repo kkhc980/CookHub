@@ -10,6 +10,41 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+    .recipe-box {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .recipe-box textarea {
+      width: 80%;
+      height: 300px;
+      padding: 15px;
+      font-size: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #fdfdfd;
+      resize: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .recipe-box textarea:focus {
+      outline: none;
+      border-color: #6c9ef8;
+      box-shadow: 0 0 8px rgba(108, 158, 248, 0.3);
+    }
+
+    .recipe-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #333;
+    }
+  </style>
    <!-- jquery 라이브러리 import -->
    <base href="${pageContext.request.contextPath}/">
    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -236,9 +271,14 @@ $(document).ready(function() {
          pattern="yyyy-MM-dd HH:mm:ss" var="recipeBoardCreatedDate" />
       <p>작성일 : ${recipeBoardCreatedDate }</p>
    </div>
-   <div>
-      <textarea rows="20" cols="120" readonly>${recipeBoard.recipeBoardContent }</textarea>
-   </div>
+  <div class="recipe-box">
+    <div class="recipe-title">레시피 내용</div>
+    <textarea readonly>${recipeBoard.recipeBoardContent}</textarea>
+
+    <div class="recipe-title">레시피 꿀팁</div>
+    <textarea readonly>${recipeBoard.recipeTip}</textarea>
+  </div>
+
 
    <div class="info-container">
       <div class="category-section">

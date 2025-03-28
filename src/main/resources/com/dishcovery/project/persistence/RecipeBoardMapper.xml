@@ -604,4 +604,80 @@
 	    JOIN recipe_board rb ON ranked_boards.recipe_board_id = rb.recipe_board_id
 	    WHERE ranked_boards.rn &lt;= 5
 	</select>
+	
+	<insert id="batchInsertIngredients">
+	    INSERT ALL
+	    <foreach collection="list" item="item">
+	        INTO RECIPE_INGREDIENTS (RECIPE_BOARD_ID, INGREDIENT_ID)
+	        VALUES (#{item.recipeBoardId}, #{item.ingredientId})
+	    </foreach>
+	    SELECT * FROM DUAL
+	</insert>
+		
+	<insert id="batchInsertIngredientDetails">
+	    INSERT ALL
+	    <foreach collection="list" item="detail">
+	        INTO RECIPE_INGREDIENTS_DETAIL (
+	            RECIPE_BOARD_ID,
+	            INGREDIENT_NAME,
+	            INGREDIENT_AMOUNT,
+	            INGREDIENT_UNIT,
+	            INGREDIENT_NOTE
+	        )
+	        VALUES (
+	            #{detail.recipeBoardId},
+	            #{detail.ingredientName},
+	            #{detail.ingredientAmount},
+	            #{detail.ingredientUnit},
+	            #{detail.ingredientNote}
+	        )
+	    </foreach>
+	    SELECT * FROM DUAL
+	</insert>
+		
+	<insert id="batchInsertSteps">
+	    INSERT ALL
+	    <foreach collection="list" item="step">
+	        INTO RECIPE_BOARD_STEP (
+	            RECIPE_BOARD_ID,
+	            STEP_ORDER,
+	            STEP_DESCRIPTION,
+	            STEP_IMAGE_URL
+	        )
+	        VALUES (
+	            #{step.recipeBoardId},
+	            #{step.stepOrder},
+	            #{step.stepDescription},
+	            #{step.stepImageUrl}
+	        )
+	    </foreach>
+	    SELECT * FROM DUAL
+	</insert>
+	
+	<select id="selectHashtagsByNames" resultType="com.dishcovery.project.domain.HashtagsVO">
+	    SELECT HASHTAG_ID, HASHTAG_NAME
+	    FROM HASHTAGS
+	    WHERE HASHTAG_NAME IN
+	    <foreach collection="list" item="name" open="(" separator="," close=")">
+	        #{name}
+	    </foreach>
+	</select>
+	
+	<insert id="batchInsertHashtags">
+	    INSERT ALL
+	    <foreach collection="list" item="tag">
+	        INTO HASHTAGS (HASHTAG_ID, HASHTAG_NAME)
+	        VALUES (#{tag.hashtagId}, #{tag.hashtagName})
+	    </foreach>
+	    SELECT * FROM DUAL
+	</insert>
+	
+	<insert id="batchInsertRecipeHashtags">
+	    INSERT ALL
+	    <foreach collection="list" item="item">
+	        INTO RECIPE_HASHTAGS (RECIPE_BOARD_ID, HASHTAG_ID)
+	        VALUES (#{item.recipeBoardId}, #{item.hashtagId})
+	    </foreach>
+	    SELECT * FROM DUAL
+	</insert>
 </mapper>

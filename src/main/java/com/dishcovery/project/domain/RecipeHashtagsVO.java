@@ -11,5 +11,10 @@ import lombok.ToString;
 @NoArgsConstructor
 public class RecipeHashtagsVO {
     private int recipeBoardId; // 레시피 게시글 ID (FK)
-    private int hashtagId;     // 해시태그 ID (FK)
+    private Integer hashtagId;     // 해시태그 ID (FK)
+    
+    public RecipeHashtagsVO(int recipeBoardId, int hashtagId) {
+        this.recipeBoardId = recipeBoardId;
+        this.hashtagId = hashtagId;
+    }
 }

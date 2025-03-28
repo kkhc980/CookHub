@@ -106,4 +106,15 @@ public interface RecipeBoardMapper {
 	List<RecipeBoardVO> getTopPosts();
 	
 	List<Map<String, Object>> getGuestRecommendations();
+	
+	void batchInsertIngredients(List<RecipeIngredientsVO> ingredients);
+	void batchInsertIngredientDetails(List<RecipeIngredientsDetailVO> details);
+	void batchInsertSteps(List<RecipeBoardStepVO> steps);
+	
+	
+	List<HashtagsVO> selectHashtagsByNames(List<String> tagNames);
+	void batchInsertHashtags(List<HashtagsVO> hashtags);
+
+    // 🔸 레시피-해시태그 다건 매핑 insert
+    void batchInsertRecipeHashtags(List<RecipeHashtagsVO> recipeHashtags);
 }

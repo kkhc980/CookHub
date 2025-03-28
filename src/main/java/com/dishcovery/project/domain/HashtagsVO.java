@@ -10,6 +10,11 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class HashtagsVO {
-    private int hashtagId; // 해시태그 ID (PK)
+    private Integer hashtagId; // 해시태그 ID (PK)
     private String hashtagName; // 해시태그 이름 (Unique)
+    
+    public HashtagsVO(int hashtagId, String hashtagName) {
+        this.hashtagId = hashtagId;
+        this.hashtagName = hashtagName;
+    }
 }

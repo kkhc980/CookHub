@@ -3,6 +3,7 @@ package com.dishcovery.project.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -141,51 +142,63 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
 	 * stub return null; }
 	 */
     @Override
-	@Transactional
-	public void createRecipe(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, String hashtags,
-			MultipartFile thumbnail, List<RecipeBoardStepVO> steps,
-			List<RecipeIngredientsDetailVO> ingredientsDetails) {
-		if (thumbnail == null || thumbnail.isEmpty()) {
-			throw new IllegalArgumentException("Thumbnail is required for creating a recipe.");
-		}
+    @Transactional
+    public void createRecipe(RecipeBoardVO recipeBoard, List<Integer> ingredientIds, String hashtags,
+                             MultipartFile thumbnail, List<RecipeBoardStepVO> steps,
+                             List<RecipeIngredientsDetailVO> ingredientsDetails) {
+        if (thumbnail == null || thumbnail.isEmpty()) {
+            throw new IllegalArgumentException("Thumbnail is required for creating a recipe.");
+        }
 
-		try {
-			// 썸네일 저장
-			String thumbnailPath = saveThumbnail(thumbnail);
-			recipeBoard.setThumbnailPath(thumbnailPath);
+        try {
+            // 썸네일 저장
+            String thumbnailPath = saveThumbnail(thumbnail);
+            recipeBoard.setThumbnailPath(thumbnailPath);
 
-			// 게시글 ID 생성 및 저장
+            // 게시글 저장
+            log.info("Inserting recipe with memberId: {}");
+            mapper.insertRecipeBoard(recipeBoard);
+            log.info("Inserted recipe board with ID: {}");
 
-			log.info("Inserting recipe with memberId: {}" + recipeBoard.getMemberId());
-			log.info(recipeBoard.getRecipeBoardId());
-			mapper.insertRecipeBoard(recipeBoard);
-			log.info("Inserted recipe board with ID: " + recipeBoard.getRecipeBoardId());
+            // 조회수 통계 초기화
+            viewStatsMapper.insertInitialViewStats(recipeBoard.getRecipeBoardId());
 
-			// RecipeViewStats 초기화 (insertInitialViewStats 호출)
-			log.info("Inserting initial view stats for recipeBoardId: " + recipeBoard.getRecipeBoardId());
-			viewStatsMapper.insertInitialViewStats(recipeBoard.getRecipeBoardId());
+            int recipeBoardId = recipeBoard.getRecipeBoardId();
 
-			// 재료 정보 추가
-			log.info("Adding ingredients to recipe with ID: " + recipeBoard.getRecipeBoardId());
-			addIngredientsToRecipe(recipeBoard.getRecipeBoardId(), ingredientIds);
-			// 재료 상세 정보 추가
-			if (ingredientsDetails != null && !ingredientsDetails.isEmpty()) {
-				addIngredientDetailsToRecipe(recipeBoard.getRecipeBoardId(), ingredientsDetails);
-			}
-			// 해시태그 처리
-			saveHashtagsForRecipe(recipeBoard.getRecipeBoardId(), hashtags);
+            // 🔸 재료 배치 추가
+            if (ingredientIds != null && !ingredientIds.isEmpty()) {
+                List<RecipeIngredientsVO> ingredients = ingredientIds.stream()
+                    .map(id -> new RecipeIngredientsVO(recipeBoardId, id))
+                    .collect(Collectors.toList());
+                mapper.batchInsertIngredients(ingredients);
+            }
 
-			// 스텝 정보 추가
-			if (steps != null && !steps.isEmpty()) {
-				saveRecipeSteps(recipeBoard.getRecipeBoardId(), steps);
-			} else {
-				log.info("steps is empty or null");
-			}
-		} catch (Exception e) {
-			log.error("createRecipe failed " + e.getMessage(), e);
-			throw new RuntimeException("Failed to create recipe with thumbnail and hashtags", e);
-		}
-	}
+            // 🔸 재료 상세 정보 배치 추가
+            if (ingredientsDetails != null && !ingredientsDetails.isEmpty()) {
+                for (RecipeIngredientsDetailVO detail : ingredientsDetails) {
+                    detail.setRecipeBoardId(recipeBoardId);
+                }
+                mapper.batchInsertIngredientDetails(ingredientsDetails);
+            }
+
+            // 🔸 해시태그 저장
+            saveHashtagsForRecipe(recipeBoardId, hashtags);
+
+            // 🔸 스텝 정보 배치 추가
+            if (steps != null && !steps.isEmpty()) {
+                for (RecipeBoardStepVO step : steps) {
+                    step.setRecipeBoardId(recipeBoardId);
+                }
+                mapper.batchInsertSteps(steps);
+            } else {
+                log.info("steps is empty or null");
+            }
+
+        } catch (Exception e) {
+            log.error("createRecipe failed " + e.getMessage(), e);
+            throw new RuntimeException("Failed to create recipe with thumbnail and hashtags", e);
+        }
+    }
     
     @Override
     public RecipeBoardDTO getRecipeDetailById(int recipeBoardId) {
@@ -434,44 +447,65 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
     @Transactional
     public void saveHashtagsForRecipe(int recipeBoardId, String hashtags) {
         try {
-            // 기존 해시태그 연결 삭제
+            // 기존 매핑 삭제
             mapper.deleteRecipeHashtagsByRecipeId(recipeBoardId);
 
-            if (hashtags == null || hashtags.isBlank()) {
-                return;
-            }
+            if (hashtags == null || hashtags.isBlank()) return;
 
-            // 쉼표로 구분된 해시태그를 처리
-            String[] hashtagArray = hashtags.split(",");
-            for (String hashtagName : hashtagArray) {
-                hashtagName = hashtagName.trim();
+            // 1. 원본 파싱 + 정규화
+            Set<String> tagSet = Arrays.stream(hashtags.split(","))
+                .map(String::trim)
+                .filter(tag -> !tag.isEmpty())
+                .collect(Collectors.toSet());
 
-                if (!hashtagName.isEmpty()) {
-                    // 해시태그 이름으로 검색
-                    HashtagsVO existingHashtag = mapper.getHashtagByName(hashtagName);
+            if (tagSet.isEmpty()) return;
 
-                    if (existingHashtag == null) {
-                        // 시퀀스를 사용해 새 해시태그 추가
-                        int nextHashtagId = mapper.getNextHashtagId(); // 시퀀스 호출 메서드
-                        HashtagsVO newHashtag = new HashtagsVO();
-                        newHashtag.setHashtagId(nextHashtagId);
-                        newHashtag.setHashtagName(hashtagName);
+            Set<String> normalizedTagSet = tagSet.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
 
-                        mapper.insertHashtag(newHashtag); // 새 해시태그 삽입
-                        existingHashtag = newHashtag;
-                    }
+            // 2. 기존 해시태그 조회 (정규화된 이름 기준)
+            List<HashtagsVO> existing = mapper.selectHashtagsByNames(new ArrayList<>(normalizedTagSet));
+            Set<String> existingNames = existing.stream()
+                .map(h -> h.getHashtagName().trim().toLowerCase())
+                .collect(Collectors.toSet());
 
-                    // Recipe-Hashtag 연결 추가
-                    RecipeHashtagsVO recipeHashtag = new RecipeHashtagsVO();
-                    recipeHashtag.setRecipeBoardId(recipeBoardId);
-                    recipeHashtag.setHashtagId(existingHashtag.getHashtagId());
-                    mapper.insertRecipeHashtag(recipeHashtag);
+            // 3. 새로 insert할 해시태그 추출
+            List<String> toInsert = normalizedTagSet.stream()
+                .filter(tag -> !existingNames.contains(tag))
+                .collect(Collectors.toList());
+
+            if (!toInsert.isEmpty()) {
+                List<HashtagsVO> newHashtags = new ArrayList<>();
+                for (String tag : toInsert) {
+                    int id = mapper.getNextHashtagId();
+                    HashtagsVO vo = new HashtagsVO(id, tag);
+                    newHashtags.add(vo);
                 }
+                mapper.batchInsertHashtags(newHashtags);
+                existing.addAll(newHashtags); // 최종 리스트에 반영
             }
+
+            // 4. 최종 매핑을 위한 Map
+            Map<String, Integer> nameToIdMap = existing.stream()
+                .collect(Collectors.toMap(
+                    h -> h.getHashtagName().trim().toLowerCase(),
+                    HashtagsVO::getHashtagId
+                ));
+
+            // 5. recipeHashtags 생성 및 batch insert
+            List<RecipeHashtagsVO> recipeHashtags = normalizedTagSet.stream()
+                .map(name -> new RecipeHashtagsVO(recipeBoardId, nameToIdMap.get(name)))
+                .filter(vo -> vo.getHashtagId() != null) // null 방지
+                .collect(Collectors.toList());
+
+            mapper.batchInsertRecipeHashtags(recipeHashtags);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to save hashtags for recipe", e);
         }
     }
+
 
     @Override
     public List<HashtagsVO> getHashtagsByRecipeBoardId(int recipeBoardId) {
@@ -646,19 +680,18 @@ public class RecipeBoardServiceImple implements RecipeBoardService {
         if (recipeBoardId == 0) {
             throw new IllegalArgumentException("Invalid recipeBoardId: 0");
         }
+
         // recipeBoardId 유효성 검사
-        RecipeBoardVO recipeBoard = mapper.getByRecipeBoardId(recipeBoardId); // 예시: mapper를 사용하여 조회
+        RecipeBoardVO recipeBoard = mapper.getByRecipeBoardId(recipeBoardId);
         if (recipeBoard == null) {
             throw new IllegalArgumentException("Invalid recipeBoardId: " + recipeBoardId);
         }
 
         if (ingredientIds != null && !ingredientIds.isEmpty()) {
-            ingredientIds.forEach(ingredientId -> {
-                RecipeIngredientsVO recipeIngredient = new RecipeIngredientsVO();
-                recipeIngredient.setRecipeBoardId(recipeBoardId);
-                recipeIngredient.setIngredientId(ingredientId);
-                mapper.insertRecipeIngredient(recipeIngredient);
-            });
+            List<RecipeIngredientsVO> ingredients = ingredientIds.stream()
+                .map(id -> new RecipeIngredientsVO(recipeBoardId, id)) // 생성자 활용
+                .collect(Collectors.toList());
+            mapper.batchInsertIngredients(ingredients);
         }
     }
 
